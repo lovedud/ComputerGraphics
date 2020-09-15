@@ -1,0 +1,10 @@
+E:\My\Mexmat\Computer Graphics\lab2\lab2\bin\Debug\lab2.exe.config
+E:\My\Mexmat\Computer Graphics\lab2\lab2\bin\Debug\lab2.exe
+E:\My\Mexmat\Computer Graphics\lab2\lab2\bin\Debug\lab2.pdb
+E:\My\Mexmat\Computer Graphics\lab2\lab2\obj\Debug\lab2.csprojAssemblyReference.cache
+E:\My\Mexmat\Computer Graphics\lab2\lab2\obj\Debug\lab2.Form1.resources
+E:\My\Mexmat\Computer Graphics\lab2\lab2\obj\Debug\lab2.Properties.Resources.resources
+E:\My\Mexmat\Computer Graphics\lab2\lab2\obj\Debug\lab2.csproj.GenerateResource.cache
+E:\My\Mexmat\Computer Graphics\lab2\lab2\obj\Debug\lab2.csproj.CoreCompileInputs.cache
+E:\My\Mexmat\Computer Graphics\lab2\lab2\obj\Debug\lab2.exe
+E:\My\Mexmat\Computer Graphics\lab2\lab2\obj\Debug\lab2.pdb
