@@ -1,0 +1,12 @@
+D:\C#\RGB_to_gray\bin\Debug\RGB_to_gray.exe.config
+D:\C#\RGB_to_gray\bin\Debug\RGB_to_gray.exe
+D:\C#\RGB_to_gray\bin\Debug\RGB_to_gray.pdb
+D:\C#\RGB_to_gray\obj\Debug\RGB_to_gray.csprojAssemblyReference.cache
+D:\C#\RGB_to_gray\obj\Debug\RGB_to_gray.Form1.resources
+D:\C#\RGB_to_gray\obj\Debug\RGB_to_gray.Properties.Resources.resources
+D:\C#\RGB_to_gray\obj\Debug\RGB_to_gray.csproj.GenerateResource.cache
+D:\C#\RGB_to_gray\obj\Debug\RGB_to_gray.csproj.CoreCompileInputs.cache
+D:\C#\RGB_to_gray\obj\Debug\RGB_to_gray.exe
+D:\C#\RGB_to_gray\obj\Debug\RGB_to_gray.pdb
+D:\C#\RGB_to_gray\obj\Debug\RGB_to_gray.Form2.resources
+D:\C#\RGB_to_gray\obj\Debug\RGB_to_gray.Form3.resources
