@@ -1,0 +1,10 @@
+E:\My\Mexmat\Computer Graphics\lab3\task3\task3\bin\Debug\task3.exe.config
+E:\My\Mexmat\Computer Graphics\lab3\task3\task3\bin\Debug\task3.exe
+E:\My\Mexmat\Computer Graphics\lab3\task3\task3\bin\Debug\task3.pdb
+E:\My\Mexmat\Computer Graphics\lab3\task3\task3\obj\Debug\task3.csprojAssemblyReference.cache
+E:\My\Mexmat\Computer Graphics\lab3\task3\task3\obj\Debug\task3.Form1.resources
+E:\My\Mexmat\Computer Graphics\lab3\task3\task3\obj\Debug\task3.Properties.Resources.resources
+E:\My\Mexmat\Computer Graphics\lab3\task3\task3\obj\Debug\task3.csproj.GenerateResource.cache
+E:\My\Mexmat\Computer Graphics\lab3\task3\task3\obj\Debug\task3.csproj.CoreCompileInputs.cache
+E:\My\Mexmat\Computer Graphics\lab3\task3\task3\obj\Debug\task3.exe
+E:\My\Mexmat\Computer Graphics\lab3\task3\task3\obj\Debug\task3.pdb
