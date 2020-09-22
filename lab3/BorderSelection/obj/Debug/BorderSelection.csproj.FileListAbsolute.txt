@@ -1,0 +1,10 @@
+D:\C#\BorderSelection\bin\Debug\BorderSelection.exe.config
+D:\C#\BorderSelection\bin\Debug\BorderSelection.exe
+D:\C#\BorderSelection\bin\Debug\BorderSelection.pdb
+D:\C#\BorderSelection\obj\Debug\BorderSelection.csprojAssemblyReference.cache
+D:\C#\BorderSelection\obj\Debug\BorderSelection.Form1.resources
+D:\C#\BorderSelection\obj\Debug\BorderSelection.Properties.Resources.resources
+D:\C#\BorderSelection\obj\Debug\BorderSelection.csproj.GenerateResource.cache
+D:\C#\BorderSelection\obj\Debug\BorderSelection.csproj.CoreCompileInputs.cache
+D:\C#\BorderSelection\obj\Debug\BorderSelection.exe
+D:\C#\BorderSelection\obj\Debug\BorderSelection.pdb
