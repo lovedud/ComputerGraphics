@@ -1,0 +1,11 @@
+D:\MEXMAT\course4_1\КГ\Никита\ComputerGraphics\lab03\bin\Debug\cg_lab3.exe.config
+D:\MEXMAT\course4_1\КГ\Никита\ComputerGraphics\lab03\bin\Debug\cg_lab3.exe
+D:\MEXMAT\course4_1\КГ\Никита\ComputerGraphics\lab03\bin\Debug\cg_lab3.pdb
+D:\MEXMAT\course4_1\КГ\Никита\ComputerGraphics\lab03\obj\Debug\cg_lab3.csprojAssemblyReference.cache
+D:\MEXMAT\course4_1\КГ\Никита\ComputerGraphics\lab03\obj\Debug\cg_lab3.Loader.resources
+D:\MEXMAT\course4_1\КГ\Никита\ComputerGraphics\lab03\obj\Debug\cg_lab3.Properties.Resources.resources
+D:\MEXMAT\course4_1\КГ\Никита\ComputerGraphics\lab03\obj\Debug\cg_lab3.Task1a.Task1a.resources
+D:\MEXMAT\course4_1\КГ\Никита\ComputerGraphics\lab03\obj\Debug\cg_lab3.csproj.GenerateResource.cache
+D:\MEXMAT\course4_1\КГ\Никита\ComputerGraphics\lab03\obj\Debug\cg_lab3.csproj.CoreCompileInputs.cache
+D:\MEXMAT\course4_1\КГ\Никита\ComputerGraphics\lab03\obj\Debug\cg_lab3.exe
+D:\MEXMAT\course4_1\КГ\Никита\ComputerGraphics\lab03\obj\Debug\cg_lab3.pdb
