@@ -45,6 +45,8 @@ namespace BorderSelection
             moving = true;
             prev_x = e.X;
             prev_y = e.Y;
+            max_x = 0;
+            max_y = 0;
 
         }
 
@@ -73,7 +75,7 @@ namespace BorderSelection
         {
             moving = false;
         }
-        private Direction RotateN(Direction dir, int n)// if n > 0 - по часовой, else 
+        private Direction RotateN(Direction dir, int n)// if n > 0 - по часовой, else против часовой
         {
             int res = (int)dir - n;
             if (res < 0)
@@ -131,24 +133,28 @@ namespace BorderSelection
 
         private List<Point> SelectBorder()
         {
+            Point start_p = new Point(max_x, max_y);
             List<Point> border = new List<Point>();
-            Point cur_p = new Point(max_x, max_y);
+            Point cur_p = start_p;
             Direction dir = Direction.D270; // down
-            while (!border.Contains(cur_p) && cur_p.X != -1)
+            do
             {
                 border.Add(cur_p);
                 cur_p = FindNextBorderPoint(cur_p, ref dir);
-                dir = RotateN(dir, 2);
-            }
+                dir = RotateN(dir, 2); 
+            } while (cur_p != start_p && cur_p.X != -1 );
+
             border.Sort((p1, p2) => (p1.Y == p2.Y ? p1.X.CompareTo(p2.X) : p1.Y.CompareTo(p2.Y)));
             return border;
         }
         private void DrawBorder(List<Point> border)
         {
+            
             foreach(var p in border)
             {
                 bm.SetPixel(p.X, p.Y, Color.Red);
             }
+            bm.SetPixel(max_x, max_y, Color.Green);
         }
 
         private void button1_Click(object sender, EventArgs e)
