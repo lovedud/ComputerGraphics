@@ -1,0 +1,20 @@
+E:\My\Mexmat\Computer Graphics\Lab4\bin\Debug\Lab4.exe.config
+E:\My\Mexmat\Computer Graphics\Lab4\bin\Debug\Lab4.exe
+E:\My\Mexmat\Computer Graphics\Lab4\bin\Debug\Lab4.pdb
+E:\My\Mexmat\Computer Graphics\Lab4\obj\Debug\Lab4.csprojAssemblyReference.cache
+E:\My\Mexmat\Computer Graphics\Lab4\obj\Debug\Lab4.Properties.Resources.resources
+E:\My\Mexmat\Computer Graphics\Lab4\obj\Debug\Lab4.csproj.GenerateResource.cache
+E:\My\Mexmat\Computer Graphics\Lab4\obj\Debug\Lab4.csproj.CoreCompileInputs.cache
+E:\My\Mexmat\Computer Graphics\Lab4\obj\Debug\Lab4.exe
+E:\My\Mexmat\Computer Graphics\Lab4\obj\Debug\Lab4.pdb
+E:\My\Mexmat\Computer Graphics\Lab4\obj\Debug\Lab4.Form1.resources
+D:\C#\Lab4\bin\Debug\Lab4.exe.config
+D:\C#\Lab4\bin\Debug\Lab4.exe
+D:\C#\Lab4\bin\Debug\Lab4.pdb
+D:\C#\Lab4\obj\Debug\Lab4.csprojAssemblyReference.cache
+D:\C#\Lab4\obj\Debug\Lab4.Form1.resources
+D:\C#\Lab4\obj\Debug\Lab4.Properties.Resources.resources
+D:\C#\Lab4\obj\Debug\Lab4.csproj.GenerateResource.cache
+D:\C#\Lab4\obj\Debug\Lab4.csproj.CoreCompileInputs.cache
+D:\C#\Lab4\obj\Debug\Lab4.exe
+D:\C#\Lab4\obj\Debug\Lab4.pdb
