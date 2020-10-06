@@ -134,21 +134,22 @@ namespace Lab4
             }
         }
 
-        private void AddingPoint(PointF p, Graphics g, bool should_draw = true)
+        private void AddingPoint(PointF p, Graphics g, bool should_draw = true, bool addingToListPoints = true)
         {
-            PointsList.Add(p);
+            if (addingToListPoints)
+                PointsList.Add(p);
             if (should_draw)
                 DrawPoint(ref bitmap, p, Color.Black);
             pictureBox1.Image = bitmap;
             cur_point = p;
         }
-        private void AddingEdge(PointF p, Graphics g, bool addingToList = true)
+        private void AddingEdge(PointF p, Graphics g, bool addingToList = true, bool addingToListPoints = true)
         {
             if (EdgeBegin)
             {
                 EdgeBegin = false;
                 var prev_point = cur_point;
-                AddingPoint(p, g, false);
+                AddingPoint(p, g, false, addingToListPoints);
                 Edge edge = new Edge(prev_point, cur_point);
                 if (addingToList)
                     EdgeList.Add(edge);
@@ -161,22 +162,22 @@ namespace Lab4
             else
             {
                 EdgeBegin = true;
-                AddingPoint(p, g);
+                AddingPoint(p, g, true, false);
             }
         }
 
         private void AddingPoly(PointF p, Graphics g)
         {
-            if (!(cur_poly is null) && SamePoint(p,cur_poly.points.First()))
-                AddingEdge(cur_poly.points.First(), g, false);
+            if (!(cur_poly is null) && SamePoint(p,cur_poly.origPoints.First()))
+                AddingEdge(cur_poly.origPoints.First(), g, false, false);
             else
-                AddingEdge(p, g, false);
+                AddingEdge(p, g, false, false);
             if (PolyBegin)
             {
                 cur_poly.AddEdge(cur_edge);
-                if (SamePoint(cur_point, cur_poly.points.First()))
+                if (SamePoint(cur_point, cur_poly.origPoints.First()))
                 {
-                    if (cur_poly.points.Count >= 3)
+                    if (cur_poly.origPoints.Count >= 3)
                     {
                         PolyBegin = false;
                         PolygonList.Add(cur_poly);
@@ -432,17 +433,6 @@ namespace Lab4
 
         }
 
-        private void Moving_Click(object sender, EventArgs e)
-        {
-            string text = "Click inside polygon to start moving it";
-            Switch_Off_All();
-            cur_mode = Mode.MovingPoly;
-            cur_point = new PointF();
-            cur_poly = null;
-            InteractWithButton(cur_mode, false);
-            ShowInInfoBox(text);
-        }
-
         private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
         {
             if (Mode.MovingPoly != cur_mode || cur_poly != null)
@@ -454,6 +444,36 @@ namespace Lab4
             Polygon poly = new Polygon(p);//TODO: вызов функции перемещения по dx и dy, возвращает полигон
             PolygonList.Add(poly);
             Redraw(ref g);
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            var x = new PointF((int)numericUpDown1.Value, (int)numericUpDown2.Value);
+            PolygonList.First().MoveTo(x);
+            Graphics g = Graphics.FromImage(bitmap);
+            Redraw(ref g);
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if (PointsList.Count > 0)
+            {
+                PolygonList.First().Rotate(PointsList.Last(), (int)numericUpDown3.Value);
+                Graphics g = Graphics.FromImage(bitmap);
+                Redraw(ref g);
+            }
+        }
+
+        private void Moving_Click(object sender, EventArgs e)
+        {
+            double x = 0;
+            double y = 0;
+            if (PointsList.Count > 0 && double.TryParse(textBox1.Text, out x) && double.TryParse(textBox2.Text, out y))
+            {
+                PolygonList.First().Scale(PointsList.Last(), 1/x, 1/y);
+                Graphics g = Graphics.FromImage(bitmap);
+                Redraw(ref g);
+            }
         }
     }
 }

@@ -60,34 +60,100 @@ namespace Lab4
         {
             public Polygon(List<PointF> ps)
             {
-                points = ps;
+                for (int i = 0; i < ps.Count; ++i)
+                {
+                    origPoints[i] = ps[i];
+                    changedPoints[i] = ps[i];
+                }
                 convex = IsConvex();
             }
 
             public Polygon(PointF start_Point)
             {
-                points = new List<PointF>();
-                points.Add(start_Point);
+                origPoints = new List<PointF>();
+                changedPoints = new List<PointF>();
+                origPoints.Add(start_Point);
+                changedPoints.Add(start_Point);
             }
 
             public void AddEdge(Edge e)
             {
-                if (!points.Contains(e.end))
-                    points.Add(e.end);
+                if (!origPoints.Contains(e.end))
+                {
+                    origPoints.Add(e.end);
+                    changedPoints.Add(e.end);
+                }
             }
             public void Draw(ref Graphics g)
             {
                 Pen p = new Pen(Color.Black, 1);
-                g.DrawPolygon(p, points.ToArray());
+                g.DrawPolygon(p, changedPoints.ToArray());
             }
             
 
-            public List<PointF> points;
-            bool convex;
+            public List<PointF> origPoints;
+            public List<PointF> changedPoints;
+
+
+            public void MoveTo(PointF p)
+            {
+                var moveMatr = new double[3, 3] { { 1, 0, 0 }, { 0, 1, 0 },  { p.X, p.Y, 1 } };
+
+                for (int i = 0; i < changedPoints.Count; i++)
+                {
+                    var pointMatr = new double[1, 3] { { changedPoints[i].X, changedPoints[i].Y, 1 } };
+                    var resMatrix = MatrixMultiplication(pointMatr, moveMatr);
+                    changedPoints[i] = new PointF((float)resMatrix[0, 0], (float)resMatrix[0,1]);
+                }
+            }
+
+            public void Rotate(PointF p, int deg)
+            { 
+
+                var moveMatr = new double[3, 3] { { 1, 0, 0 }, { 0, 1, 0 }, { p.X, p.Y, 1 } };
+                var moveMatrToZero = new double[3, 3] { { 1, 0, 0 }, { 0, 1, 0 }, { -p.X, -p.Y, 1 } };
+
+                double angle = deg * Math.PI / 180.0;
+
+                double sin = Math.Sin(angle), cos = Math.Cos(angle);
+
+                var rotateMatrix = new double[3, 3] { { cos, sin, 0 }, { -sin, cos, 0 }, { 0, 0, 1 } };
+
+
+
+                for (int i = 0; i < changedPoints.Count; i++)
+                {
+                    var pointMatr = new double[1, 3] { { changedPoints[i].X, changedPoints[i].Y, 1 } };
+                    var resMatrix = MatrixMultiplication(pointMatr, moveMatrToZero);
+                    resMatrix = MatrixMultiplication(resMatrix, rotateMatrix);
+                    resMatrix = MatrixMultiplication(resMatrix, moveMatr);
+                    changedPoints[i] = new PointF((float)resMatrix[0, 0], (float)resMatrix[0, 1]);
+                }
+            }
+
+            public void Scale(PointF p, double kx, double ky)
+            {
+                var moveMatr = new double[3, 3] { { 1, 0, 0 }, { 0, 1, 0 }, { p.X, p.Y, 1 } };
+
+                var moveMatrToZero = new double[3, 3] { { 1, 0, 0 }, { 0, 1, 0 }, { -p.X, -p.Y, 1 } };
+
+                var scaleMatr = new double[3, 3] { { 1 / kx , 0, 0 }, { 0, 1 / ky, 0 }, { 0, 0, 1 } };
+
+                for (int i = 0; i < changedPoints.Count; i++)
+                {
+                    var pointMatr = new double[1, 3] { { changedPoints[i].X, changedPoints[i].Y, 1 } };
+                    var resMatrix = MatrixMultiplication(pointMatr, moveMatrToZero);
+                    resMatrix = MatrixMultiplication(resMatrix, scaleMatr);
+                    resMatrix = MatrixMultiplication(resMatrix, moveMatr);
+                    changedPoints[i] = new PointF((float)resMatrix[0, 0], (float)resMatrix[0, 1]);
+                }
+            }
+
+            public bool convex;
 
             private bool IsConvex()
             {
-                var arrPoint = points.ToArray();
+                var arrPoint = origPoints.ToArray();
                 for (var i = 0; i < arrPoint.Length; i++)
                 {
                     Edge edge;
@@ -127,7 +193,7 @@ namespace Lab4
             }
             private int EdgeIntersectWithPoly(Edge e)
             {
-                var arr_PointF = points.ToArray();
+                var arr_PointF = origPoints.ToArray();
                 int intersect_counter = 0;
                 for (int i = 0; i < arr_PointF.Length; i++)
                 {
