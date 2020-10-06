@@ -16,7 +16,7 @@ namespace Lab4
         
         public class Edge
         {
-            public Edge(Point s, Point e)
+            public Edge(PointF s, PointF e)
             {
                 start = s;
                 end = e;
@@ -24,7 +24,7 @@ namespace Lab4
 
             public Edge()
             {
-                start = end = new Point(-1, -1);
+                start = end = new PointF(-1, -1);
             }
             public bool IsFake()
             {
@@ -39,17 +39,17 @@ namespace Lab4
                 return e1.start != e2.start || e1.end != e2.end;
             }
 
-            public Point start;
+            public PointF start;
 
-            public Point end;
+            public PointF end;
 
-            public Position WherePoint(Point p)
+            public Position WherePoint(PointF p)
             {
-                int vector_x = end.X - start.X;
-                int vector_y = end.Y - start.Y;
-                int point_vector_x = p.X - start.X;
-                int point_vector_y = p.Y - start.Y;
-                if ((vector_y * point_vector_x - vector_x * point_vector_y) > 0)
+                double vector_x = end.X - start.X;
+                double vector_y = end.Y - start.Y;
+                double Point_vector_x = p.X - start.X;
+                double Point_vector_y = p.Y - start.Y;
+                if ((vector_y * Point_vector_x - vector_x * Point_vector_y) > 0)
                     return Position.Left;
                 else return Position.Right;
             }
@@ -58,16 +58,16 @@ namespace Lab4
         //Класс полигона
         public class Polygon
         {
-            public Polygon(List<Point> ps)
+            public Polygon(List<PointF> ps)
             {
                 points = ps;
                 convex = IsConvex();
             }
 
-            public Polygon(Point start_point)
+            public Polygon(PointF start_Point)
             {
-                points = new List<Point>();
-                points.Add(start_point);
+                points = new List<PointF>();
+                points.Add(start_Point);
             }
 
             public void AddEdge(Edge e)
@@ -82,32 +82,32 @@ namespace Lab4
             }
             
 
-            public List<Point> points;
+            public List<PointF> points;
             bool convex;
 
             private bool IsConvex()
             {
-                var arrpoint = points.ToArray();
-                for (var i = 0; i < arrpoint.Length; i++)
+                var arrPoint = points.ToArray();
+                for (var i = 0; i < arrPoint.Length; i++)
                 {
                     Edge edge;
-                    if (i == arrpoint.Length - 1)
+                    if (i == arrPoint.Length - 1)
                     {
-                        edge = new Edge(arrpoint[i], arrpoint[0]);
+                        edge = new Edge(arrPoint[i], arrPoint[0]);
                     }
                     else
                     {
-                        edge = new Edge(arrpoint[i], arrpoint[i + 1]);
+                        edge = new Edge(arrPoint[i], arrPoint[i + 1]);
                     }
                     Position pos = Position.Left; ;
-                    for (int j = 0; j < arrpoint.Length; j++)
+                    for (int j = 0; j < arrPoint.Length; j++)
                     {
-                        if (arrpoint[j] != edge.start && arrpoint[j] != edge.end)
+                        if (arrPoint[j] != edge.start && arrPoint[j] != edge.end)
                         {
 
                             if (j == 0)
-                                pos = edge.WherePoint(arrpoint[j]);
-                            else if (pos != edge.WherePoint(arrpoint[j]))
+                                pos = edge.WherePoint(arrPoint[j]);
+                            else if (pos != edge.WherePoint(arrPoint[j]))
                             {
                                 return false;
                             }
@@ -117,9 +117,9 @@ namespace Lab4
                 return true;
             }
 
-            public bool IsPointInside(Point p)
+            public bool IsPointInside(PointF p)
             {
-                Edge ray = new Edge(p, new Point(p.X + 1000, p.Y)); // TODO: come up with somth better, than 1000
+                Edge ray = new Edge(p, new PointF(p.X + 1000, p.Y)); // TODO: come up with somth better, than 1000
                 if (EdgeIntersectWithPoly(ray) % 2 == 0)
                     return false;
                 else return true;
@@ -127,49 +127,49 @@ namespace Lab4
             }
             private int EdgeIntersectWithPoly(Edge e)
             {
-                var arr_point = points.ToArray();
+                var arr_PointF = points.ToArray();
                 int intersect_counter = 0;
-                for (int i = 0; i < arr_point.Length; i++)
+                for (int i = 0; i < arr_PointF.Length; i++)
                 {
                     Edge edge;
-                    Point p = new Point();
-                    if (i == arr_point.Length - 1)
-                        edge = new Edge(arr_point[i], arr_point[0]);
+                    PointF p = new PointF();
+                    if (i == arr_PointF.Length - 1)
+                        edge = new Edge(arr_PointF[i], arr_PointF[0]);
                     else
-                        edge = new Edge(arr_point[i], arr_point[i + 1]);
+                        edge = new Edge(arr_PointF[i], arr_PointF[i + 1]);
 
-                    if (CheckEdgesForIntersection(edge, e, ref p)) // TODO: add clause if e intersect Poly's point
+                    if (CheckEdgesForIntersection(edge, e, ref p)) // TODO: add clause if e intersect Poly's PointF
                         intersect_counter++;
                 }
                 return intersect_counter;
             }
         }
 
-        static public double MultVectors(Point v1, Point v2)
+        static public double MultVectors(PointF v1, PointF v2)
         {
             return v1.X * v2.Y - v1.Y * v2.X;
         }
 
-        static public bool CheckEdgesForIntersection(Edge e1, Edge e2, ref Point res)
+        static public bool CheckEdgesForIntersection(Edge e1, Edge e2, ref PointF res)
         {
-            int x1 = e1.start.X;
-            int y1 = e1.start.Y;
+            float x1 = e1.start.X;
+            float y1 = e1.start.Y;
 
-            int x2 = e1.end.X;
-            int y2 = e1.end.Y;
+            float x2 = e1.end.X;
+            float y2 = e1.end.Y;
 
-            int x3 = e2.start.X;
-            int y3 = e2.start.Y;
+            float x3 = e2.start.X;
+            float y3 = e2.start.Y;
 
-            int x4 = e2.end.X;
-            int y4 = e2.end.Y;
+            float x4 = e2.end.X;
+            float y4 = e2.end.Y;
 
-            Point v_e2se2e = new Point(x4 - x3, y4 - y3);
-            Point v_e2se1s = new Point(x1 - x3, y1 - y3);
-            Point v_e2se1e = new Point(x2 - x3, y2 - y3);
-            Point v_e1se1e = new Point(x2 - x1, y2 - y1);
-            Point v_e1se2s = new Point(x3 - x1, y3 - y1);
-            Point v_e1se2e = new Point(x4 - x1, y4 - y1);
+            PointF v_e2se2e = new PointF(x4 - x3, y4 - y3);
+            PointF v_e2se1s = new PointF(x1 - x3, y1 - y3);
+            PointF v_e2se1e = new PointF(x2 - x3, y2 - y3);
+            PointF v_e1se1e = new PointF(x2 - x1, y2 - y1);
+            PointF v_e1se2s = new PointF(x3 - x1, y3 - y1);
+            PointF v_e1se2e = new PointF(x4 - x1, y4 - y1);
 
             double v1 = MultVectors(v_e2se2e, v_e2se1s);
             double v2 = MultVectors(v_e2se2e, v_e2se1e);
@@ -191,7 +191,7 @@ namespace Lab4
                 double det = a1 * b2 - a2 * b1;
                 double detx = c2 * b1 - c1 * b2;
                 double dety = c1 * a2 - a1 * c2;
-                res = new Point((int)(detx / det), (int)(dety / det));
+                res = new PointF((int)(detx / det), (int)(dety / det));
                 return true;
             }
 
@@ -225,14 +225,14 @@ namespace Lab4
             return matrixC;
         }
 
-        static public bool SamePoint(Point p1, Point p2)
+        static public bool SamePoint(PointF p1, PointF p2)
         {
-            if (Math.Abs(p1.X - p2.X) <= 3 && Math.Abs(p1.Y - p2.Y) <= 3)
+            if (Math.Abs(p1.X - p2.X) <= 10 && Math.Abs(p1.Y - p2.Y) <= 10)
                 return true;
             return false;
         }
 
-        static public bool EdgeHasPoint(Point p, Edge e)
+        static public bool EdgeHasPoint(PointF p, Edge e)
         {
             double squared_sdx = (e.start.X - p.X) * (e.start.X - p.X);
             double squared_sdy = (e.start.Y - p.Y) * (e.start.Y - p.Y);
@@ -251,7 +251,7 @@ namespace Lab4
         static public void RotateEdge(ref Edge e, double angle)
         {
             angle = angle * (Math.PI / 180.0);
-            Point center = new Point(e.start.X + (e.end.X - e.start.X) / 2, e.start.Y + (e.end.Y - e.start.Y) / 2);
+            PointF center = new PointF(e.start.X + (e.end.X - e.start.X) / 2, e.start.Y + (e.end.Y - e.start.Y) / 2);
 
             var a = center.X;
             var b = center.Y;
@@ -259,30 +259,30 @@ namespace Lab4
             var matr1 = new double[1, 3] { { p.X, p.Y, 1 } };
             var matr2 = new double[3, 3] { { Math.Cos(angle), Math.Sin(angle), 0 }, { -Math.Sin(angle), Math.Cos(angle), 0 }, { -a * Math.Cos(angle) + b * Math.Sin(angle) + a, -a * Math.Sin(angle) - b * Math.Cos(angle) + b, 1 } };
             var res = MatrixMultiplication(matr1, matr2);
-            var newstart = new Point((int)res[0, 0], (int)res[0, 1]);
+            var newstart = new PointF((float)res[0, 0], (float)res[0, 1]);
             p = e.end;
             matr1 = new double[1, 3] { { p.X, p.Y, 1 } };
             matr2 = new double[3, 3] { { Math.Cos(angle), Math.Sin(angle), 0 }, { -Math.Sin(angle), Math.Cos(angle), 0 }, { -a * Math.Cos(angle) + b * Math.Sin(angle) + a, -a * Math.Sin(angle) - b * Math.Cos(angle) + b, 1 } };
             res = MatrixMultiplication(matr1, matr2);
-            var newend = new Point((int)res[0, 0], (int)res[0, 1]);
+            var newend = new PointF((float)res[0, 0], (float)res[0, 1]);
 
             e = new Edge(newstart, newend);
         }
 
-        static public void DrawPoint(ref Bitmap bitmap, Point e, Color color)
+        static public void DrawPoint(ref Bitmap bitmap, PointF e, Color color)
         {
             if (e.X > 0 && e.X < bitmap.Width && e.Y > 0 && e.Y < bitmap.Height)
             {
-                bitmap.SetPixel(e.X + 1, e.Y, color);
-                bitmap.SetPixel(e.X - 1, e.Y, color);
-                bitmap.SetPixel(e.X + 1, e.Y + 1, color);
-                bitmap.SetPixel(e.X - 1, e.Y + 1, color);
-                bitmap.SetPixel(e.X + 1, e.Y - 1, color);
-                bitmap.SetPixel(e.X - 1, e.Y - 1, color);
-                bitmap.SetPixel(e.X, e.Y + 1, color);
-                bitmap.SetPixel(e.X, e.Y - 1, color);
+                bitmap.SetPixel((int)e.X + 1, (int)e.Y, color);
+                bitmap.SetPixel((int)e.X - 1, (int)e.Y, color);
+                bitmap.SetPixel((int)e.X + 1, (int)e.Y + 1, color);
+                bitmap.SetPixel((int)e.X - 1, (int)e.Y + 1, color);
+                bitmap.SetPixel((int)e.X + 1, (int)e.Y - 1, color);
+                bitmap.SetPixel((int)e.X - 1, (int)e.Y - 1, color);
+                bitmap.SetPixel((int)e.X, (int)e.Y + 1, color);
+                bitmap.SetPixel((int)e.X, (int)e.Y - 1, color);
 
-                bitmap.SetPixel(e.X, e.Y, color);
+                bitmap.SetPixel((int)e.X, (int)e.Y, color);
             }
 
         }

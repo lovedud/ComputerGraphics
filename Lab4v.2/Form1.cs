@@ -18,13 +18,13 @@ namespace Lab4
     {
         Bitmap bitmap;  //Битмап, на котором рисуем
 
-        List<Point> PointsList = new List<Point>(); // Список всех точек на экране
+        List<PointF> PointsList = new List<PointF>(); // Список всех точек на экране
         List<Edge> EdgeList = new List<Edge>();  // Список всех ребер на экране
         List<Polygon> PolygonList = new List<Polygon>(); // Список всех полигонов на экране
 
         //current primitives
         Edge cur_edge = new Edge();
-        Point cur_point;
+        PointF cur_point;
         Polygon cur_poly;
 
         //current chosen mode
@@ -114,6 +114,11 @@ namespace Lab4
         {
             switch (m)
             {
+                case Mode.AddPoint:
+                    if (enable)
+                        AddPointButton.Enabled = true;
+                    else AddPointButton.Enabled = false;
+                    break;
                 case Mode.AddEdge:
                     if (enable)
                         AddEdgeButton.Enabled = true;
@@ -129,7 +134,7 @@ namespace Lab4
             }
         }
 
-        private void AddingPoint(Point p, Graphics g, bool should_draw = true)
+        private void AddingPoint(PointF p, Graphics g, bool should_draw = true)
         {
             PointsList.Add(p);
             if (should_draw)
@@ -137,7 +142,7 @@ namespace Lab4
             pictureBox1.Image = bitmap;
             cur_point = p;
         }
-        private void AddingEdge(Point p, Graphics g)
+        private void AddingEdge(PointF p, Graphics g)
         {
             if (EdgeBegin)
             {
@@ -159,9 +164,12 @@ namespace Lab4
             }
         }
 
-        private void AddingPoly(Point p, Graphics g)
+        private void AddingPoly(PointF p, Graphics g)
         {
-            AddingEdge(p,g);
+            if (!(cur_poly is null) && SamePoint(p,cur_poly.points.First()))
+                AddingEdge(cur_poly.points.First(), g);
+            else
+                AddingEdge(p, g);
             if (PolyBegin)
             {
                 cur_poly.AddEdge(cur_edge);
@@ -185,7 +193,7 @@ namespace Lab4
             }
         }
 
-        private bool FindEdge(Point p, out Edge e)
+        private bool FindEdge(PointF p, out Edge e)
         {
             foreach (var ed in EdgeList)
             {
@@ -198,7 +206,7 @@ namespace Lab4
             e = new Edge();
             return false;
         }
-        private void RotatingEdge(Point p, Graphics g)
+        private void RotatingEdge(PointF p, Graphics g)
         {
             if (FindEdge(p, out Edge chosen_edge))
             {
@@ -214,11 +222,11 @@ namespace Lab4
             }
         }
 
-        private void EdgeIntersecting(Point p)
+        private void EdgeIntersecting(PointF p)
         {
             if (!EdgeBegin)
             {
-                Point intersec = new Point();
+                PointF intersec = new PointF();
                 foreach (var x in EdgeList)
                 {
                     if (cur_edge == x)
@@ -261,7 +269,7 @@ namespace Lab4
             ShowInInfoBox(text);
         }
 
-        private bool SelectedPolygon(Point p, ref Polygon polygon)
+        private bool SelectedPolygon(PointF p, ref Polygon polygon)
         {
             foreach(var poly in PolygonList)
             {
@@ -275,7 +283,7 @@ namespace Lab4
         }
         private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
         {
-            Point p = new Point(e.X,e.Y);
+            PointF p = new PointF(e.X,e.Y);
             Graphics g = Graphics.FromImage(bitmap);
             
             if (Mode.AddPoint == cur_mode)
@@ -285,6 +293,8 @@ namespace Lab4
                     PointPos();
                 else if (backgr_mode == Mode.PointInside)
                     PointInsidePoly();
+                Switch_On_All();
+                InteractWithButton(Mode.AddPoint, false);
             }
             else if (Mode.AddEdge == cur_mode)
             {
@@ -356,7 +366,7 @@ namespace Lab4
             EdgeList.Clear();
             PolygonList.Clear();
             cur_edge = null;
-            cur_point = new Point();
+            cur_point = new PointF();
             cur_poly = null;
             EdgeBegin = false;
         }
@@ -426,7 +436,7 @@ namespace Lab4
             string text = "Click inside polygon to start moving it";
             Switch_Off_All();
             cur_mode = Mode.MovingPoly;
-            cur_point = new Point();
+            cur_point = new PointF();
             cur_poly = null;
             InteractWithButton(cur_mode, false);
             ShowInInfoBox(text);
@@ -437,9 +447,9 @@ namespace Lab4
             if (Mode.MovingPoly != cur_mode || cur_poly != null)
                 return;
             Graphics g = Graphics.FromImage(bitmap);
-            Point p = new Point(e.X, e.Y);
-            int dx = cur_point.X - p.X;
-            int dy = cur_point.Y - p.Y;
+            PointF p = new PointF(e.X, e.Y);
+            float dx = cur_point.X - p.X;
+            float dy = cur_point.Y - p.Y;
             Polygon poly = new Polygon(p);//TODO: вызов функции перемещения по dx и dy, возвращает полигон
             PolygonList.Add(poly);
             Redraw(ref g);
