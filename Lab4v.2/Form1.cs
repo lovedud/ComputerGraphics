@@ -142,7 +142,7 @@ namespace Lab4
             pictureBox1.Image = bitmap;
             cur_point = p;
         }
-        private void AddingEdge(PointF p, Graphics g)
+        private void AddingEdge(PointF p, Graphics g, bool addingToList = true)
         {
             if (EdgeBegin)
             {
@@ -150,7 +150,8 @@ namespace Lab4
                 var prev_point = cur_point;
                 AddingPoint(p, g, false);
                 Edge edge = new Edge(prev_point, cur_point);
-                EdgeList.Add(edge);
+                if (addingToList)
+                    EdgeList.Add(edge);
                 DrawEdge(ref g, ref bitmap, edge);
 
                 pictureBox1.Image = bitmap;
@@ -167,9 +168,9 @@ namespace Lab4
         private void AddingPoly(PointF p, Graphics g)
         {
             if (!(cur_poly is null) && SamePoint(p,cur_poly.points.First()))
-                AddingEdge(cur_poly.points.First(), g);
+                AddingEdge(cur_poly.points.First(), g, false);
             else
-                AddingEdge(p, g);
+                AddingEdge(p, g, false);
             if (PolyBegin)
             {
                 cur_poly.AddEdge(cur_edge);
