@@ -1,0 +1,10 @@
+D:\MEXMAT\course4_1\КГ\Таня\ComputerGraphics\lab05\Task2\bin\Debug\Task2.exe.config
+D:\MEXMAT\course4_1\КГ\Таня\ComputerGraphics\lab05\Task2\bin\Debug\Task2.exe
+D:\MEXMAT\course4_1\КГ\Таня\ComputerGraphics\lab05\Task2\bin\Debug\Task2.pdb
+D:\MEXMAT\course4_1\КГ\Таня\ComputerGraphics\lab05\Task2\obj\Debug\Task2.csprojAssemblyReference.cache
+D:\MEXMAT\course4_1\КГ\Таня\ComputerGraphics\lab05\Task2\obj\Debug\Task2.Form1.resources
+D:\MEXMAT\course4_1\КГ\Таня\ComputerGraphics\lab05\Task2\obj\Debug\Task2.Properties.Resources.resources
+D:\MEXMAT\course4_1\КГ\Таня\ComputerGraphics\lab05\Task2\obj\Debug\Task2.csproj.GenerateResource.cache
+D:\MEXMAT\course4_1\КГ\Таня\ComputerGraphics\lab05\Task2\obj\Debug\Task2.csproj.CoreCompileInputs.cache
+D:\MEXMAT\course4_1\КГ\Таня\ComputerGraphics\lab05\Task2\obj\Debug\Task2.exe
+D:\MEXMAT\course4_1\КГ\Таня\ComputerGraphics\lab05\Task2\obj\Debug\Task2.pdb
