@@ -23,9 +23,9 @@ namespace Lab4
 
         public class Point3D
         {
-            public float X { get; private set; }
-            public float Y { get; private set; }
-            public float Z { get; private set; }
+            public float X { get; set; }
+            public float Y { get; set; }
+            public float Z { get; set; }
 
             public Point3D(float x, float y, float z)
             {
@@ -90,6 +90,66 @@ namespace Lab4
                 return res;
             }
             
+            public void RotateAroundLine(Edge3D line, double angle)
+            {
+                Point3D lvector = new Point3D(line.end.X - line.start.X, line.end.Y - line.start.Y, line.end.Z - line.start.Z);
+                angle = angle * (Math.PI / 180.0);
+                //нормализуем вектор, заданный линией
+                double len = Math.Sqrt(lvector.X* lvector.X + lvector.Y * lvector.Y + lvector.Z * lvector.Z);
+                double l = (lvector.X / len); // l
+                double m = (lvector.Y / len); // m
+                double n = (lvector.Z / len); // n
+
+                double l_2 = l*l;
+                double m_2 = m*m;
+                double n_2 = n*n;
+
+                double cos = Math.Cos(angle);
+                double sin = Math.Sin(angle);
+
+                double[,] matrMoveToZero = new double[4, 4] { { 1,0,0,0 },
+                                                        { 0,1,0,0 },
+                                                        { 0,0,1,0 },
+                                                        { - line.start.X, - line.start.Y, - line.start.Z, 1 } };
+
+                double[,] matrMoveBack = new double[4, 4] { { 1,0,0,0 },
+                                                        { 0,1,0,0 },
+                                                        { 0,0,1,0 },
+                                                        { line.start.X, line.start.Y, line.start.Z, 1 } };
+
+                double[,] matr = new double[4, 4] { { l_2 + cos*(1-l_2), l*(1 - cos)*m + n * sin, l*(1 - cos)*n - m * sin, 0},
+                                                    { l * (1 - cos)*m - n*sin, m_2 + cos*(1 - m_2), m*(1-cos)*n + l*sin, 0 },
+                                                    {l*(1-cos)*n+m*sin, m*(1-cos)*n-l*sin, n_2+cos*(1-n_2),0 },
+                                                    { 0, 0, 0, 1 } };
+
+                foreach(var x in points)
+                {
+                    double[,] vec = new double[1,4] { { x.X, x.Y, x.Z, 1 } };
+                    var res = MatrixMultiplication(MatrixMultiplication(MatrixMultiplication(vec, matrMoveToZero), matr), matrMoveBack);
+                    x.X = (float)res[0, 0];
+                    x.Y = (float)res[0, 1];
+                    x.Z = (float)res[0, 2];
+                }
+            }
+
+            public Point3D center()
+            {
+                int counter = 0;
+                double xs = 0;
+                double ys = 0;
+                double zs = 0;
+                foreach (var x in points)
+                {
+                    xs += x.X;
+                    ys += x.Y;
+                    zs += x.Z;
+                    ++counter;
+                }
+                xs /= counter;
+                ys /= counter;
+                zs /= counter;
+                return new Point3D((float)xs, (float)ys, (float)zs);
+            }
         }
 
 
