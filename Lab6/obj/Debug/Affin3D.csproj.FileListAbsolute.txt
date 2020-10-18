@@ -8,3 +8,4 @@ E:\My\Mexmat\Computer Graphics\ComputerGraphics\Lab6\obj\Debug\Affin3D.csproj.Ge
 E:\My\Mexmat\Computer Graphics\ComputerGraphics\Lab6\obj\Debug\Affin3D.csproj.CoreCompileInputs.cache
 E:\My\Mexmat\Computer Graphics\ComputerGraphics\Lab6\obj\Debug\Affin3D.exe
 E:\My\Mexmat\Computer Graphics\ComputerGraphics\Lab6\obj\Debug\Affin3D.pdb
+E:\My\Mexmat\Computer Graphics\ComputerGraphics\Lab6\obj\Debug\Affin3D.InputForCoordinates.resources

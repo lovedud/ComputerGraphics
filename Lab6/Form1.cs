@@ -1,5 +1,4 @@
-﻿using Lab4;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -8,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static Lab4.AffinStuff;
+using static Affin3D.AffinStuff;
 
 namespace Affin3D
 {
@@ -144,7 +143,7 @@ namespace Affin3D
 
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        private void Rota_Click(object sender, EventArgs e)
         {
             cur_state = State.RotateAroundLine;
             SwitchOnAllButtonsExcept(rotateAroundLine);

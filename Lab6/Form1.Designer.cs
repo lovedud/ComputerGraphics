@@ -34,7 +34,6 @@
             this.Ortxy = new System.Windows.Forms.CheckBox();
             this.Ortxz = new System.Windows.Forms.CheckBox();
             this.Ortyz = new System.Windows.Forms.CheckBox();
-
             this.clear_button = new System.Windows.Forms.Button();
             this.iso_button = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
@@ -57,9 +56,7 @@
             this.lab7 = new System.Windows.Forms.Label();
             this.e_x = new System.Windows.Forms.TextBox();
             this.lab8 = new System.Windows.Forms.Label();
-            this.testbox = new System.Windows.Forms.TextBox();
             this.button3 = new System.Windows.Forms.Button();
-
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -89,7 +86,7 @@
             // 
             // ort_button
             // 
-            this.ort_button.Location = new System.Drawing.Point(822, 129);
+            this.ort_button.Location = new System.Drawing.Point(822, 162);
             this.ort_button.Margin = new System.Windows.Forms.Padding(2);
             this.ort_button.Name = "ort_button";
             this.ort_button.Size = new System.Drawing.Size(109, 32);
@@ -103,7 +100,7 @@
             this.Ortxy.AutoSize = true;
             this.Ortxy.Checked = true;
             this.Ortxy.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.Ortxy.Location = new System.Drawing.Point(830, 176);
+            this.Ortxy.Location = new System.Drawing.Point(830, 209);
             this.Ortxy.Margin = new System.Windows.Forms.Padding(2);
             this.Ortxy.Name = "Ortxy";
             this.Ortxy.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
@@ -116,7 +113,7 @@
             // Ortxz
             // 
             this.Ortxz.AutoSize = true;
-            this.Ortxz.Location = new System.Drawing.Point(830, 198);
+            this.Ortxz.Location = new System.Drawing.Point(830, 231);
             this.Ortxz.Margin = new System.Windows.Forms.Padding(2);
             this.Ortxz.Name = "Ortxz";
             this.Ortxz.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
@@ -129,7 +126,7 @@
             // Ortyz
             // 
             this.Ortyz.AutoSize = true;
-            this.Ortyz.Location = new System.Drawing.Point(830, 220);
+            this.Ortyz.Location = new System.Drawing.Point(830, 253);
             this.Ortyz.Margin = new System.Windows.Forms.Padding(2);
             this.Ortyz.Name = "Ortyz";
             this.Ortyz.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
@@ -141,7 +138,7 @@
             // 
             // clear_button
             // 
-            this.clear_button.Location = new System.Drawing.Point(930, 515);
+            this.clear_button.Location = new System.Drawing.Point(850, 556);
             this.clear_button.Name = "clear_button";
             this.clear_button.Size = new System.Drawing.Size(91, 23);
             this.clear_button.TabIndex = 1;
@@ -151,7 +148,7 @@
             // 
             // iso_button
             // 
-            this.iso_button.Location = new System.Drawing.Point(899, 296);
+            this.iso_button.Location = new System.Drawing.Point(820, 117);
             this.iso_button.Name = "iso_button";
             this.iso_button.Size = new System.Drawing.Size(145, 40);
             this.iso_button.TabIndex = 1;
@@ -159,7 +156,7 @@
             this.iso_button.UseVisualStyleBackColor = true;
             this.iso_button.Click += new System.EventHandler(this.iso_button_Click);
             // 
-            // button3
+            // button2
             // 
             this.button2.Location = new System.Drawing.Point(865, 560);
             this.button2.Margin = new System.Windows.Forms.Padding(2);
@@ -172,17 +169,17 @@
             // 
             // rotateAroundLine
             // 
-            this.rotateAroundLine.Location = new System.Drawing.Point(846, 262);
+            this.rotateAroundLine.Location = new System.Drawing.Point(850, 339);
             this.rotateAroundLine.Name = "rotateAroundLine";
             this.rotateAroundLine.Size = new System.Drawing.Size(115, 35);
             this.rotateAroundLine.TabIndex = 3;
             this.rotateAroundLine.Text = "Вращение вокруг прямой";
             this.rotateAroundLine.UseVisualStyleBackColor = true;
-            this.rotateAroundLine.Click += new System.EventHandler(this.button3_Click);
+            this.rotateAroundLine.Click += new System.EventHandler(this.Rota_Click);
             // 
             // OX
             // 
-            this.OX.Location = new System.Drawing.Point(850, 303);
+            this.OX.Location = new System.Drawing.Point(854, 380);
             this.OX.Name = "OX";
             this.OX.Size = new System.Drawing.Size(31, 23);
             this.OX.TabIndex = 4;
@@ -192,7 +189,7 @@
             // 
             // OY
             // 
-            this.OY.Location = new System.Drawing.Point(887, 303);
+            this.OY.Location = new System.Drawing.Point(891, 380);
             this.OY.Name = "OY";
             this.OY.Size = new System.Drawing.Size(31, 23);
             this.OY.TabIndex = 5;
@@ -202,7 +199,7 @@
             // 
             // OZ
             // 
-            this.OZ.Location = new System.Drawing.Point(924, 303);
+            this.OZ.Location = new System.Drawing.Point(928, 380);
             this.OZ.Name = "OZ";
             this.OZ.Size = new System.Drawing.Size(31, 23);
             this.OZ.TabIndex = 6;
@@ -212,7 +209,7 @@
             // 
             // Custom
             // 
-            this.Custom.Location = new System.Drawing.Point(846, 332);
+            this.Custom.Location = new System.Drawing.Point(850, 409);
             this.Custom.Name = "Custom";
             this.Custom.Size = new System.Drawing.Size(105, 37);
             this.Custom.TabIndex = 7;
@@ -224,7 +221,7 @@
             // 
             this.lab1.AutoSize = true;
             this.lab1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            this.lab1.Location = new System.Drawing.Point(869, 372);
+            this.lab1.Location = new System.Drawing.Point(873, 449);
             this.lab1.Name = "lab1";
             this.lab1.Size = new System.Drawing.Size(58, 17);
             this.lab1.TabIndex = 8;
@@ -234,7 +231,7 @@
             // 
             this.lab9.AutoSize = true;
             this.lab9.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            this.lab9.Location = new System.Drawing.Point(869, 426);
+            this.lab9.Location = new System.Drawing.Point(873, 503);
             this.lab9.Name = "lab9";
             this.lab9.Size = new System.Drawing.Size(58, 17);
             this.lab9.TabIndex = 9;
@@ -243,7 +240,7 @@
             // lab2
             // 
             this.lab2.AutoSize = true;
-            this.lab2.Location = new System.Drawing.Point(806, 398);
+            this.lab2.Location = new System.Drawing.Point(810, 475);
             this.lab2.Name = "lab2";
             this.lab2.Size = new System.Drawing.Size(14, 13);
             this.lab2.TabIndex = 12;
@@ -251,14 +248,14 @@
             // 
             // s_x
             // 
-            this.s_x.Location = new System.Drawing.Point(822, 395);
+            this.s_x.Location = new System.Drawing.Point(826, 472);
             this.s_x.Name = "s_x";
             this.s_x.Size = new System.Drawing.Size(34, 20);
             this.s_x.TabIndex = 13;
             // 
             // s_y
             // 
-            this.s_y.Location = new System.Drawing.Point(880, 395);
+            this.s_y.Location = new System.Drawing.Point(884, 472);
             this.s_y.Name = "s_y";
             this.s_y.Size = new System.Drawing.Size(37, 20);
             this.s_y.TabIndex = 15;
@@ -266,7 +263,7 @@
             // lab5
             // 
             this.lab5.AutoSize = true;
-            this.lab5.Location = new System.Drawing.Point(862, 398);
+            this.lab5.Location = new System.Drawing.Point(866, 475);
             this.lab5.Name = "lab5";
             this.lab5.Size = new System.Drawing.Size(14, 13);
             this.lab5.TabIndex = 14;
@@ -274,7 +271,7 @@
             // 
             // s_z
             // 
-            this.s_z.Location = new System.Drawing.Point(940, 395);
+            this.s_z.Location = new System.Drawing.Point(944, 472);
             this.s_z.Name = "s_z";
             this.s_z.Size = new System.Drawing.Size(35, 20);
             this.s_z.TabIndex = 17;
@@ -282,7 +279,7 @@
             // lab6
             // 
             this.lab6.AutoSize = true;
-            this.lab6.Location = new System.Drawing.Point(922, 398);
+            this.lab6.Location = new System.Drawing.Point(926, 475);
             this.lab6.Name = "lab6";
             this.lab6.Size = new System.Drawing.Size(14, 13);
             this.lab6.TabIndex = 16;
@@ -290,7 +287,7 @@
             // 
             // e_z
             // 
-            this.e_z.Location = new System.Drawing.Point(940, 446);
+            this.e_z.Location = new System.Drawing.Point(944, 523);
             this.e_z.Name = "e_z";
             this.e_z.Size = new System.Drawing.Size(35, 20);
             this.e_z.TabIndex = 23;
@@ -298,7 +295,7 @@
             // lab3
             // 
             this.lab3.AutoSize = true;
-            this.lab3.Location = new System.Drawing.Point(922, 449);
+            this.lab3.Location = new System.Drawing.Point(926, 526);
             this.lab3.Name = "lab3";
             this.lab3.Size = new System.Drawing.Size(14, 13);
             this.lab3.TabIndex = 22;
@@ -306,7 +303,7 @@
             // 
             // e_y
             // 
-            this.e_y.Location = new System.Drawing.Point(880, 446);
+            this.e_y.Location = new System.Drawing.Point(884, 523);
             this.e_y.Name = "e_y";
             this.e_y.Size = new System.Drawing.Size(36, 20);
             this.e_y.TabIndex = 21;
@@ -314,7 +311,7 @@
             // lab7
             // 
             this.lab7.AutoSize = true;
-            this.lab7.Location = new System.Drawing.Point(862, 449);
+            this.lab7.Location = new System.Drawing.Point(866, 526);
             this.lab7.Name = "lab7";
             this.lab7.Size = new System.Drawing.Size(14, 13);
             this.lab7.TabIndex = 20;
@@ -322,7 +319,7 @@
             // 
             // e_x
             // 
-            this.e_x.Location = new System.Drawing.Point(822, 446);
+            this.e_x.Location = new System.Drawing.Point(826, 523);
             this.e_x.Name = "e_x";
             this.e_x.Size = new System.Drawing.Size(34, 20);
             this.e_x.TabIndex = 19;
@@ -330,19 +327,15 @@
             // lab8
             // 
             this.lab8.AutoSize = true;
-            this.lab8.Location = new System.Drawing.Point(806, 449);
+            this.lab8.Location = new System.Drawing.Point(810, 526);
             this.lab8.Name = "lab8";
             this.lab8.Size = new System.Drawing.Size(14, 13);
             this.lab8.TabIndex = 18;
             this.lab8.Text = "X";
             // 
-            // testbox
+            // button3
             // 
-            this.testbox.Location = new System.Drawing.Point(830, 514);
-            this.testbox.Name = "testbox";
-            this.testbox.Size = new System.Drawing.Size(100, 20);
-            this.testbox.TabIndex = 24;
-            this.button3.Location = new System.Drawing.Point(909, 325);
+            this.button3.Location = new System.Drawing.Point(853, 310);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(112, 23);
             this.button3.TabIndex = 3;
@@ -354,8 +347,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(998, 590);
-            this.Controls.Add(this.testbox);
+            this.ClientSize = new System.Drawing.Size(1150, 640);
             this.Controls.Add(this.e_z);
             this.Controls.Add(this.lab3);
             this.Controls.Add(this.e_y);
@@ -375,7 +367,6 @@
             this.Controls.Add(this.OY);
             this.Controls.Add(this.OX);
             this.Controls.Add(this.rotateAroundLine);
-            this.ClientSize = new System.Drawing.Size(1051, 550);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.Ortyz);
             this.Controls.Add(this.Ortxz);
@@ -425,7 +416,6 @@
         private System.Windows.Forms.Label lab7;
         private System.Windows.Forms.TextBox e_x;
         private System.Windows.Forms.Label lab8;
-        private System.Windows.Forms.TextBox testbox;
         private System.Windows.Forms.Button button3;
 
     }

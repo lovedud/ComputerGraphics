@@ -1,5 +1,4 @@
-﻿using Affin3D;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -8,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Lab4
+namespace Affin3D
 {
     public enum Position { Left, Right };
     
@@ -45,7 +44,7 @@ namespace Lab4
                 return (e1.X - e2.X) < e1.eps && (e1.Y - e2.Y) < e1.eps && (e1.Z - e1.Z) < e1.eps;
             }
         }
- 
+
         public class Polyhedron
         {
             List<Point3D> points;
@@ -81,7 +80,7 @@ namespace Lab4
                 int c_ind = PointInd(conn);
                 connections[point_ind].Add(c_ind);
                 connections[c_ind].Add(point_ind);
-                
+
             }
 
             public List<Edge3D> PreparePrint()
@@ -89,30 +88,30 @@ namespace Lab4
                 //TODO: add check for repeat of edge
                 //TODO: using type of polyhedron and points to calculate amount of edge and finish later
                 List<Edge3D> res = new List<Edge3D>();
-                foreach(var c in connections)
+                foreach (var c in connections)
                 {
                     Point3D point = points[c.Key];
-                    foreach(var conn in c.Value)
+                    foreach (var conn in c.Value)
                     {
                         res.Add(new Edge3D(point, points[conn]));
                     }
                 }
                 return res;
             }
-            
+
             public void RotateAroundLine(Edge3D line, double angle)
             {
                 Point3D lvector = new Point3D(line.end.X - line.start.X, line.end.Y - line.start.Y, line.end.Z - line.start.Z);
                 angle = angle * (Math.PI / 180.0);
                 //нормализуем вектор, заданный линией
-                double len = Math.Sqrt(lvector.X* lvector.X + lvector.Y * lvector.Y + lvector.Z * lvector.Z);
+                double len = Math.Sqrt(lvector.X * lvector.X + lvector.Y * lvector.Y + lvector.Z * lvector.Z);
                 double l = (lvector.X / len); // l
                 double m = (lvector.Y / len); // m
                 double n = (lvector.Z / len); // n
 
-                double l_2 = l*l;
-                double m_2 = m*m;
-                double n_2 = n*n;
+                double l_2 = l * l;
+                double m_2 = m * m;
+                double n_2 = n * n;
 
                 double cos = Math.Cos(angle);
                 double sin = Math.Sin(angle);
@@ -132,9 +131,9 @@ namespace Lab4
                                                     {l*(1-cos)*n+m*sin, m*(1-cos)*n-l*sin, n_2+cos*(1-n_2),0 },
                                                     { 0, 0, 0, 1 } };
 
-                foreach(var x in points)
+                foreach (var x in points)
                 {
-                    double[,] vec = new double[1,4] { { x.X, x.Y, x.Z, 1 } };
+                    double[,] vec = new double[1, 4] { { x.X, x.Y, x.Z, 1 } };
                     var res = MatrixMultiplication(MatrixMultiplication(MatrixMultiplication(vec, matrMoveToZero), matr), matrMoveBack);
                     x.X = (float)res[0, 0];
                     x.Y = (float)res[0, 1];
@@ -160,7 +159,7 @@ namespace Lab4
                 zs /= counter;
                 return new Point3D((float)xs, (float)ys, (float)zs);
             }
-        }
+
 
             public void getMoved(Point3D p)
             {
