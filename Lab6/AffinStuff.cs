@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Affin3D;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -89,9 +90,24 @@ namespace Lab4
                 }
                 return res;
             }
-            
-        }
 
+            public void getMoved(Point3D p)
+            {
+                var moveMatrix = new double[4, 4]
+                {
+                { 1, 0, 0, 0 },
+                { 0, 1, 0, 0 },
+                { 0, 0, 1, 0 },
+                { p.X, p.Y, p.Z, 1 }
+                };
+                for (int i = 0; i < points.Count; i++)
+                {
+                    var pointMatr = new double[1, 4] { { points[i].X, points[i].Y, points[i].Z, 1 } };
+                    var resMatrix = MatrixMultiplication(pointMatr, moveMatrix);
+                    points[i] = new Point3D((float)resMatrix[0, 0], (float)resMatrix[0, 1], (float)resMatrix[0, 2]);
+                }
+            }
+        }
 
         static public Polyhedron CreateCube(Point3D start, float a)
         {
