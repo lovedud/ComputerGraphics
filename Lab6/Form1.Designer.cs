@@ -34,8 +34,12 @@
             this.Ortxy = new System.Windows.Forms.CheckBox();
             this.Ortxz = new System.Windows.Forms.CheckBox();
             this.Ortyz = new System.Windows.Forms.CheckBox();
+
             this.clear_button = new System.Windows.Forms.Button();
             this.iso_button = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
+            this.button3 = new System.Windows.Forms.Button();
+
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -125,11 +129,22 @@
             this.iso_button.UseVisualStyleBackColor = true;
             this.iso_button.Click += new System.EventHandler(this.iso_button_Click);
             // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(909, 325);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(112, 23);
+            this.button3.TabIndex = 3;
+            this.button3.Text = "Смещение";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1051, 550);
+            this.Controls.Add(this.button3);
             this.Controls.Add(this.Ortyz);
             this.Controls.Add(this.Ortxz);
             this.Controls.Add(this.Ortxy);
@@ -156,6 +171,9 @@
         private System.Windows.Forms.CheckBox Ortyz;
         private System.Windows.Forms.Button clear_button;
         private System.Windows.Forms.Button iso_button;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button button3;
+
     }
 }
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Lab4;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -93,7 +94,6 @@ namespace Affin3D
             pictureBox1.Image = bm;
             g = Graphics.FromImage(bm);
         }
-
         private void iso_button_Click(object sender, EventArgs e)
         {
             if (cur_polyhedron is null)
@@ -104,6 +104,33 @@ namespace Affin3D
                 DrawEdge(ref g, ref bm, edge);
             }
             pictureBox1.Image = bm;
+        }
+        private void button3_Click(object sender, EventArgs e)
+        {
+            var dialogX = new InputForCoordinates("Введите смещение по X");
+            var dialogY = new InputForCoordinates("Введите смещение по Y");
+            var dialogZ = new InputForCoordinates("Введите смещение по Z");
+            if (dialogX.ShowDialog() == DialogResult.OK && dialogY.ShowDialog() == DialogResult.OK && dialogZ.ShowDialog() == DialogResult.OK) { 
+                var x = new Point3D(int.Parse(dialogX.ResultText), int.Parse(dialogY.ResultText), int.Parse(dialogZ.ResultText));
+                cur_polyhedron.getMoved(x);
+
+                g.Clear(Color.White);
+                pictureBox1.Image = bm;
+                g = Graphics.FromImage(bm);
+
+                var edges = ToOrtographics(cur_polyhedron, cur_mode);
+                foreach (var edge in edges)
+                {
+                    DrawEdge(ref g, ref bm, edge);
+                }
+                pictureBox1.Image = bm;
+                //cur_polyhedron = AffinStuff.getMoved(
+                //    cur_polyhedron,
+                //    int.Parse(dialogX.ResultText),
+                //    int.Parse(dialogY.ResultText),
+                //    int.Parse(dialogZ.ResultText)
+                //);
+            }
         }
     }
 }
