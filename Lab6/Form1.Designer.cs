@@ -34,6 +34,9 @@
             this.Ortxy = new System.Windows.Forms.CheckBox();
             this.Ortxz = new System.Windows.Forms.CheckBox();
             this.Ortyz = new System.Windows.Forms.CheckBox();
+
+            this.clear_button = new System.Windows.Forms.Button();
+            this.iso_button = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.rotateAroundLine = new System.Windows.Forms.Button();
             this.OX = new System.Windows.Forms.Button();
@@ -55,6 +58,8 @@
             this.e_x = new System.Windows.Forms.TextBox();
             this.lab8 = new System.Windows.Forms.Label();
             this.testbox = new System.Windows.Forms.TextBox();
+            this.button3 = new System.Windows.Forms.Button();
+
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -134,7 +139,27 @@
             this.Ortyz.UseVisualStyleBackColor = true;
             this.Ortyz.CheckedChanged += new System.EventHandler(this.Ortyz_CheckedChanged);
             // 
-            // button2
+            // clear_button
+            // 
+            this.clear_button.Location = new System.Drawing.Point(930, 515);
+            this.clear_button.Name = "clear_button";
+            this.clear_button.Size = new System.Drawing.Size(91, 23);
+            this.clear_button.TabIndex = 1;
+            this.clear_button.Text = "Очистить";
+            this.clear_button.UseVisualStyleBackColor = true;
+            this.clear_button.Click += new System.EventHandler(this.ClearButton_Click);
+            // 
+            // iso_button
+            // 
+            this.iso_button.Location = new System.Drawing.Point(899, 296);
+            this.iso_button.Name = "iso_button";
+            this.iso_button.Size = new System.Drawing.Size(145, 40);
+            this.iso_button.TabIndex = 1;
+            this.iso_button.Text = "Изометрическая";
+            this.iso_button.UseVisualStyleBackColor = true;
+            this.iso_button.Click += new System.EventHandler(this.iso_button_Click);
+            // 
+            // button3
             // 
             this.button2.Location = new System.Drawing.Point(865, 560);
             this.button2.Margin = new System.Windows.Forms.Padding(2);
@@ -317,6 +342,13 @@
             this.testbox.Name = "testbox";
             this.testbox.Size = new System.Drawing.Size(100, 20);
             this.testbox.TabIndex = 24;
+            this.button3.Location = new System.Drawing.Point(909, 325);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(112, 23);
+            this.button3.TabIndex = 3;
+            this.button3.Text = "Смещение";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // Form1
             // 
@@ -343,11 +375,14 @@
             this.Controls.Add(this.OY);
             this.Controls.Add(this.OX);
             this.Controls.Add(this.rotateAroundLine);
+            this.ClientSize = new System.Drawing.Size(1051, 550);
+            this.Controls.Add(this.button3);
             this.Controls.Add(this.Ortyz);
             this.Controls.Add(this.Ortxz);
             this.Controls.Add(this.Ortxy);
+            this.Controls.Add(this.iso_button);
             this.Controls.Add(this.ort_button);
-            this.Controls.Add(this.button2);
+            this.Controls.Add(this.clear_button);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.pictureBox1);
             this.Margin = new System.Windows.Forms.Padding(2);
@@ -368,6 +403,8 @@
         private System.Windows.Forms.CheckBox Ortxy;
         private System.Windows.Forms.CheckBox Ortxz;
         private System.Windows.Forms.CheckBox Ortyz;
+        private System.Windows.Forms.Button clear_button;
+        private System.Windows.Forms.Button iso_button;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button rotateAroundLine;
         private System.Windows.Forms.Button OX;
@@ -389,6 +426,8 @@
         private System.Windows.Forms.TextBox e_x;
         private System.Windows.Forms.Label lab8;
         private System.Windows.Forms.TextBox testbox;
+        private System.Windows.Forms.Button button3;
+
     }
 }
 
