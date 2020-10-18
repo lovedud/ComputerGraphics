@@ -34,7 +34,8 @@
             this.Ortxy = new System.Windows.Forms.CheckBox();
             this.Ortxz = new System.Windows.Forms.CheckBox();
             this.Ortyz = new System.Windows.Forms.CheckBox();
-            this.button2 = new System.Windows.Forms.Button();
+            this.clear_button = new System.Windows.Forms.Button();
+            this.iso_button = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -104,15 +105,25 @@
             this.Ortyz.UseVisualStyleBackColor = true;
             this.Ortyz.CheckedChanged += new System.EventHandler(this.Ortyz_CheckedChanged);
             // 
-            // button2
+            // clear_button
             // 
-            this.button2.Location = new System.Drawing.Point(930, 515);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(91, 23);
-            this.button2.TabIndex = 1;
-            this.button2.Text = "Очистить";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click_1);
+            this.clear_button.Location = new System.Drawing.Point(930, 515);
+            this.clear_button.Name = "clear_button";
+            this.clear_button.Size = new System.Drawing.Size(91, 23);
+            this.clear_button.TabIndex = 1;
+            this.clear_button.Text = "Очистить";
+            this.clear_button.UseVisualStyleBackColor = true;
+            this.clear_button.Click += new System.EventHandler(this.ClearButton_Click);
+            // 
+            // iso_button
+            // 
+            this.iso_button.Location = new System.Drawing.Point(899, 296);
+            this.iso_button.Name = "iso_button";
+            this.iso_button.Size = new System.Drawing.Size(145, 40);
+            this.iso_button.TabIndex = 1;
+            this.iso_button.Text = "Изометрическая";
+            this.iso_button.UseVisualStyleBackColor = true;
+            this.iso_button.Click += new System.EventHandler(this.iso_button_Click);
             // 
             // Form1
             // 
@@ -122,8 +133,9 @@
             this.Controls.Add(this.Ortyz);
             this.Controls.Add(this.Ortxz);
             this.Controls.Add(this.Ortxy);
+            this.Controls.Add(this.iso_button);
             this.Controls.Add(this.ort_button);
-            this.Controls.Add(this.button2);
+            this.Controls.Add(this.clear_button);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.pictureBox1);
             this.Name = "Form1";
@@ -142,7 +154,8 @@
         private System.Windows.Forms.CheckBox Ortxy;
         private System.Windows.Forms.CheckBox Ortxz;
         private System.Windows.Forms.CheckBox Ortyz;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button clear_button;
+        private System.Windows.Forms.Button iso_button;
     }
 }
 

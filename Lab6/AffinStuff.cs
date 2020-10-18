@@ -27,13 +27,22 @@ namespace Lab4
             public float Y { get; private set; }
             public float Z { get; private set; }
 
+            public float eps;
             public Point3D(float x, float y, float z)
             {
                 X = x;
                 Y = y;
                 Z = z;
+                eps = 0.01F;
             }
-            
+            public static bool operator !=(Point3D e1, Point3D e2)
+            {
+                return !(e1 == e2);
+            }
+            public static bool operator ==(Point3D e1, Point3D e2)
+            {
+                return (e1.X - e2.X) < e1.eps && (e1.Y - e2.Y) < e1.eps && (e1.Z - e1.Z) < e1.eps;
+            }
         }
  
         public class Polyhedron
@@ -100,18 +109,25 @@ namespace Lab4
             Point3D start_x = new Point3D(start.X + a, start.Y, start.Z);
             Point3D start_y = new Point3D(start.X, start.Y + a, start.Z);
             Point3D start_xyz = new Point3D(start.X + a, start.Y + a, start.Z + a);
+            Point3D start_xz = new Point3D(start_x.X, start.Y, start_z.Z);
+            Point3D start_xy = new Point3D(start_x.X, start_y.Y, start.Z);
+            Point3D start_yz = new Point3D(start.X, start_y.Y, start_z.Z);            
             res.AddPoint(start, start_x);
             res.AddPoint(start, start_y);
             res.AddPoint(start, start_z);
-            res.AddPoint(start_x, new Point3D(start_x.X, start_y.Y, start_x.Z));
-            res.AddPoint(start_x, new Point3D(start_x.X, start_x.Y, start_z.Z));
 
-            res.AddPoint(start_y, new Point3D(start_x.X, start_y.Y, start_y.Z));
-            res.AddPoint(start_y, new Point3D(start_y.X, start_y.Y, start_z.Z));
+            res.AddPoint(start_x, start_xy);
+            res.AddPoint(start_x, start_xz);
 
-            res.AddPoint(start_xyz, new Point3D(start_x.X, start_x.Y, start_z.Z));
-            res.AddPoint(start_xyz, new Point3D(start_y.X, start_y.Y, start_z.Z));
-            res.AddPoint(start_xyz, new Point3D(start_x.X, start_y.Y, start.Z));
+            res.AddPoint(start_y, start_xy);
+            res.AddPoint(start_y, start_yz);
+
+            res.AddPoint(start_z, start_yz);
+            res.AddPoint(start_z, start_xz );
+
+            res.AddPoint(start_xyz, start_yz);
+            res.AddPoint(start_xyz, start_xz);
+            res.AddPoint(start_xyz, start_xy);
             return res;
         }
 
@@ -176,8 +192,40 @@ namespace Lab4
             }
             return matr;
         }
+        static public double[,] FormIsometricMatr()
+        {
+            double cos = Math.Cos(2.094395); //120 degree
+            double sin = Math.Sin(2.094395);
+            return new double[4, 4]
+            {{ cos, sin * sin,  0, 0 },
+             {0,    cos,        0, 0 },
+             {sin,  -sin * cos, 0, 0 },
+             {0,    0,          0, 1 } };
+        }
 
-   
+        static public List<Edge> ToIsometric(Polyhedron ph)
+        {
+            List<Edge> res = new List<Edge>();
+            var edges_3d = ph.PreparePrint();
+            var matr = FormIsometricMatr();
+            foreach(var edge in edges_3d)
+            {
+                var new_start = MatrixMultiplication(PointToVector(edge.start), matr);
+                var new_end = MatrixMultiplication(PointToVector(edge.end), matr);
+                res.Add(new Edge(VectorToPoint(new_start), VectorToPoint(new_end)));
+            }
+            return res;
+        }
+
+        static public double[,] PointToVector(Point3D p)
+        {
+            return new double[1, 4] { { p.X, p.Y, p.Z, 1 } };
+        }
+        static public PointF VectorToPoint(double [,] vec)
+        {
+            return new PointF((float)vec[0, 0], (float)vec[0, 1]);
+        }
+
         public class Edge3D
         {
             public Edge3D(Point3D s, Point3D e)
@@ -418,6 +466,26 @@ namespace Lab4
 
             return matrixC;
         }
+        static public float[,] MatrixMultiplication(float[,] matrixA, float[,] matrixB)
+        {
+
+            var matrixC = new float[matrixA.RowsCount(), matrixB.ColumnsCount()];
+
+            for (var i = 0; i < matrixA.RowsCount(); i++)
+            {
+                for (var j = 0; j < matrixB.ColumnsCount(); j++)
+                {
+                    matrixC[i, j] = 0;
+
+                    for (var k = 0; k < matrixA.ColumnsCount(); k++)
+                    {
+                        matrixC[i, j] += matrixA[i, k] * matrixB[k, j];
+                    }
+                }
+            }
+
+            return matrixC;
+        }
 
         static public bool SamePointF(PointF p1, PointF p2)
         {
@@ -489,13 +557,13 @@ namespace Lab4
         }
 
         // метод расширения для получения количества строк матрицы
-        public static int RowsCount(this double[,] matrix)
+        public static int RowsCount<T>(this T[,] matrix)
         {
             return matrix.GetUpperBound(0) + 1;
         }
 
         // метод расширения для получения количества столбцов матрицы
-        public static int ColumnsCount(this double[,] matrix)
+        public static int ColumnsCount<T>(this T[,] matrix)
         {
             return matrix.GetUpperBound(1) + 1;
         }

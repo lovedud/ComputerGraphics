@@ -19,7 +19,7 @@ namespace Affin3D
             bm = new Bitmap(pictureBox1.Width, pictureBox1.Height);
             pictureBox1.Image = bm;
             g = Graphics.FromImage(bm);
-            //cur_mode = 
+            
         }
        
         Mode cur_mode;
@@ -87,11 +87,23 @@ namespace Affin3D
             cur_polyhedron = CreateCube(new Point3D(200, 200, 200), 50);
         }
 
-        private void button2_Click_1(object sender, EventArgs e)
+        private void ClearButton_Click(object sender, EventArgs e)
         {
             g.Clear(Color.White);
             pictureBox1.Image = bm;
             g = Graphics.FromImage(bm);
+        }
+
+        private void iso_button_Click(object sender, EventArgs e)
+        {
+            if (cur_polyhedron is null)
+                return;
+            var edges = ToIsometric(cur_polyhedron);
+            foreach (var edge in edges)
+            {
+                DrawEdge(ref g, ref bm, edge);
+            }
+            pictureBox1.Image = bm;
         }
     }
 }
