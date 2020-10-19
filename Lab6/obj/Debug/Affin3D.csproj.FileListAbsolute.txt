@@ -9,3 +9,14 @@ D:\MEXMAT\course4_1\КГ\GIT\ComputerGraphics\Lab6\obj\Debug\Affin3D.csproj.Gene
 D:\MEXMAT\course4_1\КГ\GIT\ComputerGraphics\Lab6\obj\Debug\Affin3D.csproj.CoreCompileInputs.cache
 D:\MEXMAT\course4_1\КГ\GIT\ComputerGraphics\Lab6\obj\Debug\Affin3D.exe
 D:\MEXMAT\course4_1\КГ\GIT\ComputerGraphics\Lab6\obj\Debug\Affin3D.pdb
+D:\kek\ComputerGraphics\Lab6\bin\Debug\Affin3D.exe.config
+D:\kek\ComputerGraphics\Lab6\bin\Debug\Affin3D.exe
+D:\kek\ComputerGraphics\Lab6\bin\Debug\Affin3D.pdb
+D:\kek\ComputerGraphics\Lab6\obj\Debug\Affin3D.csprojAssemblyReference.cache
+D:\kek\ComputerGraphics\Lab6\obj\Debug\Affin3D.Form1.resources
+D:\kek\ComputerGraphics\Lab6\obj\Debug\Affin3D.InputForCoordinates.resources
+D:\kek\ComputerGraphics\Lab6\obj\Debug\Affin3D.Properties.Resources.resources
+D:\kek\ComputerGraphics\Lab6\obj\Debug\Affin3D.csproj.GenerateResource.cache
+D:\kek\ComputerGraphics\Lab6\obj\Debug\Affin3D.csproj.CoreCompileInputs.cache
+D:\kek\ComputerGraphics\Lab6\obj\Debug\Affin3D.exe
+D:\kek\ComputerGraphics\Lab6\obj\Debug\Affin3D.pdb

@@ -118,7 +118,7 @@ namespace Affin3D
                 pictureBox1.Image = bm;
                 g = Graphics.FromImage(bm);
 
-                var edges = ToOrtographics(cur_polyhedron, cur_mode);
+                var edges =ToOrtographics(cur_polyhedron, cur_mode);
                 foreach (var edge in edges)
                 {
                     DrawEdge(ref g, ref bm, edge);

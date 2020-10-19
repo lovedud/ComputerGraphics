@@ -34,12 +34,10 @@
             this.Ortxy = new System.Windows.Forms.CheckBox();
             this.Ortxz = new System.Windows.Forms.CheckBox();
             this.Ortyz = new System.Windows.Forms.CheckBox();
-
             this.clear_button = new System.Windows.Forms.Button();
             this.iso_button = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
-
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -121,13 +119,20 @@
             // 
             // iso_button
             // 
-            this.iso_button.Location = new System.Drawing.Point(899, 296);
+            this.iso_button.Location = new System.Drawing.Point(899, 111);
             this.iso_button.Name = "iso_button";
             this.iso_button.Size = new System.Drawing.Size(145, 40);
             this.iso_button.TabIndex = 1;
             this.iso_button.Text = "Изометрическая";
             this.iso_button.UseVisualStyleBackColor = true;
             this.iso_button.Click += new System.EventHandler(this.iso_button_Click);
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(0, 0);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(75, 23);
+            this.button2.TabIndex = 0;
             // 
             // button3
             // 
