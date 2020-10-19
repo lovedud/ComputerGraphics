@@ -57,6 +57,11 @@
             this.e_x = new System.Windows.Forms.TextBox();
             this.lab8 = new System.Windows.Forms.Label();
             this.button3 = new System.Windows.Forms.Button();
+            this.testbox = new System.Windows.Forms.TextBox();
+            this.Tetrahedron = new System.Windows.Forms.Button();
+            this.Octahedron = new System.Windows.Forms.Button();
+            this.Icosahedron = new System.Windows.Forms.Button();
+            this.dodecahedron = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -75,7 +80,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(830, 11);
+            this.button1.Location = new System.Drawing.Point(826, 39);
             this.button1.Margin = new System.Windows.Forms.Padding(2);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(46, 23);
@@ -179,6 +184,7 @@
             // 
             // OX
             // 
+            this.OX.Enabled = false;
             this.OX.Location = new System.Drawing.Point(854, 380);
             this.OX.Name = "OX";
             this.OX.Size = new System.Drawing.Size(31, 23);
@@ -189,6 +195,7 @@
             // 
             // OY
             // 
+            this.OY.Enabled = false;
             this.OY.Location = new System.Drawing.Point(891, 380);
             this.OY.Name = "OY";
             this.OY.Size = new System.Drawing.Size(31, 23);
@@ -199,6 +206,7 @@
             // 
             // OZ
             // 
+            this.OZ.Enabled = false;
             this.OZ.Location = new System.Drawing.Point(928, 380);
             this.OZ.Name = "OZ";
             this.OZ.Size = new System.Drawing.Size(31, 23);
@@ -209,6 +217,7 @@
             // 
             // Custom
             // 
+            this.Custom.Enabled = false;
             this.Custom.Location = new System.Drawing.Point(850, 409);
             this.Custom.Name = "Custom";
             this.Custom.Size = new System.Drawing.Size(105, 37);
@@ -343,11 +352,63 @@
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
+            // testbox
+            // 
+            this.testbox.Location = new System.Drawing.Point(1034, 449);
+            this.testbox.Name = "testbox";
+            this.testbox.Size = new System.Drawing.Size(100, 20);
+            this.testbox.TabIndex = 24;
+            // 
+            // Tetrahedron
+            // 
+            this.Tetrahedron.Location = new System.Drawing.Point(826, 13);
+            this.Tetrahedron.Name = "Tetrahedron";
+            this.Tetrahedron.Size = new System.Drawing.Size(75, 23);
+            this.Tetrahedron.TabIndex = 25;
+            this.Tetrahedron.Text = "Тетраэдр";
+            this.Tetrahedron.UseVisualStyleBackColor = true;
+            this.Tetrahedron.Click += new System.EventHandler(this.Tetrahedron_Click);
+            // 
+            // Octahedron
+            // 
+            this.Octahedron.Location = new System.Drawing.Point(826, 67);
+            this.Octahedron.Name = "Octahedron";
+            this.Octahedron.Size = new System.Drawing.Size(75, 23);
+            this.Octahedron.TabIndex = 26;
+            this.Octahedron.Text = "Октаэдр";
+            this.Octahedron.UseVisualStyleBackColor = true;
+            this.Octahedron.Click += new System.EventHandler(this.Octahedron_Click);
+            // 
+            // Icosahedron
+            // 
+            this.Icosahedron.Location = new System.Drawing.Point(929, 12);
+            this.Icosahedron.Name = "Icosahedron";
+            this.Icosahedron.Size = new System.Drawing.Size(75, 23);
+            this.Icosahedron.TabIndex = 27;
+            this.Icosahedron.Text = "Икосаэдр";
+            this.Icosahedron.UseVisualStyleBackColor = true;
+            this.Icosahedron.Click += new System.EventHandler(this.Icosahedron_Click);
+            // 
+            // dodecahedron
+            // 
+            this.dodecahedron.Location = new System.Drawing.Point(929, 38);
+            this.dodecahedron.Name = "dodecahedron";
+            this.dodecahedron.Size = new System.Drawing.Size(75, 23);
+            this.dodecahedron.TabIndex = 28;
+            this.dodecahedron.Text = "Додекаэдр";
+            this.dodecahedron.UseVisualStyleBackColor = true;
+            this.dodecahedron.Click += new System.EventHandler(this.dodecahedron_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1150, 640);
+            this.Controls.Add(this.dodecahedron);
+            this.Controls.Add(this.Icosahedron);
+            this.Controls.Add(this.Octahedron);
+            this.Controls.Add(this.Tetrahedron);
+            this.Controls.Add(this.testbox);
             this.Controls.Add(this.e_z);
             this.Controls.Add(this.lab3);
             this.Controls.Add(this.e_y);
@@ -417,7 +478,11 @@
         private System.Windows.Forms.TextBox e_x;
         private System.Windows.Forms.Label lab8;
         private System.Windows.Forms.Button button3;
-
+        private System.Windows.Forms.TextBox testbox;
+        private System.Windows.Forms.Button Tetrahedron;
+        private System.Windows.Forms.Button Octahedron;
+        private System.Windows.Forms.Button Icosahedron;
+        private System.Windows.Forms.Button dodecahedron;
     }
 }
 

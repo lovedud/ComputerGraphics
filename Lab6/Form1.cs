@@ -19,7 +19,6 @@ namespace Affin3D
             bm = new Bitmap(pictureBox1.Width, pictureBox1.Height);
             pictureBox1.Image = bm;
             g = Graphics.FromImage(bm);
-            
         }
 
         public enum State
@@ -29,7 +28,7 @@ namespace Affin3D
 
         Mode cur_mode;
         State cur_state;
-        Edge3D RAL;
+        Edge3D RAL; // прямая, вокруг которой происходит вращение start - точка начала, end - нормализованный вектор, задающий направление
         Polyhedron cur_polyhedron;
         Bitmap bm;
         Graphics g;
@@ -63,7 +62,7 @@ namespace Affin3D
             double c = b / a;
             double d = Math.Acos(c)*180/Math.PI;
             if (p2.Y > p1.Y)
-                d = -d;
+                d = 360-d;
             return (int)d;
         }
 
@@ -130,7 +129,7 @@ namespace Affin3D
 
         private void button1_Click(object sender, EventArgs e)
         {
-            cur_polyhedron = CreateCube(new Point3D(200, 200, 200), 50);
+            cur_polyhedron = CreateCube(new Point3D(200, 200, 200), 100);
         }
 
         private void ClearButton_Click(object sender, EventArgs e)
@@ -152,7 +151,7 @@ namespace Affin3D
             OZ.Enabled = true;
             Custom.Enabled = true;
             Point3D center = cur_polyhedron.center();
-            RAL = new Edge3D(new Point3D(center.X, center.Y, center.Z), new Point3D(center.X + 1, center.Y, center.Z));
+            RAL = new Edge3D(new Point3D(center.X, center.Y, center.Z), new Point3D(1, 0, 0));
         }
 
         private void OX_Click(object sender, EventArgs e)
@@ -162,7 +161,7 @@ namespace Affin3D
             OZ.Enabled = true;
             Custom.Enabled = true;
             Point3D center = cur_polyhedron.center();
-            RAL = new Edge3D(new Point3D(center.X, center.Y, center.Z), new Point3D(center.X + 1, center.Y, center.Z));
+            RAL = new Edge3D(new Point3D(center.X, center.Y, center.Z), new Point3D(1, 0, 0));
         }
 
         private void OY_Click(object sender, EventArgs e)
@@ -172,7 +171,7 @@ namespace Affin3D
             OZ.Enabled = true;
             Custom.Enabled = true;
             Point3D center = cur_polyhedron.center();
-            RAL = new Edge3D(new Point3D(center.X, center.Y, center.Z), new Point3D(center.X, center.Y+1, center.Z));
+            RAL = new Edge3D(new Point3D(center.X, center.Y, center.Z), new Point3D(0, 1, 0));
         }
 
         private void OZ_Click(object sender, EventArgs e)
@@ -182,7 +181,7 @@ namespace Affin3D
             OZ.Enabled = false;
             Custom.Enabled = true;
             Point3D center = cur_polyhedron.center();
-            RAL = new Edge3D(new Point3D(center.X, center.Y, center.Z), new Point3D(center.X, center.Y, center.Z+1));
+            RAL = new Edge3D(new Point3D(center.X, center.Y, center.Z), new Point3D(0, 0, 1));
         }
 
         private void Custom_Click(object sender, EventArgs e)
@@ -198,33 +197,46 @@ namespace Affin3D
             float y2 = 0;
             float z2 = 0;
             if (float.TryParse(s_x.Text, out x1) && float.TryParse(s_y.Text, out y1) && float.TryParse(s_z.Text, out z1) && float.TryParse(e_x.Text, out x2) && float.TryParse(e_y.Text, out y2) && float.TryParse(e_z.Text, out z2))
-                RAL = new Edge3D(new Point3D(x1, y1, z1), new Point3D(x2, y2, z2));
+                RAL = new Edge3D(new Point3D(x1, y1, z1), NormalizedVector(new Edge3D(new Point3D(x1, y1, z1), new Point3D(x2,y2,z2))));
 
         }
 
         Point point_angle = new Point(0,0);
         bool m_down = false;
+        Edge3D RAL_toDraw;
+
+        int prev_angle = 0;
 
         private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
         {
-            point_angle.X = e.X;
+            point_angle.X = e.X-50;
             point_angle.Y = e.Y;
             m_down = true;
+            if(cur_state == State.RotateAroundLine)
+            {
+                RAL_toDraw = new Edge3D(new Point3D(RAL.start.X - RAL.end.X*500, RAL.start.Y - RAL.end.Y * 500, RAL.start.Z - RAL.end.Z * 500),
+                                        new Point3D(RAL.start.X + RAL.end.X * 500, RAL.start.Y + RAL.end.Y * 500, RAL.start.Z + RAL.end.Z * 500));
+            }
+            prev_angle = 0;
         }
 
-        int prev_angle = 0;
+        
 
         private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
         {
             if (m_down && cur_state == State.RotateAroundLine && !(cur_polyhedron is null))
             {
                 int angle = AngleBetweenPoints(point_angle, new Point(e.X, e.Y));
-                //testbox.Text = angle.ToString();
-                cur_polyhedron.RotateAroundLine(RAL, prev_angle - angle);
+                testbox.Text = angle.ToString();
+                cur_polyhedron.RotateAroundLine(RAL.start, RAL.end, prev_angle - angle);
                 var aa = cur_polyhedron.center();
                 prev_angle = angle;
                 Draw();
                 DrawPoint(ref bm, new PointF(aa.X, aa.Y), Color.Red);
+                DrawPoint(ref bm, new PointF(point_angle.X, point_angle.Y), Color.Orange);
+
+                //TODO отрисовать линию, вокруг которой нужно вращать фигуру
+
                 pictureBox1.Image = bm;
             }
         }
@@ -232,6 +244,7 @@ namespace Affin3D
         private void pictureBox1_MouseUp(object sender, MouseEventArgs e)
         {
             m_down = false;
+            Draw();
             //int angle = AngleBetweenPoints(point_angle, new Point(e.X, e.Y));
             //testbox.Text = angle.ToString();
             //cur_polyhedron.RotateAroundLine(RAL, angle);
@@ -274,6 +287,26 @@ namespace Affin3D
                 //    int.Parse(dialogZ.ResultText)
                 //);
             }
+        }
+
+        private void Tetrahedron_Click(object sender, EventArgs e)
+        {
+            cur_polyhedron = CreateTetrahedron(new Point3D(200, 200, 200), 100);
+        }
+
+        private void Octahedron_Click(object sender, EventArgs e)
+        {
+            cur_polyhedron = CreateOctahedron(new Point3D(200, 200, 200), 100);
+        }
+
+        private void Icosahedron_Click(object sender, EventArgs e)
+        {
+            cur_polyhedron = CreateIcosahedron(new Point3D(200, 200, 200), 100);
+        }
+
+        private void dodecahedron_Click(object sender, EventArgs e)
+        {
+            cur_polyhedron = CreateDodecahedron(new Point3D(200, 200, 200), 100);
         }
     }
 }
