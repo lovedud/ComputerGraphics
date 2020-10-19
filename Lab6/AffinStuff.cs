@@ -1,5 +1,4 @@
-﻿using Affin3D;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -8,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Lab4
+namespace Affin3D
 {
     public enum Position { Left, Right };
     
@@ -24,9 +23,9 @@ namespace Lab4
 
         public class Point3D
         {
-            public float X { get; private set; }
-            public float Y { get; private set; }
-            public float Z { get; private set; }
+            public float X { get; set; }
+            public float Y { get; set; }
+            public float Z { get; set; }
 
             public float eps;
             public Point3D(float x, float y, float z)
@@ -45,7 +44,7 @@ namespace Lab4
                 return (e1.X - e2.X) < e1.eps && (e1.Y - e2.Y) < e1.eps && (e1.Z - e1.Z) < e1.eps;
             }
         }
- 
+
         public class Polyhedron
         {
             List<Point3D> points;
@@ -81,7 +80,7 @@ namespace Lab4
                 int c_ind = PointInd(conn);
                 connections[point_ind].Add(c_ind);
                 connections[c_ind].Add(point_ind);
-                
+
             }
 
             public List<Edge3D> PreparePrint()
@@ -89,15 +88,77 @@ namespace Lab4
                 //TODO: add check for repeat of edge
                 //TODO: using type of polyhedron and points to calculate amount of edge and finish later
                 List<Edge3D> res = new List<Edge3D>();
-                foreach(var c in connections)
+                foreach (var c in connections)
                 {
                     Point3D point = points[c.Key];
-                    foreach(var conn in c.Value)
+                    foreach (var conn in c.Value)
                     {
                         res.Add(new Edge3D(point, points[conn]));
                     }
                 }
                 return res;
+            }
+
+            
+            public void RotateAroundLine(Point3D start, Point3D vector, double angle)
+            {
+                angle = angle * (Math.PI / 180.0);
+
+                double l = vector.X;
+                double m = vector.Y;
+                double n = vector.Z;
+
+                double l_2 = l * l;
+                double m_2 = m * m;
+                double n_2 = n * n;
+
+                double cos = Math.Cos(angle);
+                double sin = Math.Sin(angle);
+
+                double[,] matrMoveToZero = new double[4, 4] { { 1,0,0,0 },
+                                                        { 0,1,0,0 },
+                                                        { 0,0,1,0 },
+                                                        { - start.X, - start.Y, - start.Z, 1 } };
+
+                double[,] matrMoveBack = new double[4, 4] { { 1,0,0,0 },
+                                                        { 0,1,0,0 },
+                                                        { 0,0,1,0 },
+                                                        { start.X, start.Y, start.Z, 1 } };
+
+                double[,] matr = new double[4, 4] { { l_2 + cos*(1-l_2), l*(1 - cos)*m + n * sin, l*(1 - cos)*n - m * sin, 0},
+                                                    { l * (1 - cos)*m - n*sin, m_2 + cos*(1 - m_2), m*(1-cos)*n + l*sin, 0 },
+                                                    {l*(1-cos)*n+m*sin, m*(1-cos)*n-l*sin, n_2+cos*(1-n_2),0 },
+                                                    { 0, 0, 0, 1 } };
+
+                foreach (var x in points)
+                {
+                    double[,] vec = new double[1, 4] { { x.X, x.Y, x.Z, 1 } };
+                    var res = MatrixMultiplication(MatrixMultiplication(MatrixMultiplication(vec, matrMoveToZero), matr), matrMoveBack);
+                    x.X = (float)res[0, 0];
+                    x.Y = (float)res[0, 1];
+                    x.Z = (float)res[0, 2];
+                }
+                
+                
+            }
+
+            public Point3D center()
+            {
+                int counter = 0;
+                double xs = 0;
+                double ys = 0;
+                double zs = 0;
+                foreach (var x in points)
+                {
+                    xs += x.X;
+                    ys += x.Y;
+                    zs += x.Z;
+                    ++counter;
+                }
+                xs /= counter;
+                ys /= counter;
+                zs /= counter;
+                return new Point3D((float)xs, (float)ys, (float)zs);
             }
 
             public void getMoved(Point3D p)
@@ -118,16 +179,50 @@ namespace Lab4
             }
         }
 
+        public static Point3D NormalizedVector(Edge3D line)
+        {
+            Point3D lvector = new Point3D(line.end.X - line.start.X, line.end.Y - line.start.Y, line.end.Z - line.start.Z);
+
+            //нормализуем вектор, заданный линией
+            double len = Math.Sqrt(lvector.X * lvector.X + lvector.Y * lvector.Y + lvector.Z * lvector.Z);
+            double l = (lvector.X / len);
+            double m = (lvector.Y / len); 
+            double n = (lvector.Z / len); 
+            return new Point3D((float)l, (float)m, (float)n);
+        }
+
+        static public Polyhedron CreateTetrahedron(Point3D start, float a)
+        {
+            Polyhedron res = new Polyhedron(start);
+            Point3D start_x = new Point3D(start.X + a, start.Y, start.Z);
+            Point3D start_y = new Point3D(start.X, start.Y + a, start.Z);
+            Point3D start_z = new Point3D(start.X, start.Y, start.Z + a);
+            Point3D start_xy = new Point3D(start_x.X, start_y.Y, start.Z);
+            Point3D start_xz = new Point3D(start_x.X, start.Y, start_z.Z);
+            Point3D start_yz = new Point3D(start.X, start_y.Y, start_z.Z);
+
+            res.AddPoint(start, start_xy);
+            res.AddPoint(start, start_xz);
+            res.AddPoint(start, start_yz);
+            
+            res.AddPoint(start_xz, start_yz);
+            res.AddPoint(start_xz, start_xy);
+
+            res.AddPoint(start_yz, start_xy);
+
+            return res;
+        }
+
         static public Polyhedron CreateCube(Point3D start, float a)
         {
             Polyhedron res = new Polyhedron(start);
-            Point3D start_z = new Point3D(start.X, start.Y, start.Z + a);
             Point3D start_x = new Point3D(start.X + a, start.Y, start.Z);
             Point3D start_y = new Point3D(start.X, start.Y + a, start.Z);
-            Point3D start_xyz = new Point3D(start.X + a, start.Y + a, start.Z + a);
-            Point3D start_xz = new Point3D(start_x.X, start.Y, start_z.Z);
+            Point3D start_z = new Point3D(start.X, start.Y, start.Z + a);
             Point3D start_xy = new Point3D(start_x.X, start_y.Y, start.Z);
-            Point3D start_yz = new Point3D(start.X, start_y.Y, start_z.Z);            
+            Point3D start_xz = new Point3D(start_x.X, start.Y, start_z.Z);
+            Point3D start_yz = new Point3D(start.X, start_y.Y, start_z.Z);
+            Point3D start_xyz = new Point3D(start.X + a, start.Y + a, start.Z + a);
             res.AddPoint(start, start_x);
             res.AddPoint(start, start_y);
             res.AddPoint(start, start_z);
@@ -146,6 +241,195 @@ namespace Lab4
             res.AddPoint(start_xyz, start_xy);
             return res;
         }
+
+        static public Polyhedron CreateOctahedron(Point3D start, float a)
+        {
+            a = (float)(a * 1.5);
+
+            Point3D start_xy_2 = new Point3D(start.X + a/2, start.Y+a/2, start.Z);
+            Polyhedron res = new Polyhedron(start_xy_2);
+
+            Point3D start_yz_2 = new Point3D(start.X, start.Y + a/2, start.Z+a/2);
+            Point3D start_xz_2 = new Point3D(start.X+a/2, start.Y, start.Z + a/2);
+            Point3D start_x_yz_2 = new Point3D(start.X+a, start.Y + a/2, start.Z + a/2);
+            Point3D start_y_xz_2 = new Point3D(start.X + a/2, start.Y + a, start.Z + a / 2);
+            Point3D start_z_xy_2 = new Point3D(start.X + a/2, start.Y + a / 2, start.Z + a);
+
+
+            res.AddPoint(start_xy_2, start_yz_2);
+            res.AddPoint(start_xy_2, start_x_yz_2);
+            res.AddPoint(start_xy_2, start_y_xz_2);
+            res.AddPoint(start_xy_2, start_xz_2);
+
+            res.AddPoint(start_z_xy_2, start_yz_2);
+            res.AddPoint(start_z_xy_2, start_x_yz_2);
+            res.AddPoint(start_z_xy_2, start_y_xz_2);
+            res.AddPoint(start_z_xy_2, start_xz_2);
+
+            res.AddPoint(start_yz_2, start_y_xz_2);
+            res.AddPoint(start_yz_2, start_xz_2);
+
+            res.AddPoint(start_x_yz_2, start_y_xz_2);
+            res.AddPoint(start_x_yz_2, start_xz_2);
+
+            return res;
+        }
+
+        static public Polyhedron CreateIcosahedron(Point3D start, float a)
+        {
+            float half_side = (float)((Math.Sqrt(5) - 1) / 4)*a;
+            float n = a / 2 - half_side;
+            Point3D start_xn_y2 = new Point3D(start.X + n, start.Y + a / 2, start.Z);
+            Polyhedron res = new Polyhedron(start_xn_y2);
+
+            Point3D start_xnn_y2 = new Point3D(start.X + a - n, start.Y + a / 2, start.Z);
+            Point3D start_x2_zn = new Point3D(start.X + a / 2, start.Y, start.Z + n);
+            Point3D start_x2_y_zn = new Point3D(start.X + a / 2, start.Y + a, start.Z + n);
+            Point3D start_yn_z2 = new Point3D(start.X, start.Y + n, start.Z + a / 2);
+            Point3D start_ynn_z2 = new Point3D(start.X, start.Y + a - n, start.Z + a / 2);
+            Point3D start_x_yn_z2 = new Point3D(start.X + a, start.Y + n, start.Z + a / 2);
+            Point3D start_x_ynn_z2 = new Point3D(start.X + a, start.Y + a - n, start.Z + a / 2);
+            Point3D start_x2_znn = new Point3D(start.X + a / 2, start.Y, start.Z + a - n);
+            Point3D start_x2_y_znn = new Point3D(start.X + a / 2, start.Y + a, start.Z + a - n);
+            Point3D start_xn_y2_z = new Point3D(start.X + n, start.Y + a / 2, start.Z + a);
+            Point3D start_xnn_y2_z = new Point3D(start.X + a - n, start.Y + a / 2, start.Z + a);
+
+            res.AddPoint(start_xn_y2, start_xnn_y2);
+            res.AddPoint(start_xn_y2, start_x2_zn);
+            res.AddPoint(start_xn_y2, start_yn_z2);
+            res.AddPoint(start_xn_y2, start_ynn_z2);
+            res.AddPoint(start_xn_y2, start_x2_y_zn);
+
+            res.AddPoint(start_xnn_y2_z, start_x_yn_z2);
+            res.AddPoint(start_xnn_y2_z, start_x_ynn_z2);
+            res.AddPoint(start_xnn_y2_z, start_x2_y_znn);
+            res.AddPoint(start_xnn_y2_z, start_xn_y2_z);
+            res.AddPoint(start_xnn_y2_z, start_x2_znn);
+
+            res.AddPoint(start_x2_zn, start_yn_z2);
+            res.AddPoint(start_x2_zn, start_x2_znn);
+            res.AddPoint(start_x2_zn, start_x_yn_z2);
+            res.AddPoint(start_x2_zn, start_xnn_y2);
+
+            res.AddPoint(start_x2_y_znn, start_xn_y2_z);
+            res.AddPoint(start_x2_y_znn, start_ynn_z2);
+            res.AddPoint(start_x2_y_znn, start_x2_y_zn);
+            res.AddPoint(start_x2_y_znn, start_x_ynn_z2);
+
+            res.AddPoint(start_yn_z2, start_x2_znn);
+            res.AddPoint(start_yn_z2, start_xn_y2_z);
+            res.AddPoint(start_yn_z2, start_ynn_z2);
+
+            res.AddPoint(start_xnn_y2, start_x2_y_zn);
+            res.AddPoint(start_xnn_y2, start_x_ynn_z2);
+            res.AddPoint(start_xnn_y2, start_x_yn_z2);
+
+            res.AddPoint(start_x2_znn, start_x_yn_z2);
+            res.AddPoint(start_x2_znn, start_xn_y2_z);
+
+            res.AddPoint(start_ynn_z2, start_xn_y2_z);
+            res.AddPoint(start_ynn_z2, start_x2_y_zn);
+
+            res.AddPoint(start_x_ynn_z2, start_x_yn_z2);
+            res.AddPoint(start_x_ynn_z2, start_x2_y_zn);
+
+            return res;
+        }
+
+        public static Point3D center(Point3D p1, Point3D p2, Point3D p3)
+        {
+            float xs = (p1.X + p2.X + p3.X)/3;
+            float ys = (p1.Y + p2.Y + p3.Y) / 3;
+            float zs = (p1.Z + p2.Z + p3.Z) / 3;
+            return new Point3D(xs, ys, zs);
+        }
+
+        static public Polyhedron CreateDodecahedron(Point3D start, float a)
+        {
+            float half_side = (float)((Math.Sqrt(5) - 1) / 4) * a;
+            float n = a / 2 - half_side;
+            Point3D p0 = new Point3D(start.X + n, start.Y + a / 2, start.Z);
+            Point3D p1 = new Point3D(start.X + a - n, start.Y + a / 2, start.Z);
+            Point3D p2 = new Point3D(start.X + a / 2, start.Y, start.Z + n);
+            Point3D p3 = new Point3D(start.X + a / 2, start.Y + a, start.Z + n);
+            Point3D p4 = new Point3D(start.X, start.Y + n, start.Z + a / 2);
+            Point3D p5 = new Point3D(start.X, start.Y + a - n, start.Z + a / 2);
+            Point3D p6 = new Point3D(start.X + a, start.Y + n, start.Z + a / 2);
+            Point3D p7 = new Point3D(start.X + a, start.Y + a - n, start.Z + a / 2);
+            Point3D p8 = new Point3D(start.X + a / 2, start.Y, start.Z + a - n);
+            Point3D p9 = new Point3D(start.X + a / 2, start.Y + a, start.Z + a - n);
+            Point3D p10 = new Point3D(start.X + n, start.Y + a / 2, start.Z + a);
+            Point3D p11 = new Point3D(start.X + a - n, start.Y + a / 2, start.Z + a);
+
+            Point3D n0 = center(p0, p2, p4);
+            Point3D n1 = center(p0, p1, p2);
+            Point3D n2 = center(p0, p1, p3);
+            Point3D n3 = center(p0, p3, p5);
+            Point3D n4 = center(p0, p4, p5);
+            Point3D n5 = center(p6,p8,p11);
+            Point3D n6 = center(p6, p7, p11);
+            Point3D n7 = center(p7, p9, p11);
+            Point3D n8 = center(p9, p10, p11);
+            Point3D n9 = center(p8, p10, p11);
+            Point3D n10 = center(p2, p6, p8);
+            Point3D n11 = center(p1, p2, p6);
+            Point3D n12 = center(p1, p6, p7);
+            Point3D n13 = center(p1, p3, p7);
+            Point3D n14 = center(p3, p7, p9);
+            Point3D n15 = center(p3, p5, p9);
+            Point3D n16 = center(p5, p9, p10);
+            Point3D n17 = center(p4, p5, p10);
+            Point3D n18 = center(p4, p8, p10);
+            Point3D n19 = center(p2, p4, p8);
+
+            Polyhedron res = new Polyhedron(p0);
+
+            res.AddPoint(n0, n1);
+            res.AddPoint(n0, n4);
+            res.AddPoint(n0, n19);
+
+            res.AddPoint(n2, n1);
+            res.AddPoint(n2, n3);
+            res.AddPoint(n2, n13);
+
+            res.AddPoint(n11, n1);
+            res.AddPoint(n11, n10);
+            res.AddPoint(n11, n12);
+
+            res.AddPoint(n17, n4);
+            res.AddPoint(n17, n16);
+            res.AddPoint(n17, n18);
+
+            res.AddPoint(n15, n3);
+            res.AddPoint(n15, n14);
+            res.AddPoint(n15, n16);
+
+            res.AddPoint(n3, n4);
+
+            res.AddPoint(n8, n7);
+            res.AddPoint(n8, n9);
+            res.AddPoint(n8, n16);
+
+            res.AddPoint(n6, n5);
+            res.AddPoint(n6, n7);
+            res.AddPoint(n6, n12);
+
+            res.AddPoint(n13, n12);
+            res.AddPoint(n13, n14);
+
+            res.AddPoint(n7, n14);
+
+            res.AddPoint(n5, n9);
+            res.AddPoint(n5, n10);
+
+            res.AddPoint(n19, n10);
+            res.AddPoint(n19, n18);
+
+            res.AddPoint(n9, n18);
+
+            return res;
+        }
+
 
         static public List<Edge> ToOrtographics(Polyhedron ph, Mode plain)
         {
