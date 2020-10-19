@@ -498,9 +498,17 @@ namespace Affin3D
             double sin = Math.Sin(2.094395);
             return new double[4, 4]
             {{ cos, sin * sin,  0, 0 },
-             {0,    cos,        0, 0 },
-             {sin,  -sin * cos, 0, 0 },
-             {0,    0,          0, 1 } };
+             { 0,   cos,        0, 0 },
+             { sin, -sin * cos, 0, 0 },
+             { 0,   0,          0, 1 } };
+        }
+        static public double[,] FormPerspectiveMatr(int c)
+        {
+            return new double[4, 4]
+            {{ 1, 0, 0, 0   },
+             { 0, 1, 0, 0   },
+             { 0, 0, 0, 1.0 / c },
+             { 0, 0, 0, 1 } };
         }
 
         static public List<Edge> ToIsometric(Polyhedron ph)
@@ -516,6 +524,19 @@ namespace Affin3D
             }
             return res;
         }
+        static public List<Edge>ToPerspective(Polyhedron ph, int c)
+        {
+            List<Edge> res = new List<Edge>();
+            var edges_3d = ph.PreparePrint();
+            var matr = FormPerspectiveMatr(c);
+            foreach (var edge in edges_3d)
+            {
+                var new_start = MatrixMultiplication(PointToVector(edge.start), matr);
+                var new_end = MatrixMultiplication(PointToVector(edge.end), matr);
+                res.Add(new Edge(VectorToPoint(new_start), VectorToPoint(new_end)));
+            }
+            return res;
+        }
 
         static public double[,] PointToVector(Point3D p)
         {
@@ -523,7 +544,7 @@ namespace Affin3D
         }
         static public PointF VectorToPoint(double [,] vec)
         {
-            return new PointF((float)vec[0, 0], (float)vec[0, 1]);
+            return new PointF((float)(vec[0, 0] / vec[0,3]), (float)(vec[0, 1] / vec[0, 3]));
         }
 
         public class Edge3D

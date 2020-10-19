@@ -308,5 +308,17 @@ namespace Affin3D
         {
             cur_polyhedron = CreateDodecahedron(new Point3D(200, 200, 200), 100);
         }
+
+        private void perspective_button_Click(object sender, EventArgs e)
+        {
+            if (cur_polyhedron is null)
+                return;
+            var edges = ToPerspective(cur_polyhedron, 1600);
+            foreach (var edge in edges)
+            {
+                DrawEdge(ref g, ref bm, edge);
+            }
+            pictureBox1.Image = bm;
+        }
     }
 }
