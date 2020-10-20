@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.button1 = new System.Windows.Forms.Button();
+            this.cube_button = new System.Windows.Forms.Button();
             this.ort_button = new System.Windows.Forms.Button();
             this.Ortxy = new System.Windows.Forms.CheckBox();
             this.Ortxz = new System.Windows.Forms.CheckBox();
@@ -62,6 +62,7 @@
             this.Octahedron = new System.Windows.Forms.Button();
             this.Icosahedron = new System.Windows.Forms.Button();
             this.dodecahedron = new System.Windows.Forms.Button();
+            this.perspective_button = new System.Windows.Forms.Button();
             this.scaleButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -79,16 +80,16 @@
             this.pictureBox1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseMove);
             this.pictureBox1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseUp);
             // 
-            // button1
+            // cube_button
             // 
-            this.button1.Location = new System.Drawing.Point(1101, 48);
-            this.button1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(61, 28);
-            this.button1.TabIndex = 1;
-            this.button1.Text = "Куб";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.cube_button.Location = new System.Drawing.Point(1101, 48);
+            this.cube_button.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.cube_button.Name = "cube_button";
+            this.cube_button.Size = new System.Drawing.Size(61, 28);
+            this.cube_button.TabIndex = 1;
+            this.cube_button.Text = "Куб";
+            this.cube_button.UseVisualStyleBackColor = true;
+            this.cube_button.Click += new System.EventHandler(this.Cub_Button_Click);
             // 
             // ort_button
             // 
@@ -99,7 +100,7 @@
             this.ort_button.TabIndex = 1;
             this.ort_button.Text = "Ортографическая";
             this.ort_button.UseVisualStyleBackColor = true;
-            this.ort_button.Click += new System.EventHandler(this.button2_Click);
+            this.ort_button.Click += new System.EventHandler(this.Ort_Button_Click);
             // 
             // Ortxy
             // 
@@ -437,6 +438,17 @@
             this.scaleButton.UseVisualStyleBackColor = true;
             this.scaleButton.Click += new System.EventHandler(this.scaleButton_Click);
             // 
+            // perspective_button
+            // 
+            this.perspective_button.Location = new System.Drawing.Point(1259, 199);
+            this.perspective_button.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.perspective_button.Name = "perspective_button";
+            this.perspective_button.Size = new System.Drawing.Size(145, 39);
+            this.perspective_button.TabIndex = 1;
+            this.perspective_button.Text = "Перспективная";
+            this.perspective_button.UseVisualStyleBackColor = true;
+            this.perspective_button.Click += new System.EventHandler(this.perspective_button_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -472,9 +484,10 @@
             this.Controls.Add(this.Ortxz);
             this.Controls.Add(this.Ortxy);
             this.Controls.Add(this.iso_button);
+            this.Controls.Add(this.perspective_button);
             this.Controls.Add(this.ort_button);
             this.Controls.Add(this.clear_button);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.cube_button);
             this.Controls.Add(this.pictureBox1);
             this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Name = "Form1";
@@ -489,7 +502,7 @@
         #endregion
 
         private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button cube_button;
         private System.Windows.Forms.Button ort_button;
         private System.Windows.Forms.CheckBox Ortxy;
         private System.Windows.Forms.CheckBox Ortxz;
@@ -523,6 +536,7 @@
         private System.Windows.Forms.Button Icosahedron;
         private System.Windows.Forms.Button dodecahedron;
         private System.Windows.Forms.Button scaleButton;
+        private System.Windows.Forms.Button perspective_button;
     }
 }
 

@@ -27,8 +27,15 @@ namespace Affin3D
             MoveP,
             Scale
         }
+        public enum Mode
+        {
+            Isometric,
+            Orthographic,
+            Perspective
+        }
 
         Mode cur_mode;
+        OrtMode cur_ort_mode;
         State cur_state;
         Edge3D RAL; // прямая, вокруг которой происходит вращение start - точка начала, end - нормализованный вектор, задающий направление
         Polyhedron cur_polyhedron;
@@ -40,7 +47,19 @@ namespace Affin3D
             g.Clear(Color.White);
             if (cur_polyhedron is null)
                 return;
-            var edges = ToOrtographics(cur_polyhedron, cur_mode);
+            List<Edge> edges = new List<Edge>();
+            switch(cur_mode)
+            {
+                case Mode.Isometric:
+                    edges = ToIsometric(cur_polyhedron);
+                    break;
+                case Mode.Orthographic:
+                    edges = ToOrtographics(cur_polyhedron, cur_ort_mode);
+                    break;
+                case Mode.Perspective:
+                    edges = ToPerspective(cur_polyhedron, 1600);
+                    break;
+            }
             foreach (var edge in edges)
             {
                 DrawEdge(ref g, ref bm, edge);
@@ -88,8 +107,9 @@ namespace Affin3D
             {
                 Ortxz.Checked = false;
                 Ortyz.Checked = false;
-                cur_mode = Mode.XY;
+                cur_ort_mode = OrtMode.XY;
                 ort_button.Enabled = true;
+                Draw();
             }
             else OrtButtonAvailability();
 
@@ -101,8 +121,9 @@ namespace Affin3D
             {
                 Ortxy.Checked = false;
                 Ortyz.Checked = false;
-                cur_mode = Mode.XZ;
+                cur_ort_mode = OrtMode.XZ;
                 ort_button.Enabled = true;
+                Draw();
             } else OrtButtonAvailability();
         }
 
@@ -112,26 +133,22 @@ namespace Affin3D
             {
                 Ortxz.Checked = false;
                 Ortxy.Checked = false;
-                cur_mode = Mode.YZ;
+                cur_ort_mode = OrtMode.YZ;
                 ort_button.Enabled = true;
+                Draw();
             } else OrtButtonAvailability();
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void Ort_Button_Click(object sender, EventArgs e)
         {
-            if (cur_polyhedron is null)
-                return;
-            var edges = ToOrtographics(cur_polyhedron, cur_mode);
-            foreach(var edge in edges)
-            {
-                DrawEdge(ref g, ref bm, edge);
-            }
-            pictureBox1.Image = bm;
+            cur_mode = Mode.Orthographic;
+            Draw();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void Cub_Button_Click(object sender, EventArgs e)
         {
             cur_polyhedron = CreateCube(new Point3D(200, 200, 200), 100);
+            Draw();
         }
 
         private void ClearButton_Click(object sender, EventArgs e)
@@ -226,8 +243,6 @@ namespace Affin3D
             prevMouseMove = new Point3D(e.X, e.Y, 1);
         }
 
-        
-
         private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
         {
             if (m_down && cur_state == State.RotateAroundLine && !(cur_polyhedron is null))
@@ -284,14 +299,8 @@ namespace Affin3D
         }
         private void iso_button_Click(object sender, EventArgs e)
         {
-            if (cur_polyhedron is null)
-                return;
-            var edges = ToIsometric(cur_polyhedron);
-            foreach (var edge in edges)
-            {
-                DrawEdge(ref g, ref bm, edge);
-            }
-            pictureBox1.Image = bm;
+            cur_mode = Mode.Isometric;
+            Draw();
         }
         private void button3_Click(object sender, EventArgs e)
         {
@@ -303,6 +312,7 @@ namespace Affin3D
             //    var x = new Point3D(int.Parse(dialogX.ResultText), int.Parse(dialogY.ResultText), int.Parse(dialogZ.ResultText));
             //    cur_polyhedron.getMoved(x);
 
+                Draw();
             //    g.Clear(Color.White);
             //    pictureBox1.Image = bm;
             //    g = Graphics.FromImage(bm);
@@ -325,21 +335,31 @@ namespace Affin3D
         private void Tetrahedron_Click(object sender, EventArgs e)
         {
             cur_polyhedron = CreateTetrahedron(new Point3D(200, 200, 200), 100);
+            Draw();
         }
 
         private void Octahedron_Click(object sender, EventArgs e)
         {
             cur_polyhedron = CreateOctahedron(new Point3D(200, 200, 200), 100);
+            Draw();
         }
 
         private void Icosahedron_Click(object sender, EventArgs e)
         {
             cur_polyhedron = CreateIcosahedron(new Point3D(200, 200, 200), 100);
+            Draw();
         }
 
         private void dodecahedron_Click(object sender, EventArgs e)
         {
             cur_polyhedron = CreateDodecahedron(new Point3D(200, 200, 200), 100);
+            Draw();
+        }
+
+        private void perspective_button_Click(object sender, EventArgs e)
+        {
+            cur_mode = Mode.Perspective;
+            Draw();
         }
 
         private void scaleButton_Click(object sender, EventArgs e)
