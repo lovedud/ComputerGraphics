@@ -914,7 +914,7 @@ namespace Affin3D
 
         static public void DrawPoint(ref Bitmap bitmap, PointF e, Color color)
         {
-            if (e.X > 0 && e.X < bitmap.Width && e.Y > 0 && e.Y < bitmap.Height)
+            if (e.X > 1 && e.X < bitmap.Width-1 && e.Y > 1 && e.Y < bitmap.Height-1)
             {
                 bitmap.SetPixel((int)e.X + 1, (int)e.Y, color);
                 bitmap.SetPixel((int)e.X - 1, (int)e.Y, color);

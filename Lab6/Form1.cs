@@ -233,11 +233,11 @@ namespace Affin3D
             point_angle.X = e.X-50;
             point_angle.Y = e.Y;
             m_down = true;
-            if(cur_state == State.RotateAroundLine)
-            {
-                RAL_toDraw = new Edge3D(new Point3D(RAL.start.X - RAL.end.X*500, RAL.start.Y - RAL.end.Y * 500, RAL.start.Z - RAL.end.Z * 500),
-                                        new Point3D(RAL.start.X + RAL.end.X * 500, RAL.start.Y + RAL.end.Y * 500, RAL.start.Z + RAL.end.Z * 500));
-            }
+            //if(cur_state == State.RotateAroundLine)
+            //{
+            //    RAL_toDraw = new Edge3D(new Point3D(RAL.start.X - RAL.end.X*500, RAL.start.Y - RAL.end.Y * 500, RAL.start.Z - RAL.end.Z * 500),
+            //                            new Point3D(RAL.start.X + RAL.end.X * 500, RAL.start.Y + RAL.end.Y * 500, RAL.start.Z + RAL.end.Z * 500));
+            //}
             prev_angle = 0;
 
             prevMouseMove = new Point3D(e.X, e.Y, 0);
@@ -267,10 +267,12 @@ namespace Affin3D
                 // нужно сделать, чтобы в зависимости от выбора
                 // изменялась в осях XZ YZ
                 Point3D center = cur_polyhedron.center();
-                Point3D mouseMove = new Point3D(e.X - center.X, e.Y - center.Y, 0);
+                Point3D mouseMove = new Point3D(e.X - prevMouseMove.X, e.Y - prevMouseMove.Y, 0);
 
                 cur_polyhedron.getMoved(mouseMove);
                 Draw();
+                prevMouseMove.X = e.X;
+                prevMouseMove.Y = e.Y;
 
                 pictureBox1.Image = bm;
             }
