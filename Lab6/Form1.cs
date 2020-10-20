@@ -92,12 +92,6 @@ namespace Affin3D
             return (int)d;
         }
 
-        public void SwitchOnAllButtonsExcept(Button button)
-        {
-            rotateAroundLine.Enabled = true;
-            button.Enabled = false;
-        }
-
         private void OrtButtonAvailability()
         {
             if (!Ortxy.Checked && !Ortxz.Checked && !Ortyz.Checked)
@@ -147,6 +141,9 @@ namespace Affin3D
         private void Ort_Button_Click(object sender, EventArgs e)
         {
             cur_mode = Mode.Orthographic;
+            ort_button.Enabled = false;
+            iso_button.Enabled = true;
+            perspective_button.Enabled = true;
             Draw();
         }
 
@@ -159,17 +156,24 @@ namespace Affin3D
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            cur_mode = Mode.Orthographic;
+            ort_button.Enabled = false;
 
+            cur_state = State.MoveP;
+            button3.Enabled = false;
+            testbox.Visible = false;
         }
 
         private void Rota_Click(object sender, EventArgs e)
         {
             cur_state = State.RotateAroundLine;
-            SwitchOnAllButtonsExcept(rotateAroundLine);
+            rotateAroundLine.Enabled = false;
             OX.Enabled = false;
             OY.Enabled = true;
             OZ.Enabled = true;
             Custom.Enabled = true;
+            button3.Enabled = true;
+            scaleButton.Enabled = true;
             Point3D center = cur_polyhedron.center();
             RAL = new Edge3D(new Point3D(center.X, center.Y, center.Z), new Point3D(1, 0, 0));
         }
@@ -264,10 +268,6 @@ namespace Affin3D
             }
             if (m_down && cur_state == State.MoveP && !(cur_polyhedron is null))
             {
-                //TODO сделать move в зависимости от проекции по которой идет изменение
-                // (В оригинале  Point3D mouseMove = new Point3D(e.X - center.X, e.Y - center.Y, 0);
-                // нужно сделать, чтобы в зависимости от выбора
-                // изменялась в осях XZ YZ
                 if (Ortxy.Checked)
                 {
                     Point3D center = cur_polyhedron.center();
@@ -300,9 +300,6 @@ namespace Affin3D
             }
             if (m_down && cur_state == State.Scale && !(cur_polyhedron is null))
             {
-                //TODO сделать scale в зависимости от проекции по которой идет изменение
-                // (В оригинале  prevMouseMove.Z = 0, нужно сделать, чтобы в зависимости от выбора
-                // изменялась в осях XZ YZ
 
                 if (Ortxy.Checked)
                 {
@@ -345,36 +342,21 @@ namespace Affin3D
         private void iso_button_Click(object sender, EventArgs e)
         {
             cur_mode = Mode.Isometric;
+            ort_button.Enabled = true;
+            iso_button.Enabled = false;
+            perspective_button.Enabled = true;
             Draw();
         }
         private void button3_Click(object sender, EventArgs e)
         {
             cur_state = State.MoveP;
-            //var dialogX = new InputForCoordinates("Введите смещение по X");
-            //var dialogY = new InputForCoordinates("Введите смещение по Y");
-            //var dialogZ = new InputForCoordinates("Введите смещение по Z");
-            //if (dialogX.ShowDialog() == DialogResult.OK && dialogY.ShowDialog() == DialogResult.OK && dialogZ.ShowDialog() == DialogResult.OK) { 
-            //    var x = new Point3D(int.Parse(dialogX.ResultText), int.Parse(dialogY.ResultText), int.Parse(dialogZ.ResultText));
-            //    cur_polyhedron.getMoved(x);
-
-                Draw();
-            //    g.Clear(Color.White);
-            //    pictureBox1.Image = bm;
-            //    g = Graphics.FromImage(bm);
-
-            //    var edges = ToOrtographics(cur_polyhedron, cur_mode);
-            //    foreach (var edge in edges)
-            //    {
-            //        DrawEdge(ref g, ref bm, edge);
-            //    }
-            //    pictureBox1.Image = bm;
-                //cur_polyhedron = AffinStuff.getMoved(
-                //    cur_polyhedron,
-                //    int.Parse(dialogX.ResultText),
-                //    int.Parse(dialogY.ResultText),
-                //    int.Parse(dialogZ.ResultText)
-                //);
-            //}
+            rotateAroundLine.Enabled = true;
+            OX.Enabled = false;
+            OY.Enabled = false;
+            OZ.Enabled = false;
+            Custom.Enabled = false;
+            button3.Enabled = false;
+            scaleButton.Enabled = true;
         }
         private void Cub_Button_Click(object sender, EventArgs e)
         {
@@ -408,12 +390,22 @@ namespace Affin3D
         private void perspective_button_Click(object sender, EventArgs e)
         {
             cur_mode = Mode.Perspective;
+            ort_button.Enabled = true;
+            iso_button.Enabled = true;
+            perspective_button.Enabled = false;
             Draw();
         }
 
         private void scaleButton_Click(object sender, EventArgs e)
         {
             cur_state = State.Scale;
+            rotateAroundLine.Enabled = true;
+            OX.Enabled = false;
+            OY.Enabled = false;
+            OZ.Enabled = false;
+            Custom.Enabled = false;
+            button3.Enabled = true;
+            scaleButton.Enabled = false;
         }
     }
 }
