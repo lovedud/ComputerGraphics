@@ -266,11 +266,31 @@ namespace Affin3D
                 // (В оригинале  Point3D mouseMove = new Point3D(e.X - center.X, e.Y - center.Y, 0);
                 // нужно сделать, чтобы в зависимости от выбора
                 // изменялась в осях XZ YZ
-                Point3D center = cur_polyhedron.center();
-                Point3D mouseMove = new Point3D(e.X - center.X, e.Y - center.Y, 0);
+                if (Ortxy.Checked)
+                {
+                    Point3D center = cur_polyhedron.center();
+                    Point3D mouseMove = new Point3D(e.X - center.X, e.Y - center.Y, 0);
 
-                cur_polyhedron.getMoved(mouseMove);
-                Draw();
+                    cur_polyhedron.getMoved(mouseMove);
+                    Draw();
+                }
+                else if (Ortxz.Checked)
+                {
+                    Point3D center = cur_polyhedron.center();
+                    Point3D mouseMove = new Point3D(e.X - center.X, 0, e.Y - center.Y);
+
+                    cur_polyhedron.getMoved(mouseMove);
+                    Draw();
+                }
+                else if (Ortyz.Checked)
+                {
+                    Point3D center = cur_polyhedron.center();
+                    Point3D mouseMove = new Point3D(0, e.X - center.X, e.Y - center.Y);
+
+                    cur_polyhedron.getMoved(mouseMove);
+                    Draw();
+                }
+
 
                 pictureBox1.Image = bm;
             }
@@ -279,9 +299,28 @@ namespace Affin3D
                 //TODO сделать scale в зависимости от проекции по которой идет изменение
                 // (В оригинале  prevMouseMove.Z = 0, нужно сделать, чтобы в зависимости от выбора
                 // изменялась в осях XZ YZ
-                Point3D center = cur_polyhedron.center();
-                Point3D mouseMove = new Point3D(e.X - prevMouseMove.X, e.Y - prevMouseMove.Y, 0);
-                cur_polyhedron.scale(center, 1 - mouseMove.X * 0.01, 1 + mouseMove.Y * 0.01, 1 - mouseMove.Z * 0.01);
+
+                if (Ortxy.Checked)
+                {
+                    Point3D center = cur_polyhedron.center();
+                    Point3D mouseMove = new Point3D(e.X - prevMouseMove.X, e.Y - prevMouseMove.Y, 0);
+                    cur_polyhedron.scale(center, 1 - mouseMove.X * 0.01, 1 + mouseMove.Y * 0.01, 1 - mouseMove.Z * 0.01);
+                    Draw();
+                }
+                else if (Ortxz.Checked)
+                {
+                    Point3D center = cur_polyhedron.center();
+                    Point3D mouseMove = new Point3D(e.X - prevMouseMove.X, 0, e.Y - prevMouseMove.Y);
+                    cur_polyhedron.scale(center, 1 - mouseMove.X * 0.01, 1 + mouseMove.Y * 0.01, 1 - mouseMove.Z * 0.01);
+                    Draw();
+                }
+                else if (Ortyz.Checked)
+                {
+                    Point3D center = cur_polyhedron.center();
+                    Point3D mouseMove = new Point3D(0, e.X - prevMouseMove.X, e.Y - prevMouseMove.Y);
+                    cur_polyhedron.scale(center, 1 - mouseMove.X * 0.01, 1 + mouseMove.Y * 0.01, 1 - mouseMove.Z * 0.01);
+                    Draw();
+                }
 
                 Draw();
 
@@ -335,25 +374,25 @@ namespace Affin3D
 
         private void Tetrahedron_Click(object sender, EventArgs e)
         {
-            cur_polyhedron = CreateTetrahedron(new Point3D(200, 200, 200), 100);
+            cur_polyhedron = CreateTetrahedron(new Point3D(500, 500, 500), 100);
             Draw();
         }
 
         private void Octahedron_Click(object sender, EventArgs e)
         {
-            cur_polyhedron = CreateOctahedron(new Point3D(200, 200, 200), 100);
+            cur_polyhedron = CreateOctahedron(new Point3D(500, 500, 500), 100);
             Draw();
         }
 
         private void Icosahedron_Click(object sender, EventArgs e)
         {
-            cur_polyhedron = CreateIcosahedron(new Point3D(200, 200, 200), 100);
+            cur_polyhedron = CreateIcosahedron(new Point3D(500, 500, 500), 100);
             Draw();
         }
 
         private void dodecahedron_Click(object sender, EventArgs e)
         {
-            cur_polyhedron = CreateDodecahedron(new Point3D(200, 200, 200), 100);
+            cur_polyhedron = CreateDodecahedron(new Point3D(500, 500, 500), 100);
             Draw();
         }
 
