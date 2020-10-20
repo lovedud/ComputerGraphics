@@ -63,6 +63,7 @@
             this.Icosahedron = new System.Windows.Forms.Button();
             this.dodecahedron = new System.Windows.Forms.Button();
             this.perspective_button = new System.Windows.Forms.Button();
+            this.scaleButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -145,7 +146,7 @@
             // clear_button
             // 
             this.clear_button.Location = new System.Drawing.Point(1133, 684);
-            this.clear_button.Margin = new System.Windows.Forms.Padding(4);
+            this.clear_button.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.clear_button.Name = "clear_button";
             this.clear_button.Size = new System.Drawing.Size(121, 28);
             this.clear_button.TabIndex = 1;
@@ -156,7 +157,7 @@
             // iso_button
             // 
             this.iso_button.Location = new System.Drawing.Point(1093, 144);
-            this.iso_button.Margin = new System.Windows.Forms.Padding(4);
+            this.iso_button.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.iso_button.Name = "iso_button";
             this.iso_button.Size = new System.Drawing.Size(193, 49);
             this.iso_button.TabIndex = 1;
@@ -178,7 +179,7 @@
             // rotateAroundLine
             // 
             this.rotateAroundLine.Location = new System.Drawing.Point(1133, 417);
-            this.rotateAroundLine.Margin = new System.Windows.Forms.Padding(4);
+            this.rotateAroundLine.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.rotateAroundLine.Name = "rotateAroundLine";
             this.rotateAroundLine.Size = new System.Drawing.Size(153, 43);
             this.rotateAroundLine.TabIndex = 3;
@@ -190,7 +191,7 @@
             // 
             this.OX.Enabled = false;
             this.OX.Location = new System.Drawing.Point(1139, 468);
-            this.OX.Margin = new System.Windows.Forms.Padding(4);
+            this.OX.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.OX.Name = "OX";
             this.OX.Size = new System.Drawing.Size(41, 28);
             this.OX.TabIndex = 4;
@@ -202,7 +203,7 @@
             // 
             this.OY.Enabled = false;
             this.OY.Location = new System.Drawing.Point(1188, 468);
-            this.OY.Margin = new System.Windows.Forms.Padding(4);
+            this.OY.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.OY.Name = "OY";
             this.OY.Size = new System.Drawing.Size(41, 28);
             this.OY.TabIndex = 5;
@@ -214,7 +215,7 @@
             // 
             this.OZ.Enabled = false;
             this.OZ.Location = new System.Drawing.Point(1237, 468);
-            this.OZ.Margin = new System.Windows.Forms.Padding(4);
+            this.OZ.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.OZ.Name = "OZ";
             this.OZ.Size = new System.Drawing.Size(41, 28);
             this.OZ.TabIndex = 6;
@@ -226,7 +227,7 @@
             // 
             this.Custom.Enabled = false;
             this.Custom.Location = new System.Drawing.Point(1133, 503);
-            this.Custom.Margin = new System.Windows.Forms.Padding(4);
+            this.Custom.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Custom.Name = "Custom";
             this.Custom.Size = new System.Drawing.Size(140, 46);
             this.Custom.TabIndex = 7;
@@ -269,7 +270,7 @@
             // s_x
             // 
             this.s_x.Location = new System.Drawing.Point(1101, 581);
-            this.s_x.Margin = new System.Windows.Forms.Padding(4);
+            this.s_x.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.s_x.Name = "s_x";
             this.s_x.Size = new System.Drawing.Size(44, 22);
             this.s_x.TabIndex = 13;
@@ -277,7 +278,7 @@
             // s_y
             // 
             this.s_y.Location = new System.Drawing.Point(1179, 581);
-            this.s_y.Margin = new System.Windows.Forms.Padding(4);
+            this.s_y.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.s_y.Name = "s_y";
             this.s_y.Size = new System.Drawing.Size(48, 22);
             this.s_y.TabIndex = 15;
@@ -295,7 +296,7 @@
             // s_z
             // 
             this.s_z.Location = new System.Drawing.Point(1259, 581);
-            this.s_z.Margin = new System.Windows.Forms.Padding(4);
+            this.s_z.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.s_z.Name = "s_z";
             this.s_z.Size = new System.Drawing.Size(45, 22);
             this.s_z.TabIndex = 17;
@@ -313,7 +314,7 @@
             // e_z
             // 
             this.e_z.Location = new System.Drawing.Point(1259, 644);
-            this.e_z.Margin = new System.Windows.Forms.Padding(4);
+            this.e_z.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.e_z.Name = "e_z";
             this.e_z.Size = new System.Drawing.Size(45, 22);
             this.e_z.TabIndex = 23;
@@ -331,7 +332,7 @@
             // e_y
             // 
             this.e_y.Location = new System.Drawing.Point(1179, 644);
-            this.e_y.Margin = new System.Windows.Forms.Padding(4);
+            this.e_y.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.e_y.Name = "e_y";
             this.e_y.Size = new System.Drawing.Size(47, 22);
             this.e_y.TabIndex = 21;
@@ -349,7 +350,7 @@
             // e_x
             // 
             this.e_x.Location = new System.Drawing.Point(1101, 644);
-            this.e_x.Margin = new System.Windows.Forms.Padding(4);
+            this.e_x.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.e_x.Name = "e_x";
             this.e_x.Size = new System.Drawing.Size(44, 22);
             this.e_x.TabIndex = 19;
@@ -366,8 +367,8 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(1137, 382);
-            this.button3.Margin = new System.Windows.Forms.Padding(4);
+            this.button3.Location = new System.Drawing.Point(1133, 382);
+            this.button3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(149, 28);
             this.button3.TabIndex = 3;
@@ -378,7 +379,7 @@
             // testbox
             // 
             this.testbox.Location = new System.Drawing.Point(1379, 553);
-            this.testbox.Margin = new System.Windows.Forms.Padding(4);
+            this.testbox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.testbox.Name = "testbox";
             this.testbox.Size = new System.Drawing.Size(132, 22);
             this.testbox.TabIndex = 24;
@@ -386,7 +387,7 @@
             // Tetrahedron
             // 
             this.Tetrahedron.Location = new System.Drawing.Point(1101, 16);
-            this.Tetrahedron.Margin = new System.Windows.Forms.Padding(4);
+            this.Tetrahedron.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Tetrahedron.Name = "Tetrahedron";
             this.Tetrahedron.Size = new System.Drawing.Size(100, 28);
             this.Tetrahedron.TabIndex = 25;
@@ -397,7 +398,7 @@
             // Octahedron
             // 
             this.Octahedron.Location = new System.Drawing.Point(1101, 82);
-            this.Octahedron.Margin = new System.Windows.Forms.Padding(4);
+            this.Octahedron.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Octahedron.Name = "Octahedron";
             this.Octahedron.Size = new System.Drawing.Size(100, 28);
             this.Octahedron.TabIndex = 26;
@@ -408,7 +409,7 @@
             // Icosahedron
             // 
             this.Icosahedron.Location = new System.Drawing.Point(1239, 15);
-            this.Icosahedron.Margin = new System.Windows.Forms.Padding(4);
+            this.Icosahedron.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Icosahedron.Name = "Icosahedron";
             this.Icosahedron.Size = new System.Drawing.Size(100, 28);
             this.Icosahedron.TabIndex = 27;
@@ -419,13 +420,23 @@
             // dodecahedron
             // 
             this.dodecahedron.Location = new System.Drawing.Point(1239, 47);
-            this.dodecahedron.Margin = new System.Windows.Forms.Padding(4);
+            this.dodecahedron.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.dodecahedron.Name = "dodecahedron";
             this.dodecahedron.Size = new System.Drawing.Size(100, 28);
             this.dodecahedron.TabIndex = 28;
             this.dodecahedron.Text = "Додекаэдр";
             this.dodecahedron.UseVisualStyleBackColor = true;
             this.dodecahedron.Click += new System.EventHandler(this.dodecahedron_Click);
+            // 
+            // scaleButton
+            // 
+            this.scaleButton.Location = new System.Drawing.Point(1305, 382);
+            this.scaleButton.Name = "scaleButton";
+            this.scaleButton.Size = new System.Drawing.Size(190, 28);
+            this.scaleButton.TabIndex = 29;
+            this.scaleButton.Text = "Масштабирование";
+            this.scaleButton.UseVisualStyleBackColor = true;
+            this.scaleButton.Click += new System.EventHandler(this.scaleButton_Click);
             // 
             // perspective_button
             // 
@@ -443,6 +454,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1533, 788);
+            this.Controls.Add(this.scaleButton);
             this.Controls.Add(this.dodecahedron);
             this.Controls.Add(this.Icosahedron);
             this.Controls.Add(this.Octahedron);
@@ -523,6 +535,7 @@
         private System.Windows.Forms.Button Octahedron;
         private System.Windows.Forms.Button Icosahedron;
         private System.Windows.Forms.Button dodecahedron;
+        private System.Windows.Forms.Button scaleButton;
         private System.Windows.Forms.Button perspective_button;
     }
 }

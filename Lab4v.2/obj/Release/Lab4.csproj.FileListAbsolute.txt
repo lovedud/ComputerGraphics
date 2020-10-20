@@ -1,0 +1,9 @@
+D:\MEXMAT\course4_1\КГ\GIT\ComputerGraphics\Lab4v.2\bin\Release\Lab4.exe.config
+D:\MEXMAT\course4_1\КГ\GIT\ComputerGraphics\Lab4v.2\bin\Release\Lab4.exe
+D:\MEXMAT\course4_1\КГ\GIT\ComputerGraphics\Lab4v.2\bin\Release\Lab4.pdb
+D:\MEXMAT\course4_1\КГ\GIT\ComputerGraphics\Lab4v.2\obj\Release\Lab4.Form1.resources
+D:\MEXMAT\course4_1\КГ\GIT\ComputerGraphics\Lab4v.2\obj\Release\Lab4.Properties.Resources.resources
+D:\MEXMAT\course4_1\КГ\GIT\ComputerGraphics\Lab4v.2\obj\Release\Lab4.csproj.GenerateResource.cache
+D:\MEXMAT\course4_1\КГ\GIT\ComputerGraphics\Lab4v.2\obj\Release\Lab4.csproj.CoreCompileInputs.cache
+D:\MEXMAT\course4_1\КГ\GIT\ComputerGraphics\Lab4v.2\obj\Release\Lab4.exe
+D:\MEXMAT\course4_1\КГ\GIT\ComputerGraphics\Lab4v.2\obj\Release\Lab4.pdb

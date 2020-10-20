@@ -51,11 +51,35 @@ namespace Affin3D
             Dictionary<int, List<int>> connections; // Key - index of point in list, value - indices of points in list
             // which are connected with key point
 
+            public Polyhedron() { }
             public Polyhedron(List<Point3D> p, Dictionary<int, List<int>> conn)
             {
                 points = p;
                 connections = conn;
             }
+
+            public Polyhedron Clone()
+            {
+                Polyhedron cl = new Polyhedron();
+                //List<Point3D> npoints = new List<Point3D>();
+                //Dictionary<int, List<int>> nconnections = new Dictionary<int, List<int>>();
+                cl.points = new List<Point3D>();
+                cl.connections = new Dictionary<int, List<int>>();
+                for (int i = 0; i < points.Count; ++i)
+                {
+                    cl.points.Add(new Point3D(points[i].X, points[i].Y, points[i].Z));
+                }
+                for (int i = 0; i < connections.Count; i++)
+                {
+                    cl.connections[i] = new List<int>();
+                    for (int j = 0; j < connections[i].Count; j++)
+                    {
+                        cl.connections[i].Add(connections[i][j]);
+                    }
+                }
+                return cl;
+            }
+
             public Polyhedron(Point3D start_point)
             {
                 points = new List<Point3D>();
@@ -165,15 +189,51 @@ namespace Affin3D
             {
                 var moveMatrix = new double[4, 4]
                 {
-                { 1, 0, 0, 0 },
-                { 0, 1, 0, 0 },
-                { 0, 0, 1, 0 },
-                { p.X, p.Y, p.Z, 1 }
+                    { 1, 0, 0, 0 },
+                    { 0, 1, 0, 0 },
+                    { 0, 0, 1, 0 },
+                    { p.X, p.Y, p.Z, 1 }
                 };
                 for (int i = 0; i < points.Count; i++)
                 {
                     var pointMatr = new double[1, 4] { { points[i].X, points[i].Y, points[i].Z, 1 } };
                     var resMatrix = MatrixMultiplication(pointMatr, moveMatrix);
+                    points[i] = new Point3D((float)resMatrix[0, 0], (float)resMatrix[0, 1], (float)resMatrix[0, 2]);
+                }
+            }
+
+            public void scale(Point3D p, double kx, double ky, double kz)
+            {
+                var moveMatr = new double[4, 4] 
+                { 
+                    { 1, 0, 0, 0}, 
+                    { 0, 1, 0, 0 },
+                    { 0, 0, 1, 0 },
+                    { p.X, p.Y, p.Z, 1 } 
+                };
+
+                var moveMatrToZero = new double[4, 4]
+                {
+                    { 1, 0, 0, 0},
+                    { 0, 1, 0, 0 },
+                    { 0, 0, 1, 0 },
+                    { -p.X, -p.Y, -p.Z, 1 } 
+                };
+
+                var scaleMatr = new double[4, 4] 
+                { 
+                    { 1 / kx, 0, 0, 0 }, 
+                    { 0, 1 / ky, 0, 0 },
+                    { 0, 0, 1 / kz, 0 },
+                    { 0, 0, 0, 1 } 
+                };
+
+                for (int i = 0; i < points.Count; i++)
+                {
+                    var pointMatr = new double[1, 4] { { points[i].X, points[i].Y, points[i].Z, 1 } };
+                    var resMatrix = MatrixMultiplication(pointMatr, moveMatrToZero);
+                    resMatrix = MatrixMultiplication(resMatrix, scaleMatr);
+                    resMatrix = MatrixMultiplication(resMatrix, moveMatr);
                     points[i] = new Point3D((float)resMatrix[0, 0], (float)resMatrix[0, 1], (float)resMatrix[0, 2]);
                 }
             }

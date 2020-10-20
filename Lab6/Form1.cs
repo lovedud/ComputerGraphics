@@ -23,7 +23,9 @@ namespace Affin3D
 
         public enum State
         {
-            RotateAroundLine
+            RotateAroundLine,
+            MoveP,
+            Scale
         }
         public enum Mode
         {
@@ -223,7 +225,9 @@ namespace Affin3D
         Edge3D RAL_toDraw;
 
         int prev_angle = 0;
+        Polyhedron prev_polyhedron;
 
+        Point3D prevMouseMove;
         private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
         {
             point_angle.X = e.X-50;
@@ -235,6 +239,8 @@ namespace Affin3D
                                         new Point3D(RAL.start.X + RAL.end.X * 500, RAL.start.Y + RAL.end.Y * 500, RAL.start.Z + RAL.end.Z * 500));
             }
             prev_angle = 0;
+
+            prevMouseMove = new Point3D(e.X, e.Y, 0);
         }
 
         private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
@@ -254,16 +260,43 @@ namespace Affin3D
 
                 pictureBox1.Image = bm;
             }
+            if (m_down && cur_state == State.MoveP && !(cur_polyhedron is null))
+            {
+                //TODO сделать move в зависимости от проекции по которой идет изменение
+                // (В оригинале  Point3D mouseMove = new Point3D(e.X - center.X, e.Y - center.Y, 0);
+                // нужно сделать, чтобы в зависимости от выбора
+                // изменялась в осях XZ YZ
+                Point3D center = cur_polyhedron.center();
+                Point3D mouseMove = new Point3D(e.X - center.X, e.Y - center.Y, 0);
+
+                cur_polyhedron.getMoved(mouseMove);
+                Draw();
+
+                pictureBox1.Image = bm;
+            }
+            if (m_down && cur_state == State.Scale && !(cur_polyhedron is null))
+            {
+                //TODO сделать scale в зависимости от проекции по которой идет изменение
+                // (В оригинале  prevMouseMove.Z = 0, нужно сделать, чтобы в зависимости от выбора
+                // изменялась в осях XZ YZ
+                Point3D center = cur_polyhedron.center();
+                Point3D mouseMove = new Point3D(e.X - prevMouseMove.X, e.Y - prevMouseMove.Y, 0);
+                cur_polyhedron.scale(center, 1 - mouseMove.X * 0.01, 1 + mouseMove.Y * 0.01, 1 - mouseMove.Z * 0.01);
+
+                Draw();
+
+                prevMouseMove.X = e.X;
+                prevMouseMove.Y = e.Y;
+                prevMouseMove.Z = 0;
+
+                pictureBox1.Image = bm;
+            }
         }
 
         private void pictureBox1_MouseUp(object sender, MouseEventArgs e)
         {
             m_down = false;
             Draw();
-            //int angle = AngleBetweenPoints(point_angle, new Point(e.X, e.Y));
-            //testbox.Text = angle.ToString();
-            //cur_polyhedron.RotateAroundLine(RAL, angle);
-            //Draw();
         }
         private void iso_button_Click(object sender, EventArgs e)
         {
@@ -272,21 +305,32 @@ namespace Affin3D
         }
         private void button3_Click(object sender, EventArgs e)
         {
-            var dialogX = new InputForCoordinates("Введите смещение по X");
-            var dialogY = new InputForCoordinates("Введите смещение по Y");
-            var dialogZ = new InputForCoordinates("Введите смещение по Z");
-            if (dialogX.ShowDialog() == DialogResult.OK && dialogY.ShowDialog() == DialogResult.OK && dialogZ.ShowDialog() == DialogResult.OK) { 
-                var x = new Point3D(int.Parse(dialogX.ResultText), int.Parse(dialogY.ResultText), int.Parse(dialogZ.ResultText));
-                cur_polyhedron.getMoved(x);
+            cur_state = State.MoveP;
+            //var dialogX = new InputForCoordinates("Введите смещение по X");
+            //var dialogY = new InputForCoordinates("Введите смещение по Y");
+            //var dialogZ = new InputForCoordinates("Введите смещение по Z");
+            //if (dialogX.ShowDialog() == DialogResult.OK && dialogY.ShowDialog() == DialogResult.OK && dialogZ.ShowDialog() == DialogResult.OK) { 
+            //    var x = new Point3D(int.Parse(dialogX.ResultText), int.Parse(dialogY.ResultText), int.Parse(dialogZ.ResultText));
+            //    cur_polyhedron.getMoved(x);
 
                 Draw();
+            //    g.Clear(Color.White);
+            //    pictureBox1.Image = bm;
+            //    g = Graphics.FromImage(bm);
+
+            //    var edges = ToOrtographics(cur_polyhedron, cur_mode);
+            //    foreach (var edge in edges)
+            //    {
+            //        DrawEdge(ref g, ref bm, edge);
+            //    }
+            //    pictureBox1.Image = bm;
                 //cur_polyhedron = AffinStuff.getMoved(
                 //    cur_polyhedron,
                 //    int.Parse(dialogX.ResultText),
                 //    int.Parse(dialogY.ResultText),
                 //    int.Parse(dialogZ.ResultText)
                 //);
-            }
+            //}
         }
 
         private void Tetrahedron_Click(object sender, EventArgs e)
@@ -317,6 +361,11 @@ namespace Affin3D
         {
             cur_mode = Mode.Perspective;
             Draw();
+        }
+
+        private void scaleButton_Click(object sender, EventArgs e)
+        {
+            cur_state = State.Scale;
         }
     }
 }
