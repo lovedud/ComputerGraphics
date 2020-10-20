@@ -36,7 +36,7 @@ namespace Affin3D
         Polyhedron cur_polyhedron;
         Bitmap bm;
         Graphics g;
-        Point3D start_point = new Point3D(100, 100, 300);
+        Point3D start_point;
         int c = 1600;
 
         public void Draw()
@@ -159,9 +159,20 @@ namespace Affin3D
             cur_mode = Mode.Orthographic;
             ort_button.Enabled = false;
 
+            start_point = new Point3D(pictureBox1.Width/2-50, pictureBox1.Height / 2-50, 300);
+
             cur_state = State.MoveP;
             button3.Enabled = false;
-            testbox.Visible = false;
+
+            cur_polyhedron = CreateCube(start_point, 100);
+            s_x.Text = (pictureBox1.Width / 2).ToString();
+            s_y.Text = (pictureBox1.Height / 2).ToString();
+            s_z.Text = (pictureBox1.Width / 2).ToString();
+
+            e_x.Text = (1).ToString();
+            e_y.Text = (0).ToString();
+            e_z.Text = (0).ToString();
+            Draw();
         }
 
         private void Rota_Click(object sender, EventArgs e)
@@ -214,15 +225,7 @@ namespace Affin3D
             OY.Enabled = true;
             OZ.Enabled = true;
             Custom.Enabled = false;
-            float x1 = 0;
-            float y1 = 0;
-            float z1 = 0;
-            float x2 = 0;
-            float y2 = 0;
-            float z2 = 0;
-            if (float.TryParse(s_x.Text, out x1) && float.TryParse(s_y.Text, out y1) && float.TryParse(s_z.Text, out z1) && float.TryParse(e_x.Text, out x2) && float.TryParse(e_y.Text, out y2) && float.TryParse(e_z.Text, out z2))
-                RAL = new Edge3D(new Point3D(x1, y1, z1), NormalizedVector(new Edge3D(new Point3D(x1, y1, z1), new Point3D(x2,y2,z2))));
-
+            CheckForCustomLine(sender, e);
         }
 
         Point point_angle = new Point(0,0);
@@ -230,7 +233,6 @@ namespace Affin3D
         Edge3D RAL_toDraw;
 
         int prev_angle = 0;
-        Polyhedron prev_polyhedron;
 
         Point3D prevMouseMove;
         private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
@@ -238,11 +240,11 @@ namespace Affin3D
             point_angle.X = e.X-50;
             point_angle.Y = e.Y;
             m_down = true;
-            //if(cur_state == State.RotateAroundLine)
-            //{
-            //    RAL_toDraw = new Edge3D(new Point3D(RAL.start.X - RAL.end.X*500, RAL.start.Y - RAL.end.Y * 500, RAL.start.Z - RAL.end.Z * 500),
-            //                            new Point3D(RAL.start.X + RAL.end.X * 500, RAL.start.Y + RAL.end.Y * 500, RAL.start.Z + RAL.end.Z * 500));
-            //}
+            if (cur_state == State.RotateAroundLine)
+            {
+                RAL_toDraw = new Edge3D(new Point3D(RAL.start.X - RAL.end.X * 500, RAL.start.Y - RAL.end.Y * 500, RAL.start.Z - RAL.end.Z * 500),
+                                        new Point3D(RAL.start.X + RAL.end.X * 500, RAL.start.Y + RAL.end.Y * 500, RAL.start.Z + RAL.end.Z * 500));
+            }
             prev_angle = 0;
 
 
@@ -254,15 +256,13 @@ namespace Affin3D
             if (m_down && cur_state == State.RotateAroundLine && !(cur_polyhedron is null))
             {
                 int angle = AngleBetweenPoints(point_angle, new Point(e.X, e.Y));
-                testbox.Text = angle.ToString();
                 cur_polyhedron.RotateAroundLine(RAL.start, RAL.end, prev_angle - angle);
-                var aa = cur_polyhedron.center();
                 prev_angle = angle;
                 Draw();
-                DrawPoint(ref bm, new PointF(aa.X, aa.Y), Color.Red);
                 DrawPoint(ref bm, new PointF(point_angle.X, point_angle.Y), Color.Orange);
 
-                //TODO отрисовать линию, вокруг которой нужно вращать фигуру
+                var edge = EdgeToProjection(RAL_toDraw, cur_mode, cur_ort_mode, c);
+                g.DrawLine(new Pen(Color.Orange, 1), edge.start, edge.end);
 
                 pictureBox1.Image = bm;
             }
@@ -406,6 +406,21 @@ namespace Affin3D
             Custom.Enabled = false;
             button3.Enabled = true;
             scaleButton.Enabled = false;
+        }
+
+        private void CheckForCustomLine(object sender, EventArgs e)
+        {
+            float x1, y1, z1, x2, y2, z2;
+            if ((s_x.Text != e_x.Text || s_y.Text != e_y.Text || s_z.Text != e_z.Text)
+                && float.TryParse(s_x.Text, out x1) && float.TryParse(s_y.Text, out y1)
+                && float.TryParse(s_z.Text, out z1) && float.TryParse(e_x.Text, out x2)
+                && float.TryParse(e_y.Text, out y2) && float.TryParse(e_z.Text, out z2)
+                && (x2 != 0 || y2 != 0 || z2 != 0))
+            { 
+                RAL = new Edge3D(new Point3D(x1, y1, z1), NormalizedVector(new Edge3D(new Point3D(0,0,0), new Point3D(x2, y2, z2))));
+                RAL_toDraw = new Edge3D(new Point3D(RAL.start.X - RAL.end.X * 500, RAL.start.Y - RAL.end.Y * 500, RAL.start.Z - RAL.end.Z * 500),
+                                        new Point3D(RAL.start.X + RAL.end.X * 500, RAL.start.Y + RAL.end.Y * 500, RAL.start.Z + RAL.end.Z * 500));
+            }
         }
     }
 }

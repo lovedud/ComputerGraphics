@@ -116,7 +116,6 @@ namespace Affin3D
             public List<Edge3D> PreparePrint()
             {
                 //TODO: add check for repeat of edge
-                //TODO: using type of polyhedron and points to calculate amount of edge and finish later
                 List<Edge3D> res = new List<Edge3D>();
                 foreach (var c in connections)
                 {
@@ -793,7 +792,7 @@ namespace Affin3D
 
             public bool IsPointInside(PointF p)
             {
-                Edge ray = new Edge(p, new PointF(p.X + 1000, p.Y)); // TODO: come up with somth better, than 1000
+                Edge ray = new Edge(p, new PointF(p.X + 1000, p.Y));
                 if (EdgeIntersectWithPoly(ray) % 2 == 0)
                     return false;
                 else return true;
@@ -812,7 +811,7 @@ namespace Affin3D
                     else
                         edge = new Edge(arr_Point[i], arr_Point[i + 1]);
 
-                    if (CheckEdgesForIntersection(edge, e, ref p)) // TODO: add clause if e intersect Poly's PointF
+                    if (CheckEdgesForIntersection(edge, e, ref p))
                         intersect_counter++;
                 }
                 return intersect_counter;
