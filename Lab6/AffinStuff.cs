@@ -165,15 +165,51 @@ namespace Affin3D
             {
                 var moveMatrix = new double[4, 4]
                 {
-                { 1, 0, 0, 0 },
-                { 0, 1, 0, 0 },
-                { 0, 0, 1, 0 },
-                { p.X, p.Y, p.Z, 1 }
+                    { 1, 0, 0, 0 },
+                    { 0, 1, 0, 0 },
+                    { 0, 0, 1, 0 },
+                    { p.X, p.Y, p.Z, 1 }
                 };
                 for (int i = 0; i < points.Count; i++)
                 {
                     var pointMatr = new double[1, 4] { { points[i].X, points[i].Y, points[i].Z, 1 } };
                     var resMatrix = MatrixMultiplication(pointMatr, moveMatrix);
+                    points[i] = new Point3D((float)resMatrix[0, 0], (float)resMatrix[0, 1], (float)resMatrix[0, 2]);
+                }
+            }
+
+            public void scale(Point3D p, double kx, double ky, double kz)
+            {
+                var moveMatr = new double[4, 4] 
+                { 
+                    { 1, 0, 0, 0}, 
+                    { 0, 1, 0, 0 },
+                    { 0, 0, 1, 0 },
+                    { p.X, p.Y, p.Z, 1 } 
+                };
+
+                var moveMatrToZero = new double[4, 4]
+                {
+                    { 1, 0, 0, 0},
+                    { 0, 1, 0, 0 },
+                    { 0, 0, 1, 0 },
+                    { -p.X, -p.Y, -p.Z, 1 } 
+                };
+
+                var scaleMatr = new double[4, 4] 
+                { 
+                    { 1 / kx, 0, 0, 0 }, 
+                    { 0, 1 / ky, 0, 0 },
+                    { 0, 0, 1 / kz, 0 },
+                    { 0, 0, 0, 1 } 
+                };
+
+                for (int i = 0; i < points.Count; i++)
+                {
+                    var pointMatr = new double[1, 4] { { points[i].X, points[i].Y, points[i].Z, 1 } };
+                    var resMatrix = MatrixMultiplication(pointMatr, moveMatrToZero);
+                    resMatrix = MatrixMultiplication(resMatrix, scaleMatr);
+                    resMatrix = MatrixMultiplication(resMatrix, moveMatr);
                     points[i] = new Point3D((float)resMatrix[0, 0], (float)resMatrix[0, 1], (float)resMatrix[0, 2]);
                 }
             }
