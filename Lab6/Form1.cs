@@ -41,6 +41,7 @@ namespace Affin3D
         Polyhedron cur_polyhedron;
         Bitmap bm;
         Graphics g;
+        Point3D start_point = new Point3D(100, 100, 300);
 
         public void Draw()
         {
@@ -145,11 +146,7 @@ namespace Affin3D
             Draw();
         }
 
-        private void Cub_Button_Click(object sender, EventArgs e)
-        {
-            cur_polyhedron = CreateCube(new Point3D(200, 200, 200), 100);
-            Draw();
-        }
+       
 
         private void ClearButton_Click(object sender, EventArgs e)
         {
@@ -332,28 +329,32 @@ namespace Affin3D
                 //);
             //}
         }
-
+        private void Cub_Button_Click(object sender, EventArgs e)
+        {
+            cur_polyhedron = CreateCube(start_point, 100);
+            Draw();
+        }
         private void Tetrahedron_Click(object sender, EventArgs e)
         {
-            cur_polyhedron = CreateTetrahedron(new Point3D(200, 200, 200), 100);
+            cur_polyhedron = CreateTetrahedron(start_point, 100);
             Draw();
         }
 
         private void Octahedron_Click(object sender, EventArgs e)
         {
-            cur_polyhedron = CreateOctahedron(new Point3D(200, 200, 200), 100);
+            cur_polyhedron = CreateOctahedron(start_point, 100);
             Draw();
         }
 
         private void Icosahedron_Click(object sender, EventArgs e)
         {
-            cur_polyhedron = CreateIcosahedron(new Point3D(200, 200, 200), 100);
+            cur_polyhedron = CreateIcosahedron(start_point, 100);
             Draw();
         }
 
         private void dodecahedron_Click(object sender, EventArgs e)
         {
-            cur_polyhedron = CreateDodecahedron(new Point3D(200, 200, 200), 100);
+            cur_polyhedron = CreateDodecahedron(start_point, 100);
             Draw();
         }
 

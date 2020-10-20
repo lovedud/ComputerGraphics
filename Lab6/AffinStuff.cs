@@ -495,50 +495,24 @@ namespace Affin3D
         {
             List<Edge> edges = new List<Edge>();
             var edges_3d = ph.PreparePrint();
-            //var ort_matr = FormMatrByMode(plain);
+            var ort_matr = FormOrtoghraphicsMatr(plain);
             foreach(var edge in edges_3d)
             {
-                PointF s = new PointF();
-                PointF e = new PointF();
-                switch(plain)
-                {
-                    case OrtMode.XY:
-                        s.X = edge.start.X;
-                        s.Y = edge.start.Y;
-                        e.X = edge.end.X;
-                        e.Y = edge.end.Y;
-                        break;
-                    case OrtMode.XZ:
-                        s.X = edge.start.X;
-                        s.Y = edge.start.Z;
-                        e.X = edge.end.X;
-                        e.Y = edge.end.Z;
-                        break;
-                    case OrtMode.YZ:
-                        s.X = edge.start.Y;
-                        s.Y = edge.start.Z;
-                        e.X = edge.end.Y;
-                        e.Y = edge.end.Z;
-                        break;
-                }
-                edges.Add(new Edge(s, e));
+                var new_start = MatrixMultiplication(PointToVector(edge.start), ort_matr);
+                var new_end = MatrixMultiplication(PointToVector(edge.end), ort_matr);
+                edges.Add(new Edge(VectorToPoint(new_start), VectorToPoint(new_end)));
             }
             return edges;
             
         }
-        static public float[,] FormMatrByMode(OrtMode m)
+        static public double[,] FormOrtoghraphicsMatr(OrtMode m)
         {
-            float[,] matr = new float[4, 4];
-            for (var i = 0; i < 4; i++)
-            {
-                for(var j = 0; j < 4; j++)
-                {
-                    if (i == j)
-                        matr[i, j] = 1;
-                    else matr[i, j] = 0;
-                }
-            }
-            switch(m)
+            double[,] matr = new double[4, 4]
+            {{ 1, 0, 0, 0 },
+             { 0, 1, 0, 0 },
+             { 0, 0, 1, 0 },
+             { 0, 0, 0, 1 }};
+            switch (m)
             {
                 case OrtMode.XY:
                     matr[2, 2] = 0;
@@ -571,6 +545,24 @@ namespace Affin3D
              { 0, 0, 0, 1 } };
         }
 
+        static public PointF ToIsometric(Point3D p)
+        {
+            var vector_p = PointToVector(p);
+            var new_vector_p = MatrixMultiplication(vector_p, FormIsometricMatr());
+            return VectorToPoint(new_vector_p);
+        }
+        static public PointF ToPerspective(Point3D p, int c)
+        {
+            var vector_p = PointToVector(p);
+            var new_vector_p = MatrixMultiplication(vector_p, FormPerspectiveMatr(c));
+            return VectorToPoint(new_vector_p);
+        }
+        static public PointF ToOrtographics(Point3D p, int c)
+        {
+            var vector_p = PointToVector(p);
+            var new_vector_p = MatrixMultiplication(vector_p, FormPerspectiveMatr(c));
+            return VectorToPoint(new_vector_p);
+        }
         static public List<Edge> ToIsometric(Polyhedron ph)
         {
             List<Edge> res = new List<Edge>();
@@ -602,9 +594,18 @@ namespace Affin3D
         {
             return new double[1, 4] { { p.X, p.Y, p.Z, 1 } };
         }
-        static public PointF VectorToPoint(double [,] vec)
+        static public PointF VectorToPoint(double[,] vec)
         {
-            return new PointF((float)(vec[0, 0] / vec[0,3]), (float)(vec[0, 1] / vec[0, 3]));
+            if (vec[0, 0] == 0)
+            {
+                return new PointF((float)(vec[0, 1] / vec[0, 3]), (float)(vec[0, 2] / vec[0, 3]));
+            }
+            else if (vec[0,1] == 0)
+            {
+                return new PointF((float)(vec[0, 0] / vec[0, 3]), (float)(vec[0, 2] / vec[0, 3]));
+            }
+            return new PointF((float)(vec[0, 0] / vec[0, 3]), (float)(vec[0, 1] / vec[0, 3]));
+
         }
 
         public class Edge3D
