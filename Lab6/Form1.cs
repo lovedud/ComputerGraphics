@@ -233,11 +233,11 @@ namespace Affin3D
             point_angle.X = e.X-50;
             point_angle.Y = e.Y;
             m_down = true;
-            if(cur_state == State.RotateAroundLine)
-            {
-                RAL_toDraw = new Edge3D(new Point3D(RAL.start.X - RAL.end.X*500, RAL.start.Y - RAL.end.Y * 500, RAL.start.Z - RAL.end.Z * 500),
-                                        new Point3D(RAL.start.X + RAL.end.X * 500, RAL.start.Y + RAL.end.Y * 500, RAL.start.Z + RAL.end.Z * 500));
-            }
+            //if(cur_state == State.RotateAroundLine)
+            //{
+            //    RAL_toDraw = new Edge3D(new Point3D(RAL.start.X - RAL.end.X*500, RAL.start.Y - RAL.end.Y * 500, RAL.start.Z - RAL.end.Z * 500),
+            //                            new Point3D(RAL.start.X + RAL.end.X * 500, RAL.start.Y + RAL.end.Y * 500, RAL.start.Z + RAL.end.Z * 500));
+            //}
             prev_angle = 0;
 
             prevMouseMove = new Point3D(e.X, e.Y, 0);
@@ -374,25 +374,25 @@ namespace Affin3D
 
         private void Tetrahedron_Click(object sender, EventArgs e)
         {
-            cur_polyhedron = CreateTetrahedron(new Point3D(500, 500, 500), 100);
+            cur_polyhedron = CreateTetrahedron(new Point3D(200, 200, 200), 100);
             Draw();
         }
 
         private void Octahedron_Click(object sender, EventArgs e)
         {
-            cur_polyhedron = CreateOctahedron(new Point3D(500, 500, 500), 100);
+            cur_polyhedron = CreateOctahedron(new Point3D(200, 200, 200), 100);
             Draw();
         }
 
         private void Icosahedron_Click(object sender, EventArgs e)
         {
-            cur_polyhedron = CreateIcosahedron(new Point3D(500, 500, 500), 100);
+            cur_polyhedron = CreateIcosahedron(new Point3D(200, 200, 200), 100);
             Draw();
         }
 
         private void dodecahedron_Click(object sender, EventArgs e)
         {
-            cur_polyhedron = CreateDodecahedron(new Point3D(500, 500, 500), 100);
+            cur_polyhedron = CreateDodecahedron(new Point3D(200, 200, 200), 100);
             Draw();
         }
 
