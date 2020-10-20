@@ -230,12 +230,13 @@ namespace Affin3D
             point_angle.X = e.X-50;
             point_angle.Y = e.Y;
             m_down = true;
-            if(cur_state == State.RotateAroundLine)
-            {
-                RAL_toDraw = new Edge3D(new Point3D(RAL.start.X - RAL.end.X*500, RAL.start.Y - RAL.end.Y * 500, RAL.start.Z - RAL.end.Z * 500),
-                                        new Point3D(RAL.start.X + RAL.end.X * 500, RAL.start.Y + RAL.end.Y * 500, RAL.start.Z + RAL.end.Z * 500));
-            }
+            //if(cur_state == State.RotateAroundLine)
+            //{
+            //    RAL_toDraw = new Edge3D(new Point3D(RAL.start.X - RAL.end.X*500, RAL.start.Y - RAL.end.Y * 500, RAL.start.Z - RAL.end.Z * 500),
+            //                            new Point3D(RAL.start.X + RAL.end.X * 500, RAL.start.Y + RAL.end.Y * 500, RAL.start.Z + RAL.end.Z * 500));
+            //}
             prev_angle = 0;
+
 
             prevMouseMove = new Point3D(e.X, e.Y, 0);
         }
@@ -263,11 +264,33 @@ namespace Affin3D
                 // (В оригинале  Point3D mouseMove = new Point3D(e.X - center.X, e.Y - center.Y, 0);
                 // нужно сделать, чтобы в зависимости от выбора
                 // изменялась в осях XZ YZ
-                Point3D center = cur_polyhedron.center();
-                Point3D mouseMove = new Point3D(e.X - center.X, e.Y - center.Y, 0);
+                if (Ortxy.Checked)
+                {
+                    Point3D center = cur_polyhedron.center();
+                    Point3D mouseMove = new Point3D(e.X - prevMouseMove.X, e.Y - prevMouseMove.Y, 0);
 
-                cur_polyhedron.getMoved(mouseMove);
-                Draw();
+                    cur_polyhedron.getMoved(mouseMove);
+                    Draw();
+                }
+                else if (Ortxz.Checked)
+                {
+                    Point3D center = cur_polyhedron.center();
+                    Point3D mouseMove = new Point3D(e.X - prevMouseMove.X, 0, e.Y - prevMouseMove.Y);
+
+                    cur_polyhedron.getMoved(mouseMove);
+                    Draw();
+                }
+                else if (Ortyz.Checked)
+                {
+                    Point3D center = cur_polyhedron.center();
+                    Point3D mouseMove = new Point3D(0, e.X - prevMouseMove.X, e.Y - prevMouseMove.Y);
+
+                    cur_polyhedron.getMoved(mouseMove);
+                    Draw();
+                }
+
+                prevMouseMove.X = e.X;
+                prevMouseMove.Y = e.Y;
 
                 pictureBox1.Image = bm;
             }
@@ -276,15 +299,35 @@ namespace Affin3D
                 //TODO сделать scale в зависимости от проекции по которой идет изменение
                 // (В оригинале  prevMouseMove.Z = 0, нужно сделать, чтобы в зависимости от выбора
                 // изменялась в осях XZ YZ
-                Point3D center = cur_polyhedron.center();
-                Point3D mouseMove = new Point3D(e.X - prevMouseMove.X, e.Y - prevMouseMove.Y, 0);
-                cur_polyhedron.scale(center, 1 - mouseMove.X * 0.01, 1 + mouseMove.Y * 0.01, 1 - mouseMove.Z * 0.01);
+
+                if (Ortxy.Checked)
+                {
+                    Point3D center = cur_polyhedron.center();
+                    Point3D mouseMove = new Point3D(e.X - prevMouseMove.X, e.Y - prevMouseMove.Y, 0);
+                    cur_polyhedron.scale(center, 1 - mouseMove.X * 0.01, 1 + mouseMove.Y * 0.01, 1 - mouseMove.Z * 0.01);
+                    Draw();
+                }
+                else if (Ortxz.Checked)
+                {
+                    Point3D center = cur_polyhedron.center();
+                    Point3D mouseMove = new Point3D(e.X - prevMouseMove.X, 0, e.Y - prevMouseMove.Y);
+                    cur_polyhedron.scale(center, 1 - mouseMove.X * 0.01, 1 + mouseMove.Y * 0.01, 1 - mouseMove.Z * 0.01);
+                    Draw();
+
+                }
+                else if (Ortyz.Checked)
+                {
+                    Point3D center = cur_polyhedron.center();
+                    Point3D mouseMove = new Point3D(0, e.X - prevMouseMove.X, e.Y - prevMouseMove.Y);
+                    cur_polyhedron.scale(center, 1 - mouseMove.X * 0.01, 1 + mouseMove.Y * 0.01, 1 - mouseMove.Z * 0.01);
+                    Draw();
+
+                }
 
                 Draw();
 
                 prevMouseMove.X = e.X;
                 prevMouseMove.Y = e.Y;
-                prevMouseMove.Z = 0;
 
                 pictureBox1.Image = bm;
             }
