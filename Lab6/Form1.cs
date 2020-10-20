@@ -225,7 +225,7 @@ namespace Affin3D
         Edge3D RAL_toDraw;
 
         int prev_angle = 0;
-
+        Polyhedron prev_polyhedron;
 
         Point3D prevMouseMove;
         private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
@@ -240,7 +240,7 @@ namespace Affin3D
             }
             prev_angle = 0;
 
-            prevMouseMove = new Point3D(e.X, e.Y, 1);
+            prevMouseMove = new Point3D(e.X, e.Y, 0);
         }
 
         private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
@@ -262,6 +262,10 @@ namespace Affin3D
             }
             if (m_down && cur_state == State.MoveP && !(cur_polyhedron is null))
             {
+                //TODO сделать move в зависимости от проекции по которой идет изменение
+                // (В оригинале  Point3D mouseMove = new Point3D(e.X - center.X, e.Y - center.Y, 0);
+                // нужно сделать, чтобы в зависимости от выбора
+                // изменялась в осях XZ YZ
                 Point3D center = cur_polyhedron.center();
                 Point3D mouseMove = new Point3D(e.X - center.X, e.Y - center.Y, 0);
 
@@ -272,17 +276,18 @@ namespace Affin3D
             }
             if (m_down && cur_state == State.Scale && !(cur_polyhedron is null))
             {
+                //TODO сделать scale в зависимости от проекции по которой идет изменение
+                // (В оригинале  prevMouseMove.Z = 0, нужно сделать, чтобы в зависимости от выбора
+                // изменялась в осях XZ YZ
                 Point3D center = cur_polyhedron.center();
-                Point3D mouseMove = new Point3D(e.X - prevMouseMove.X, e.Y - prevMouseMove.Y, 10);
-                //if (mouseMove.X != 0 && mouseMove.Y != 0 && mouseMove.Z != 0 )
-                cur_polyhedron.scale(center, mouseMove.X * 0.01, mouseMove.Y * 0.01, mouseMove.Z * 0.01);
+                Point3D mouseMove = new Point3D(e.X - prevMouseMove.X, e.Y - prevMouseMove.Y, 0);
+                cur_polyhedron.scale(center, 1 - mouseMove.X * 0.01, 1 + mouseMove.Y * 0.01, 1 - mouseMove.Z * 0.01);
 
                 Draw();
 
-                prevMouseMove.X = mouseMove.X;
-                prevMouseMove.Y = mouseMove.Y;
-                prevMouseMove.Z = mouseMove.Z;
-
+                prevMouseMove.X = e.X;
+                prevMouseMove.Y = e.Y;
+                prevMouseMove.Z = 0;
 
                 pictureBox1.Image = bm;
             }
@@ -292,10 +297,6 @@ namespace Affin3D
         {
             m_down = false;
             Draw();
-            //int angle = AngleBetweenPoints(point_angle, new Point(e.X, e.Y));
-            //testbox.Text = angle.ToString();
-            //cur_polyhedron.RotateAroundLine(RAL, angle);
-            //Draw();
         }
         private void iso_button_Click(object sender, EventArgs e)
         {

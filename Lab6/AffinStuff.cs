@@ -51,11 +51,35 @@ namespace Affin3D
             Dictionary<int, List<int>> connections; // Key - index of point in list, value - indices of points in list
             // which are connected with key point
 
+            public Polyhedron() { }
             public Polyhedron(List<Point3D> p, Dictionary<int, List<int>> conn)
             {
                 points = p;
                 connections = conn;
             }
+
+            public Polyhedron Clone()
+            {
+                Polyhedron cl = new Polyhedron();
+                //List<Point3D> npoints = new List<Point3D>();
+                //Dictionary<int, List<int>> nconnections = new Dictionary<int, List<int>>();
+                cl.points = new List<Point3D>();
+                cl.connections = new Dictionary<int, List<int>>();
+                for (int i = 0; i < points.Count; ++i)
+                {
+                    cl.points.Add(new Point3D(points[i].X, points[i].Y, points[i].Z));
+                }
+                for (int i = 0; i < connections.Count; i++)
+                {
+                    cl.connections[i] = new List<int>();
+                    for (int j = 0; j < connections[i].Count; j++)
+                    {
+                        cl.connections[i].Add(connections[i][j]);
+                    }
+                }
+                return cl;
+            }
+
             public Polyhedron(Point3D start_point)
             {
                 points = new List<Point3D>();
