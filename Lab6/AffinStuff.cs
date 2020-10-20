@@ -20,6 +20,12 @@ namespace Affin3D
             XZ,
             YZ
         }
+        public enum Mode
+        {
+            Isometric,
+            Orthographic,
+            Perspective
+        }
 
         public class Point3D
         {
@@ -490,7 +496,51 @@ namespace Affin3D
             return res;
         }
 
-
+        static public List<Edge> GetAxis(Point3D center, Mode m, OrtMode om, int c)
+        {
+            List<Edge> res = new List<Edge>();
+            Edge3D x = new Edge3D(center, new Point3D(center.X + 200, center.Y, center.Z));
+            Edge3D y = new Edge3D(center, new Point3D(center.X, center.Y - 200, center.Z));
+            Edge3D z = new Edge3D(center, new Point3D(center.X, center.Y, center.Z + 200));
+            switch(m)
+            {
+                case Mode.Orthographic:
+                    res.Add(EdgeToProjection(x, Mode.Orthographic, om));
+                    res.Add(EdgeToProjection(y, Mode.Orthographic, om));
+                    res.Add(EdgeToProjection(z, Mode.Orthographic, om));
+                    break;
+                case Mode.Isometric:
+                    res.Add(EdgeToProjection(x, Mode.Isometric));
+                    res.Add(EdgeToProjection(y, Mode.Isometric));
+                    res.Add(EdgeToProjection(z, Mode.Isometric));
+                    break;
+                case Mode.Perspective:
+                    res.Add(EdgeToProjection(x, Mode.Perspective, OrtMode.XY, 1600));
+                    res.Add(EdgeToProjection(y, Mode.Perspective, OrtMode.XY, 1600));
+                    res.Add(EdgeToProjection(z, Mode.Perspective, OrtMode.XY, 1600));
+                    break;
+            }
+            return res;
+        }
+        static public Edge EdgeToProjection(Edge3D e, Mode m, OrtMode om = OrtMode.XY, int c = 0)
+        {
+            double[,] matr = new double[4,4];
+            switch(m)
+            {
+                case Mode.Orthographic:
+                    matr = FormOrtoghraphicsMatr(om);
+                    break;
+                case Mode.Isometric:
+                    matr = FormIsometricMatr();
+                    break;
+                case Mode.Perspective:
+                    matr = FormPerspectiveMatr(c);
+                    break;
+            }
+            var new_start = VectorToPoint(MatrixMultiplication(PointToVector(e.start), matr));
+            var new_end = VectorToPoint(MatrixMultiplication(PointToVector(e.end), matr));
+            return new Edge(new_start, new_end);
+        }
         static public List<Edge> ToOrtographics(Polyhedron ph, OrtMode plain)
         {
             List<Edge> edges = new List<Edge>();
@@ -528,8 +578,8 @@ namespace Affin3D
         }
         static public double[,] FormIsometricMatr()
         {
-            double cos = Math.Cos(2.094395); //120 degree
-            double sin = Math.Sin(2.094395);
+            double cos = Math.Cos(60 * Math.PI / 180); //60 degree 2.094395
+            double sin = Math.Sin(60 * Math.PI / 180);
             return new double[4, 4]
             {{ cos, sin * sin,  0, 0 },
              { 0,   cos,        0, 0 },

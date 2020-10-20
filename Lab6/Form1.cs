@@ -27,12 +27,7 @@ namespace Affin3D
             MoveP,
             Scale
         }
-        public enum Mode
-        {
-            Isometric,
-            Orthographic,
-            Perspective
-        }
+        
 
         Mode cur_mode;
         OrtMode cur_ort_mode;
@@ -42,6 +37,7 @@ namespace Affin3D
         Bitmap bm;
         Graphics g;
         Point3D start_point = new Point3D(100, 100, 300);
+        int c = 1600;
 
         public void Draw()
         {
@@ -61,11 +57,19 @@ namespace Affin3D
                     edges = ToPerspective(cur_polyhedron, 1600);
                     break;
             }
+            DrawAxis(cur_polyhedron.center());
             foreach (var edge in edges)
             {
                 DrawEdge(ref g, ref bm, edge);
             }
             pictureBox1.Image = bm;
+        }
+        private void DrawAxis(Point3D center)
+        {
+            var new_axis = GetAxis(center, cur_mode, cur_ort_mode, c);
+            g.DrawLine(new Pen(Color.Red), new_axis[0].start, new_axis[0].end);
+            g.DrawLine(new Pen(Color.Blue), new_axis[1].start, new_axis[1].end);
+            g.DrawLine(new Pen(Color.Green), new_axis[2].start, new_axis[2].end);
         }
 
         public void Clear()
