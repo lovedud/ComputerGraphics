@@ -240,6 +240,7 @@ namespace Affin3D
             //}
             prev_angle = 0;
 
+
             prevMouseMove = new Point3D(e.X, e.Y, 0);
         }
 
@@ -269,7 +270,7 @@ namespace Affin3D
                 if (Ortxy.Checked)
                 {
                     Point3D center = cur_polyhedron.center();
-                    Point3D mouseMove = new Point3D(e.X - center.X, e.Y - center.Y, 0);
+                    Point3D mouseMove = new Point3D(e.X - prevMouseMove.X, e.Y - prevMouseMove.Y, 0);
 
                     cur_polyhedron.getMoved(mouseMove);
                     Draw();
@@ -277,7 +278,7 @@ namespace Affin3D
                 else if (Ortxz.Checked)
                 {
                     Point3D center = cur_polyhedron.center();
-                    Point3D mouseMove = new Point3D(e.X - center.X, 0, e.Y - center.Y);
+                    Point3D mouseMove = new Point3D(e.X - prevMouseMove.X, 0, e.Y - prevMouseMove.Y);
 
                     cur_polyhedron.getMoved(mouseMove);
                     Draw();
@@ -285,12 +286,14 @@ namespace Affin3D
                 else if (Ortyz.Checked)
                 {
                     Point3D center = cur_polyhedron.center();
-                    Point3D mouseMove = new Point3D(0, e.X - center.X, e.Y - center.Y);
+                    Point3D mouseMove = new Point3D(0, e.X - prevMouseMove.X, e.Y - prevMouseMove.Y);
 
                     cur_polyhedron.getMoved(mouseMove);
                     Draw();
                 }
 
+                prevMouseMove.X = e.X;
+                prevMouseMove.Y = e.Y;
 
                 pictureBox1.Image = bm;
             }
@@ -313,6 +316,7 @@ namespace Affin3D
                     Point3D mouseMove = new Point3D(e.X - prevMouseMove.X, 0, e.Y - prevMouseMove.Y);
                     cur_polyhedron.scale(center, 1 - mouseMove.X * 0.01, 1 + mouseMove.Y * 0.01, 1 - mouseMove.Z * 0.01);
                     Draw();
+
                 }
                 else if (Ortyz.Checked)
                 {
@@ -320,13 +324,13 @@ namespace Affin3D
                     Point3D mouseMove = new Point3D(0, e.X - prevMouseMove.X, e.Y - prevMouseMove.Y);
                     cur_polyhedron.scale(center, 1 - mouseMove.X * 0.01, 1 + mouseMove.Y * 0.01, 1 - mouseMove.Z * 0.01);
                     Draw();
+
                 }
 
                 Draw();
 
                 prevMouseMove.X = e.X;
                 prevMouseMove.Y = e.Y;
-                prevMouseMove.Z = 0;
 
                 pictureBox1.Image = bm;
             }
