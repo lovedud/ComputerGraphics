@@ -14,7 +14,7 @@ namespace Affin3D
 
     static class AffinStuff
     {
-        public enum Mode
+        public enum OrtMode
         {
             XY,
             XZ,
@@ -431,7 +431,7 @@ namespace Affin3D
         }
 
 
-        static public List<Edge> ToOrtographics(Polyhedron ph, Mode plain)
+        static public List<Edge> ToOrtographics(Polyhedron ph, OrtMode plain)
         {
             List<Edge> edges = new List<Edge>();
             var edges_3d = ph.PreparePrint();
@@ -442,19 +442,19 @@ namespace Affin3D
                 PointF e = new PointF();
                 switch(plain)
                 {
-                    case Mode.XY:
+                    case OrtMode.XY:
                         s.X = edge.start.X;
                         s.Y = edge.start.Y;
                         e.X = edge.end.X;
                         e.Y = edge.end.Y;
                         break;
-                    case Mode.XZ:
+                    case OrtMode.XZ:
                         s.X = edge.start.X;
                         s.Y = edge.start.Z;
                         e.X = edge.end.X;
                         e.Y = edge.end.Z;
                         break;
-                    case Mode.YZ:
+                    case OrtMode.YZ:
                         s.X = edge.start.Y;
                         s.Y = edge.start.Z;
                         e.X = edge.end.Y;
@@ -466,7 +466,7 @@ namespace Affin3D
             return edges;
             
         }
-        static public float[,] FormMatrByMode(Mode m)
+        static public float[,] FormMatrByMode(OrtMode m)
         {
             float[,] matr = new float[4, 4];
             for (var i = 0; i < 4; i++)
@@ -480,13 +480,13 @@ namespace Affin3D
             }
             switch(m)
             {
-                case Mode.XY:
+                case OrtMode.XY:
                     matr[2, 2] = 0;
                     break;
-                case Mode.XZ:
+                case OrtMode.XZ:
                     matr[1, 1] = 0;
                     break;
-                case Mode.YZ:
+                case OrtMode.YZ:
                     matr[0, 0] = 0;
                     break;
             }
