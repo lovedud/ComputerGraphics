@@ -38,25 +38,15 @@ namespace Affin3D
         Graphics g;
         Point3D start_point;
         int c = 1600;
+        Projector projector;
 
         public void Draw()
         {
             g.Clear(Color.White);
             if (cur_polyhedron is null)
                 return;
-            List<Edge> edges = new List<Edge>();
-            switch(cur_mode)
-            {
-                case Mode.Isometric:
-                    edges = ToIsometric(cur_polyhedron);
-                    break;
-                case Mode.Orthographic:
-                    edges = ToOrtographics(cur_polyhedron, cur_ort_mode);
-                    break;
-                case Mode.Perspective:
-                    edges = ToPerspective(cur_polyhedron, 1600);
-                    break;
-            }
+            List<Edge> edges = projector.Project(cur_mode, cur_polyhedron);
+
             DrawAxis(cur_polyhedron.center());
             foreach (var edge in edges)
             {
@@ -66,7 +56,7 @@ namespace Affin3D
         }
         private void DrawAxis(Point3D center)
         {
-            var new_axis = GetAxis(center, cur_mode, cur_ort_mode, c);
+            var new_axis = GetAxis(center, cur_mode, projector);
             g.DrawLine(new Pen(Color.Red), new_axis[0].start, new_axis[0].end);
             g.DrawLine(new Pen(Color.Blue), new_axis[1].start, new_axis[1].end);
             g.DrawLine(new Pen(Color.Green), new_axis[2].start, new_axis[2].end);
@@ -107,6 +97,7 @@ namespace Affin3D
                 Ortxz.Checked = false;
                 Ortyz.Checked = false;
                 cur_ort_mode = OrtMode.XY;
+                projector.Update(cur_ort_mode);
                 ort_button.Enabled = true;
                 Draw();
             }
@@ -121,6 +112,7 @@ namespace Affin3D
                 Ortxy.Checked = false;
                 Ortyz.Checked = false;
                 cur_ort_mode = OrtMode.XZ;
+                projector.Update(cur_ort_mode);
                 ort_button.Enabled = true;
                 Draw();
             } else OrtButtonAvailability();
@@ -133,6 +125,7 @@ namespace Affin3D
                 Ortxz.Checked = false;
                 Ortxy.Checked = false;
                 cur_ort_mode = OrtMode.YZ;
+                projector.Update(cur_ort_mode);
                 ort_button.Enabled = true;
                 Draw();
             } else OrtButtonAvailability();
@@ -172,6 +165,7 @@ namespace Affin3D
             e_x.Text = (1).ToString();
             e_y.Text = (0).ToString();
             e_z.Text = (0).ToString();
+            projector = new Projector(c);
             Draw();
         }
 
@@ -261,7 +255,7 @@ namespace Affin3D
                 Draw();
                 DrawPoint(ref bm, new PointF(point_angle.X, point_angle.Y), Color.Orange);
 
-                var edge = EdgeToProjection(RAL_toDraw, cur_mode, cur_ort_mode, c);
+                var edge = projector.Project(cur_mode, RAL_toDraw);
                 g.DrawLine(new Pen(Color.Orange, 1), edge.start, edge.end);
 
                 pictureBox1.Image = bm;

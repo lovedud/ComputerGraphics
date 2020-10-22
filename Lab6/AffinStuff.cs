@@ -11,9 +11,9 @@ namespace Affin3D
 {
     public enum Position { Left, Right };
     
-
     static class AffinStuff
     {
+       
         public enum OrtMode
         {
             XY,
@@ -49,6 +49,7 @@ namespace Affin3D
             {
                 return (e1.X - e2.X) < e1.eps && (e1.Y - e2.Y) < e1.eps && (e1.Z - e1.Z) < e1.eps;
             }
+            
         }
 
         public class Polyhedron
@@ -495,147 +496,12 @@ namespace Affin3D
             return res;
         }
 
-        static public List<Edge> GetAxis(Point3D center, Mode m, OrtMode om, int c)
+        static public List<Edge> GetAxis(Point3D center, Mode projection, Projector pr)
         {
             List<Edge> res = new List<Edge>();
-            Edge3D x = new Edge3D(center, new Point3D(center.X + 200, center.Y, center.Z));
-            Edge3D y = new Edge3D(center, new Point3D(center.X, center.Y - 200, center.Z));
-            Edge3D z = new Edge3D(center, new Point3D(center.X, center.Y, center.Z + 200));
-            switch(m)
-            {
-                case Mode.Orthographic:
-                    res.Add(EdgeToProjection(x, Mode.Orthographic, om));
-                    res.Add(EdgeToProjection(y, Mode.Orthographic, om));
-                    res.Add(EdgeToProjection(z, Mode.Orthographic, om));
-                    break;
-                case Mode.Isometric:
-                    res.Add(EdgeToProjection(x, Mode.Isometric));
-                    res.Add(EdgeToProjection(y, Mode.Isometric));
-                    res.Add(EdgeToProjection(z, Mode.Isometric));
-                    break;
-                case Mode.Perspective:
-                    res.Add(EdgeToProjection(x, Mode.Perspective, OrtMode.XY, 1600));
-                    res.Add(EdgeToProjection(y, Mode.Perspective, OrtMode.XY, 1600));
-                    res.Add(EdgeToProjection(z, Mode.Perspective, OrtMode.XY, 1600));
-                    break;
-            }
-            return res;
-        }
-        static public Edge EdgeToProjection(Edge3D e, Mode m, OrtMode om = OrtMode.XY, int c = 0)
-        {
-            double[,] matr = new double[4,4];
-            switch(m)
-            {
-                case Mode.Orthographic:
-                    matr = FormOrtoghraphicsMatr(om);
-                    break;
-                case Mode.Isometric:
-                    matr = FormIsometricMatr();
-                    break;
-                case Mode.Perspective:
-                    matr = FormPerspectiveMatr(c);
-                    break;
-            }
-            var new_start = VectorToPoint(MatrixMultiplication(PointToVector(e.start), matr));
-            var new_end = VectorToPoint(MatrixMultiplication(PointToVector(e.end), matr));
-            return new Edge(new_start, new_end);
-        }
-        static public List<Edge> ToOrtographics(Polyhedron ph, OrtMode plain)
-        {
-            List<Edge> edges = new List<Edge>();
-            var edges_3d = ph.PreparePrint();
-            var ort_matr = FormOrtoghraphicsMatr(plain);
-            foreach(var edge in edges_3d)
-            {
-                var new_start = MatrixMultiplication(PointToVector(edge.start), ort_matr);
-                var new_end = MatrixMultiplication(PointToVector(edge.end), ort_matr);
-                edges.Add(new Edge(VectorToPoint(new_start), VectorToPoint(new_end)));
-            }
-            return edges;
-            
-        }
-        static public double[,] FormOrtoghraphicsMatr(OrtMode m)
-        {
-            double[,] matr = new double[4, 4]
-            {{ 1, 0, 0, 0 },
-             { 0, 1, 0, 0 },
-             { 0, 0, 1, 0 },
-             { 0, 0, 0, 1 }};
-            switch (m)
-            {
-                case OrtMode.XY:
-                    matr[2, 2] = 0;
-                    break;
-                case OrtMode.XZ:
-                    matr[1, 1] = 0;
-                    break;
-                case OrtMode.YZ:
-                    matr[0, 0] = 0;
-                    break;
-            }
-            return matr;
-        }
-        static public double[,] FormIsometricMatr()
-        {
-            double cos = Math.Cos(60 * Math.PI / 180); //60 degree 2.094395
-            double sin = Math.Sin(60 * Math.PI / 180);
-            return new double[4, 4]
-            {{ cos, sin * sin,  0, 0 },
-             { 0,   cos,        0, 0 },
-             { sin, -sin * cos, 0, 0 },
-             { 0,   0,          0, 1 } };
-        }
-        static public double[,] FormPerspectiveMatr(int c)
-        {
-            return new double[4, 4]
-            {{ 1, 0, 0, 0   },
-             { 0, 1, 0, 0   },
-             { 0, 0, 0, 1.0 / c },
-             { 0, 0, 0, 1 } };
-        }
-
-        static public PointF ToIsometric(Point3D p)
-        {
-            var vector_p = PointToVector(p);
-            var new_vector_p = MatrixMultiplication(vector_p, FormIsometricMatr());
-            return VectorToPoint(new_vector_p);
-        }
-        static public PointF ToPerspective(Point3D p, int c)
-        {
-            var vector_p = PointToVector(p);
-            var new_vector_p = MatrixMultiplication(vector_p, FormPerspectiveMatr(c));
-            return VectorToPoint(new_vector_p);
-        }
-        static public PointF ToOrtographics(Point3D p, int c)
-        {
-            var vector_p = PointToVector(p);
-            var new_vector_p = MatrixMultiplication(vector_p, FormPerspectiveMatr(c));
-            return VectorToPoint(new_vector_p);
-        }
-        static public List<Edge> ToIsometric(Polyhedron ph)
-        {
-            List<Edge> res = new List<Edge>();
-            var edges_3d = ph.PreparePrint();
-            var matr = FormIsometricMatr();
-            foreach(var edge in edges_3d)
-            {
-                var new_start = MatrixMultiplication(PointToVector(edge.start), matr);
-                var new_end = MatrixMultiplication(PointToVector(edge.end), matr);
-                res.Add(new Edge(VectorToPoint(new_start), VectorToPoint(new_end)));
-            }
-            return res;
-        }
-        static public List<Edge>ToPerspective(Polyhedron ph, int c)
-        {
-            List<Edge> res = new List<Edge>();
-            var edges_3d = ph.PreparePrint();
-            var matr = FormPerspectiveMatr(c);
-            foreach (var edge in edges_3d)
-            {
-                var new_start = MatrixMultiplication(PointToVector(edge.start), matr);
-                var new_end = MatrixMultiplication(PointToVector(edge.end), matr);
-                res.Add(new Edge(VectorToPoint(new_start), VectorToPoint(new_end)));
-            }
+            res.Add(pr.Project(projection, new Edge3D(center, new Point3D(center.X + 200, center.Y, center.Z))));
+            res.Add(pr.Project(projection, new Edge3D(center, new Point3D(center.X, center.Y - 200, center.Z))));
+            res.Add(pr.Project(projection, new Edge3D(center, new Point3D(center.X, center.Y, center.Z + 200))));
             return res;
         }
 
@@ -645,16 +511,16 @@ namespace Affin3D
         }
         static public PointF VectorToPoint(double[,] vec)
         {
+            var w = vec[0, 3] == 0 ? 1 : vec[0, 3];
             if (vec[0, 0] == 0)
             {
-                return new PointF((float)(vec[0, 1] / vec[0, 3]), (float)(vec[0, 2] / vec[0, 3]));
+                return new PointF((float)(vec[0, 1] / w), (float)(vec[0, 2] / w));
             }
             else if (vec[0,1] == 0)
             {
-                return new PointF((float)(vec[0, 0] / vec[0, 3]), (float)(vec[0, 2] / vec[0, 3]));
+                return new PointF((float)(vec[0, 0] /w), (float)(vec[0, 2] / w));
             }
-            return new PointF((float)(vec[0, 0] / vec[0, 3]), (float)(vec[0, 1] / vec[0, 3]));
-
+            return new PointF((float)(vec[0, 0] / w), (float)(vec[0, 1] / w));
         }
 
         public class Edge3D
