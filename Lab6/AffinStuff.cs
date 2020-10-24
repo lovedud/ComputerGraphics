@@ -55,43 +55,22 @@ namespace Affin3D
         public class Polyhedron
         {
             List<Point3D> points;
-            Dictionary<int, List<int>> connections; // Key - index of point in list, value - indices of points in list
-            // which are connected with key point
+            List<List<int>> polygons; 
 
             public Polyhedron() { }
-            public Polyhedron(List<Point3D> p, Dictionary<int, List<int>> conn)
+            public Polyhedron(List<Point3D> p, List<List<int>> conn)
             {
                 points = p;
-                connections = conn;
-            }
-
-            public Polyhedron Clone()
-            {
-                Polyhedron cl = new Polyhedron();
-                //List<Point3D> npoints = new List<Point3D>();
-                //Dictionary<int, List<int>> nconnections = new Dictionary<int, List<int>>();
-                cl.points = new List<Point3D>();
-                cl.connections = new Dictionary<int, List<int>>();
-                for (int i = 0; i < points.Count; ++i)
-                {
-                    cl.points.Add(new Point3D(points[i].X, points[i].Y, points[i].Z));
-                }
-                for (int i = 0; i < connections.Count; i++)
-                {
-                    cl.connections[i] = new List<int>();
-                    for (int j = 0; j < connections[i].Count; j++)
-                    {
-                        cl.connections[i].Add(connections[i][j]);
-                    }
-                }
-                return cl;
+                polygons = conn;
             }
 
             public Polyhedron(Point3D start_point)
             {
                 points = new List<Point3D>();
-                connections = new Dictionary<int, List<int>>();
-                connections[0] = new List<int>();
+                polygons = new List<List<int>>
+                {
+                    [0] = new List<int>()
+                };
                 points.Add(start_point);
             }
             private int PointInd(Point3D p)
@@ -101,7 +80,7 @@ namespace Affin3D
                 {
                     points.Add(p);
                     point_ind = points.Count() - 1;
-                    connections[point_ind] = new List<int>();
+                    polygons[point_ind] = new List<int>();
                 }
                 return point_ind;
             }
@@ -109,18 +88,16 @@ namespace Affin3D
             {
                 int point_ind = PointInd(p);
                 int c_ind = PointInd(conn);
-                connections[point_ind].Add(c_ind);
-                connections[c_ind].Add(point_ind);
-
+                polygons[point_ind].Add(c_ind);
+                polygons[c_ind].Add(point_ind);
             }
 
             public List<Edge3D> PreparePrint()
             {
-                //TODO: add check for repeat of edge
                 List<Edge3D> res = new List<Edge3D>();
-                foreach (var c in connections)
+                foreach (var c in polygons)
                 {
-                    Point3D point = points[c.Key];
+                    Point3D point = points[c];
                     foreach (var conn in c.Value)
                     {
                         res.Add(new Edge3D(point, points[conn]));
@@ -593,7 +570,30 @@ namespace Affin3D
                 else return Position.Right;
             }
         }
+        //Класс полигона
+        public class Polygon3D
+        {
+            public Polygon3D(List<Point3D> ps)
+            {
+                Points = ps;
+            }
 
+            public Polygon3D(Point3D start_Point3D)
+            {
+                Points = new List<Point3D>();
+                Points.Add(start_Point3D);
+            }
+
+            public void AddEdge(Edge3D e)
+            {
+                if (!Points.Contains(e.end))
+                    Points.Add(e.end);
+            }
+
+
+            public List<Point3D> Points;
+            
+        }
         //Класс полигона
         public class Polygon
         {
