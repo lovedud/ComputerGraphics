@@ -54,7 +54,7 @@ namespace Affin3D
             }
             public static bool operator ==(Point3D e1, Point3D e2)
             {
-                return (e1.X - e2.X) < e1.eps && (e1.Y - e2.Y) < e1.eps && (e1.Z - e1.Z) < e1.eps;
+                return (e1.X - e2.X) < e1.eps && (e1.Y - e2.Y) < e1.eps && (e1.Z - e2.Z) < e1.eps;
             }
             
         }
@@ -162,7 +162,7 @@ namespace Affin3D
                 
             }
 
-            public Point3D center()
+            public Point3D Center()
             {
                 int counter = 0;
                 double xs = 0;

@@ -47,7 +47,7 @@ namespace Affin3D
                 return;
             List<Edge> edges = projector.Project(cur_mode, cur_polyhedron);
             
-            DrawAxis(start_point);
+            //DrawAxis(start_point); убрал, так как сломались ( становятся не по центру объекта)
             foreach (var edge in edges)
             {
                 DrawEdge(ref g, ref bm, edge);
@@ -165,6 +165,7 @@ namespace Affin3D
             e_y.Text = (0).ToString();
             e_z.Text = (0).ToString();
             projector = new Projector(c);
+            comboBox1.SelectedIndex = 0;
             Draw();
         }
 
@@ -178,7 +179,7 @@ namespace Affin3D
             Custom.Enabled = true;
             button3.Enabled = true;
             scaleButton.Enabled = true;
-            Point3D center = cur_polyhedron.center();
+            Point3D center = cur_polyhedron.Center();
             RAL = new Edge3D(new Point3D(center.X, center.Y, center.Z), new Point3D(1, 0, 0));
         }
 
@@ -188,7 +189,7 @@ namespace Affin3D
             OY.Enabled = true;
             OZ.Enabled = true;
             Custom.Enabled = true;
-            Point3D center = cur_polyhedron.center();
+            Point3D center = cur_polyhedron.Center();
             RAL = new Edge3D(new Point3D(center.X, center.Y, center.Z), new Point3D(1, 0, 0));
         }
 
@@ -198,7 +199,7 @@ namespace Affin3D
             OY.Enabled = false;
             OZ.Enabled = true;
             Custom.Enabled = true;
-            Point3D center = cur_polyhedron.center();
+            Point3D center = cur_polyhedron.Center();
             RAL = new Edge3D(new Point3D(center.X, center.Y, center.Z), new Point3D(0, 1, 0));
         }
 
@@ -208,7 +209,7 @@ namespace Affin3D
             OY.Enabled = true;
             OZ.Enabled = false;
             Custom.Enabled = true;
-            Point3D center = cur_polyhedron.center();
+            Point3D center = cur_polyhedron.Center();
             RAL = new Edge3D(new Point3D(center.X, center.Y, center.Z), new Point3D(0, 0, 1));
         }
 
@@ -263,7 +264,7 @@ namespace Affin3D
             {
                 if (Ortxy.Checked)
                 {
-                    Point3D center = cur_polyhedron.center();
+                    Point3D center = cur_polyhedron.Center();
                     Point3D mouseMove = new Point3D(e.X - prevMouseMove.X, e.Y - prevMouseMove.Y, 0);
 
                     cur_polyhedron.getMoved(mouseMove);
@@ -271,7 +272,7 @@ namespace Affin3D
                 }
                 else if (Ortxz.Checked)
                 {
-                    Point3D center = cur_polyhedron.center();
+                    Point3D center = cur_polyhedron.Center();
                     Point3D mouseMove = new Point3D(e.X - prevMouseMove.X, 0, e.Y - prevMouseMove.Y);
 
                     cur_polyhedron.getMoved(mouseMove);
@@ -279,7 +280,7 @@ namespace Affin3D
                 }
                 else if (Ortyz.Checked)
                 {
-                    Point3D center = cur_polyhedron.center();
+                    Point3D center = cur_polyhedron.Center();
                     Point3D mouseMove = new Point3D(0, e.X - prevMouseMove.X, e.Y - prevMouseMove.Y);
 
                     cur_polyhedron.getMoved(mouseMove);
@@ -296,21 +297,21 @@ namespace Affin3D
 
                 if (Ortxy.Checked)
                 {
-                    Point3D center = cur_polyhedron.center();
+                    Point3D center = cur_polyhedron.Center();
                     Point3D mouseMove = new Point3D(e.X - prevMouseMove.X, e.Y - prevMouseMove.Y, 0);
                     cur_polyhedron.scale(center, 1 - mouseMove.X * 0.01, 1 + mouseMove.Y * 0.01, 1 - mouseMove.Z * 0.01);
                     Draw();
                 }
                 else if (Ortxz.Checked)
                 {
-                    Point3D center = cur_polyhedron.center();
+                    Point3D center = cur_polyhedron.Center();
                     Point3D mouseMove = new Point3D(e.X - prevMouseMove.X, 0, e.Y - prevMouseMove.Y);
                     cur_polyhedron.scale(center, 1 - mouseMove.X * 0.01, 1 + mouseMove.Y * 0.01, 1 - mouseMove.Z * 0.01);
                     Draw();
                 }
                 else if (Ortyz.Checked)
                 {
-                    Point3D center = cur_polyhedron.center();
+                    Point3D center = cur_polyhedron.Center();
                     Point3D mouseMove = new Point3D(0, e.X - prevMouseMove.X, e.Y - prevMouseMove.Y);
                     cur_polyhedron.scale(center, 1 - mouseMove.X * 0.01, 1 + mouseMove.Y * 0.01, 1 - mouseMove.Z * 0.01);
                     Draw();
@@ -406,10 +407,80 @@ namespace Affin3D
                 foreach (var o in objects)
                 {
                     cur_polyhedron = o;
-                    cur_polyhedron.scale(cur_polyhedron.center(), 1 / 50.0, 1 / 50.0, 1 / 50.1);
+                    cur_polyhedron.scale(cur_polyhedron.Center(), 1 / 50.0, 1 / 50.0, 1 / 50.0);
                     Draw();
                 }
             }
+
+        }
+
+        double Func(double x, double y)
+        {
+            if (comboBox1.SelectedIndex == 0)
+                return Math.Sin(x) * Math.Cos(y);
+            else if (comboBox1.SelectedIndex == 1)
+                return Math.Sin(x) + Math.Sin(y);
+            else return 0;
+        }
+
+        private void Graph_Click(object sender, EventArgs e)
+        {
+            double x1 = 0;
+            double x2 = 0;
+            double y1 = 0;
+            double y2 = 0;
+            double stepx = 0;
+            double stepy = 0;
+            if (double.TryParse(grx1.Text, out x1) &&
+                double.TryParse(grx2.Text, out x2) &&
+                double.TryParse(gry1.Text, out y1) &&
+                double.TryParse(gry2.Text, out y2) &&
+                double.TryParse(X_step.Text, out stepx) &&
+                double.TryParse(Y_step.Text, out stepy))
+            {
+                List<Point3D> buf = new List<Point3D>();
+                Point3D p = new Point3D((float)x1, (float)y1, (float)Func(x1, y1));
+                Point3D p_prev = new Point3D(0, 0, 0);
+                cur_polyhedron = new Polyhedron();
+                buf.Add(p);
+                int k = 0;
+                for (double j = y1 + stepy; j <= y2; j += stepy)
+                {
+                    p = new Point3D((float)x1, (float)j, (float)Func(x1, j));
+                    //cur_polyhedron.AddPoint(buf[k++], p);
+                    buf.Add(p);
+                }
+
+                for (double i = x1 + stepx; i <= x2; i += stepx)
+                {
+                    k = 0;
+                    for (double j = y1; j <= y2; j += stepy)
+                    {
+                        p = new Point3D((float)i, (float)j, (float)Func(i, j));
+                        if (k != 0)
+                        {
+                            cur_polyhedron.AddPoints(new List<Point3D> { new Point3D(buf[k - 1].X, buf[k - 1].Y, buf[k - 1].Z), new Point3D(buf[k].X, buf[k].Y, buf[k].Z), p, p_prev });
+                            buf[k - 1] = new Point3D(p_prev.X, p_prev.Y, p_prev.Z);
+                        }
+
+                        ++k;
+                        p_prev = new Point3D(p.X, p.Y, p.Z);
+                        if (j == y2)
+                        {
+                            buf[--k] = new Point3D(p_prev.X, p_prev.Y, p_prev.Z);
+                        }
+                    }
+                }
+                cur_polyhedron.getMoved(new Point3D(pictureBox1.Width / 4, pictureBox1.Height / 4, 0));
+                Point3D cent = cur_polyhedron.Center();
+                double scale = (x2 - x1) < (y2 - y1) ? (x2 - x1) / pictureBox1.Width * 1.5 : (y2 - y1) / pictureBox1.Height*1.25;
+                cur_polyhedron.scale(cent, scale, scale, scale);
+                Draw();
+            }
+        }
+
+        private void gry1_TextChanged(object sender, EventArgs e)
+        {
 
         }
     }
