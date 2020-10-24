@@ -406,7 +406,7 @@ namespace Affin3D
                 foreach (var o in objects)
                 {
                     cur_polyhedron = o;
-
+                    cur_polyhedron.scale(cur_polyhedron.center(), 1 / 50.0, 1 / 50.0, 1 / 50.1);
                     Draw();
                 }
             }

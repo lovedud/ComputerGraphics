@@ -54,24 +54,25 @@ namespace Affin3D
         private Point3D ParcePoint(string line)
         {
             Point3D res = new Point3D();
-            var tokens = line.Split(' ');
-            if (tokens.Length < 4)
+            var tokens = line.Substring(1).Trim().Split(' ').SkipWhile((x) => x == "").ToArray(); 
+            if (tokens.Length < 2)
                 throw new InvalidCastException("Point parse fail");
-            res.X = float.Parse(tokens[1].Replace('.',',').Trim(' '));
-            res.Y = float.Parse(tokens[2].Replace('.', ',').Trim(' '));
-            res.Z = float.Parse(tokens[3].Replace('.', ',').Trim(' '));
+            res.X = float.Parse(tokens[0].Replace('.',','));
+            res.Y = float.Parse(tokens[1].Replace('.', ','));
+            res.Z = float.Parse(tokens[2].Replace('.', ','));
             return res;
         }
         private List<int> ParcePolygon(string line)
         {
             List<int> res = new List<int>();
-            var tokens = line.Split(' ');
-            for(var i = 1; i < tokens.Length; i++)
+            var tokens = line.Substring(1).Trim().Split(' ').SkipWhile((x) => x == "").ToArray();
+            for (var i = 0; i < tokens.Length; i++)
             {
                 var vertex_ind = int.Parse(tokens[i].Split('/')[0]);
                 res.Add(vertex_ind - 1);
             }
             return res;
         }
+       
     }
 }
