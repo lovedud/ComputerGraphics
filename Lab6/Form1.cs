@@ -46,8 +46,8 @@ namespace Affin3D
             if (cur_polyhedron is null)
                 return;
             List<Edge> edges = projector.Project(cur_mode, cur_polyhedron);
-
-            DrawAxis(cur_polyhedron.center());
+            
+            DrawAxis(start_point);
             foreach (var edge in edges)
             {
                 DrawEdge(ref g, ref bm, edge);
@@ -140,7 +140,6 @@ namespace Affin3D
             Draw();
         }
 
-       
 
         private void ClearButton_Click(object sender, EventArgs e)
         {
@@ -151,13 +150,13 @@ namespace Affin3D
         {
             cur_mode = Mode.Orthographic;
             ort_button.Enabled = false;
-
-            start_point = new Point3D(pictureBox1.Width/2-50, pictureBox1.Height / 2-50, 300);
+            
+            start_point = new Point3D(pictureBox1.Width / 2 - 50, pictureBox1.Height / 2 - 50, 300);
 
             cur_state = State.MoveP;
             button3.Enabled = false;
 
-            cur_polyhedron = CreateCube(start_point, 100);
+            cur_polyhedron = CreateCube(new Point3D(0 , 0, 0), 100);
             s_x.Text = (pictureBox1.Width / 2).ToString();
             s_y.Text = (pictureBox1.Height / 2).ToString();
             s_z.Text = (pictureBox1.Width / 2).ToString();
@@ -308,7 +307,6 @@ namespace Affin3D
                     Point3D mouseMove = new Point3D(e.X - prevMouseMove.X, 0, e.Y - prevMouseMove.Y);
                     cur_polyhedron.scale(center, 1 - mouseMove.X * 0.01, 1 + mouseMove.Y * 0.01, 1 - mouseMove.Z * 0.01);
                     Draw();
-
                 }
                 else if (Ortyz.Checked)
                 {
@@ -316,7 +314,6 @@ namespace Affin3D
                     Point3D mouseMove = new Point3D(0, e.X - prevMouseMove.X, e.Y - prevMouseMove.Y);
                     cur_polyhedron.scale(center, 1 - mouseMove.X * 0.01, 1 + mouseMove.Y * 0.01, 1 - mouseMove.Z * 0.01);
                     Draw();
-
                 }
 
                 Draw();
@@ -354,32 +351,10 @@ namespace Affin3D
         }
         private void Cub_Button_Click(object sender, EventArgs e)
         {
-            cur_polyhedron = CreateCube(start_point, 100);
+            cur_polyhedron = CreateCube(new Point3D(0, 0, 0), 100);
             Draw();
         }
-        private void Tetrahedron_Click(object sender, EventArgs e)
-        {
-            cur_polyhedron = CreateTetrahedron(start_point, 100);
-            Draw();
-        }
-
-        private void Octahedron_Click(object sender, EventArgs e)
-        {
-            cur_polyhedron = CreateOctahedron(start_point, 100);
-            Draw();
-        }
-
-        private void Icosahedron_Click(object sender, EventArgs e)
-        {
-            cur_polyhedron = CreateIcosahedron(start_point, 100);
-            Draw();
-        }
-
-        private void dodecahedron_Click(object sender, EventArgs e)
-        {
-            cur_polyhedron = CreateDodecahedron(start_point, 100);
-            Draw();
-        }
+       
 
         private void perspective_button_Click(object sender, EventArgs e)
         {
@@ -415,6 +390,27 @@ namespace Affin3D
                 RAL_toDraw = new Edge3D(new Point3D(RAL.start.X - RAL.end.X * 500, RAL.start.Y - RAL.end.Y * 500, RAL.start.Z - RAL.end.Z * 500),
                                         new Point3D(RAL.start.X + RAL.end.X * 500, RAL.start.Y + RAL.end.Y * 500, RAL.start.Z + RAL.end.Z * 500));
             }
+        }
+
+        private void load_obj_click(object sender, EventArgs e)
+        {
+            var objects = new List<Polyhedron>();
+            OpenFileDialog openfileD = new OpenFileDialog
+            {
+                Filter = "Obj Files(*.obj)|*.obj"
+            };
+            if (openfileD.ShowDialog() == DialogResult.OK)
+            {
+                Parcer p = new Parcer();
+                objects = p.ParceFromFile(openfileD.FileName);
+                foreach (var o in objects)
+                {
+                    cur_polyhedron = o;
+
+                    Draw();
+                }
+            }
+
         }
     }
 }

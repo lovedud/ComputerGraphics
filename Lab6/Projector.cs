@@ -28,6 +28,7 @@ namespace Affin3D
 
         public PointF Project(Mode m, Point3D p)
         {
+            
             switch(m)
             {
                 case Mode.Orthographic:
