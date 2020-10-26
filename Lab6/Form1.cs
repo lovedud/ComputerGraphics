@@ -483,5 +483,49 @@ namespace Affin3D
         {
 
         }
+
+        private void RotateFigure(Edge3D RAL, int count)
+        {
+            float angle = 360f / count;
+
+            for (int i = 0; i < count; ++i)
+            {
+                cur_polyhedron.RotateAroundLine(RAL.start, RAL.end, angle);
+                Draw();
+            }
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            List<Point3D> points = new List<Point3D>();
+            Point3D center = cur_polyhedron.Center();
+            var lines = textBox1.Text.Split('\n');
+
+            foreach (var p in lines)
+            {
+                var arr = ((string)p).Split(',');
+                points.Add(new Point3D(float.Parse(arr[0]), float.Parse(arr[1]), float.Parse(arr[2])));
+            }
+
+            switch (comboBox1.SelectedItem.ToString())
+            {
+                case "OX":
+                    RAL = new Edge3D(new Point3D(center.X, center.Y, center.Z), new Point3D(1, 0, 0));
+                    break;
+                case "OY":
+                    RAL = new Edge3D(new Point3D(center.X, center.Y, center.Z), new Point3D(0, 1, 0));
+                    break;
+                case "OZ":
+                    RAL = new Edge3D(new Point3D(center.X, center.Y, center.Z), new Point3D(0, 0, 1));
+                    break;
+                default:
+                    break;
+            }
+
+            cur_polyhedron = new Polyhedron(points);
+            RotateFigure(RAL, (int)numericUpDown1.Value);
+
+            //cur_polyhedron = RotateFigure(points, RAL, (int)numericUpDown1.Value);
+        }
     }
 }

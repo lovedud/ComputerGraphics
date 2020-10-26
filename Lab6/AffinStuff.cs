@@ -56,8 +56,10 @@ namespace Affin3D
             {
                 return (e1.X - e2.X) < e1.eps && (e1.Y - e2.Y) < e1.eps && (e1.Z - e2.Z) < e1.eps;
             }
-            
+
+      
         }
+
 
         public class Polyhedron
         {
@@ -77,7 +79,13 @@ namespace Affin3D
                 //points.ForEach((x) => ToCenterCoord(ref x));
             }
 
-        
+            public Polyhedron(List<Point3D> p)
+            {
+                points = p;
+                //points.ForEach((x) => ToCenterCoord(ref x));
+            }
+
+
             private int PointInd(Point3D p)
             {
                 int point_ind = points.IndexOf(p);
