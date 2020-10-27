@@ -578,12 +578,14 @@ namespace Affin3D
 
                 for (int j = 0; j < buf.Count; ++j)
                 {
-                    cur_polyhedron.AddPoints(new List<Point3D> { 
+                    if (rotated_pol.points[j] != buf[j])
+                        cur_polyhedron.AddPoints(new List<Point3D> { 
                                                                     new Point3D(buf[j].X, buf[j].Y, buf[j].Z), 
                                                                     new Point3D(buf[(j + 1) % buf.Count].X, buf[(j + 1) % buf.Count].Y, buf[(j + 1) % buf.Count].Z), 
                                                                     new Point3D(rotated_pol.points[j].X, rotated_pol.points[j].Y, rotated_pol.points[j].Z) 
                     });
-                    cur_polyhedron.AddPoints(new List<Point3D> {
+                    if (rotated_pol.points[(j + 1) % buf.Count] != buf[(j + 1) % buf.Count])
+                        cur_polyhedron.AddPoints(new List<Point3D> {
                                                                         new Point3D(rotated_pol.points[j].X, rotated_pol.points[j].Y, rotated_pol.points[j].Z),
                                                                         new Point3D(rotated_pol.points[(j + 1) % buf.Count].X, rotated_pol.points[(j + 1) % buf.Count].Y, rotated_pol.points[(j + 1) % buf.Count].Z),
                                                                         new Point3D(buf[(j + 1) % buf.Count].X, buf[(j + 1) % buf.Count].Y, buf[(j + 1) % buf.Count].Z)
