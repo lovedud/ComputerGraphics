@@ -330,9 +330,7 @@ namespace Affin3D
                 prevMouseMove.X = e.X;
                 prevMouseMove.Y = e.Y;
 
-                //pictureBox1.Image = bm;
                 Draw(false);
-                //pictureBox1.Update();
                 
             }
         }
@@ -598,19 +596,6 @@ namespace Affin3D
                 }
                 
             }
-
-            //List<Point3D> all_points = Copy(points);
-            //int last_ind = all_points.Count() - 1;
-            //List<List<int>> polygons = new List<List<int>>();
-            //List<Point3D> temp1 = Copy(points);
-
-            //for (int i = 0; i < temp1.Count() - 1; i++)
-            //{
-            //    polygons.Add(new List<int> { last_ind - i, last_ind - i - 1, last_ind - i - 1 - temp1.Count(), last_ind - i - temp1.Count() });
-
-            //}
-
-            //cur_polyhedron.AddPoints(points);
 
             Draw();
         }
