@@ -40,7 +40,7 @@ namespace Affin3D
         int c = 1600;
         Projector projector;
 
-        public void Draw()
+        public void Draw(bool drawpoint = true, bool update = true)
         {
             g.Clear(Color.White);
             if (cur_polyhedron is null)
@@ -50,9 +50,11 @@ namespace Affin3D
             //DrawAxis(start_point); убрал, так как сломались ( становятся не по центру объекта)
             foreach (var edge in edges)
             {
-                DrawEdge(ref g, ref bm, edge);
+                DrawEdge(ref g, ref bm, edge, drawpoint);
             }
             pictureBox1.Image = bm;
+            if (update)
+                pictureBox1.Update();
         }
         private void DrawAxis(Point3D center)
         {
@@ -98,7 +100,7 @@ namespace Affin3D
                 Ortyz.Checked = false;
                 cur_ort_mode = OrtMode.XY;
                 projector.Update(cur_ort_mode);
-                ort_button.Enabled = true;
+                //ort_button.Enabled = true;
                 Draw();
             }
             else OrtButtonAvailability();
@@ -113,7 +115,7 @@ namespace Affin3D
                 Ortyz.Checked = false;
                 cur_ort_mode = OrtMode.XZ;
                 projector.Update(cur_ort_mode);
-                ort_button.Enabled = true;
+                //ort_button.Enabled = true;
                 Draw();
             } else OrtButtonAvailability();
         }
@@ -126,7 +128,7 @@ namespace Affin3D
                 Ortxy.Checked = false;
                 cur_ort_mode = OrtMode.YZ;
                 projector.Update(cur_ort_mode);
-                ort_button.Enabled = true;
+                //ort_button.Enabled = true;
                 Draw();
             } else OrtButtonAvailability();
         }
@@ -252,13 +254,15 @@ namespace Affin3D
                 int angle = AngleBetweenPoints(point_angle, new Point(e.X, e.Y));
                 cur_polyhedron.RotateAroundLine(RAL.start, RAL.end, prev_angle - angle);
                 prev_angle = angle;
-                Draw();
+                Draw(false,false);
                 DrawPoint(ref bm, new PointF(point_angle.X, point_angle.Y), Color.Orange);
 
-                var edge = projector.Project(cur_mode, RAL_toDraw);
-                g.DrawLine(new Pen(Color.Orange, 1), edge.start, edge.end);
-
+                //var edge = projector.Project(cur_mode, RAL_toDraw);
+                //g.DrawLine(new Pen(Color.Orange, 1), edge.start, edge.end); //Не работает из-за нового центрирования
+                
                 pictureBox1.Image = bm;
+
+                pictureBox1.Update();
             }
             if (m_down && cur_state == State.MoveP && !(cur_polyhedron is null))
             {
@@ -268,7 +272,7 @@ namespace Affin3D
                     Point3D mouseMove = new Point3D(e.X - prevMouseMove.X, e.Y - prevMouseMove.Y, 0);
 
                     cur_polyhedron.getMoved(mouseMove);
-                    Draw();
+                    Draw(false);
                 }
                 else if (Ortxz.Checked)
                 {
@@ -276,7 +280,7 @@ namespace Affin3D
                     Point3D mouseMove = new Point3D(e.X - prevMouseMove.X, 0, e.Y - prevMouseMove.Y);
 
                     cur_polyhedron.getMoved(mouseMove);
-                    Draw();
+                    Draw(false);
                 }
                 else if (Ortyz.Checked)
                 {
@@ -284,7 +288,8 @@ namespace Affin3D
                     Point3D mouseMove = new Point3D(0, e.X - prevMouseMove.X, e.Y - prevMouseMove.Y);
 
                     cur_polyhedron.getMoved(mouseMove);
-                    Draw();
+                    Draw(false);
+                    
                 }
 
                 prevMouseMove.X = e.X;
@@ -294,42 +299,46 @@ namespace Affin3D
             }
             if (m_down && cur_state == State.Scale && !(cur_polyhedron is null))
             {
-
-                if (Ortxy.Checked)
+                if (Ortxyz.Checked)
+                {
+                    Point3D center = cur_polyhedron.Center();
+                    Point3D mouseMove = new Point3D(e.X - prevMouseMove.X, e.X - prevMouseMove.X, e.X - prevMouseMove.X);
+                    cur_polyhedron.scale(center, 1 - mouseMove.X * 0.01, 1 - mouseMove.X * 0.01, 1 - mouseMove.X * 0.01);
+                }
+                else if (Ortxy.Checked)
                 {
                     Point3D center = cur_polyhedron.Center();
                     Point3D mouseMove = new Point3D(e.X - prevMouseMove.X, e.Y - prevMouseMove.Y, 0);
                     cur_polyhedron.scale(center, 1 - mouseMove.X * 0.01, 1 + mouseMove.Y * 0.01, 1 - mouseMove.Z * 0.01);
-                    Draw();
                 }
                 else if (Ortxz.Checked)
                 {
                     Point3D center = cur_polyhedron.Center();
                     Point3D mouseMove = new Point3D(e.X - prevMouseMove.X, 0, e.Y - prevMouseMove.Y);
                     cur_polyhedron.scale(center, 1 - mouseMove.X * 0.01, 1 + mouseMove.Y * 0.01, 1 - mouseMove.Z * 0.01);
-                    Draw();
                 }
                 else if (Ortyz.Checked)
                 {
                     Point3D center = cur_polyhedron.Center();
                     Point3D mouseMove = new Point3D(0, e.X - prevMouseMove.X, e.Y - prevMouseMove.Y);
                     cur_polyhedron.scale(center, 1 - mouseMove.X * 0.01, 1 + mouseMove.Y * 0.01, 1 - mouseMove.Z * 0.01);
-                    Draw();
                 }
-
-                Draw();
+                
 
                 prevMouseMove.X = e.X;
                 prevMouseMove.Y = e.Y;
 
-                pictureBox1.Image = bm;
+                //pictureBox1.Image = bm;
+                Draw(false);
+                //pictureBox1.Update();
+                
             }
         }
 
         private void pictureBox1_MouseUp(object sender, MouseEventArgs e)
         {
             m_down = false;
-            Draw();
+            Draw(false);
         }
         private void iso_button_Click(object sender, EventArgs e)
         {
@@ -411,7 +420,6 @@ namespace Affin3D
                     Draw();
                 }
             }
-
         }
 
         double Func(double x, double y)
@@ -429,43 +437,48 @@ namespace Affin3D
             double x2 = 0;
             double y1 = 0;
             double y2 = 0;
-            double stepx = 0;
-            double stepy = 0;
+            int amountx = 0;
+            int amounty = 0;
             if (double.TryParse(grx1.Text, out x1) &&
                 double.TryParse(grx2.Text, out x2) &&
                 double.TryParse(gry1.Text, out y1) &&
                 double.TryParse(gry2.Text, out y2) &&
-                double.TryParse(X_step.Text, out stepx) &&
-                double.TryParse(Y_step.Text, out stepy))
+                int.TryParse(X_step.Text, out amountx) &&
+                int.TryParse(Y_step.Text, out amounty))
             {
+                double stepx = (x2 - x1) / amountx;
+                double stepy = (y2 - y1) / amounty;
                 List<Point3D> buf = new List<Point3D>();
                 Point3D p = new Point3D((float)x1, (float)y1, (float)Func(x1, y1));
                 Point3D p_prev = new Point3D(0, 0, 0);
                 cur_polyhedron = new Polyhedron();
                 buf.Add(p);
-                int k = 0;
-                for (double j = y1 + stepy; j <= y2; j += stepy)
+                int k;
+                for (double j = y1 + stepy; j < y2 || Math.Abs(j - y2) < 0.001; j += stepy)
                 {
                     p = new Point3D((float)x1, (float)j, (float)Func(x1, j));
-                    //cur_polyhedron.AddPoint(buf[k++], p);
                     buf.Add(p);
                 }
 
-                for (double i = x1 + stepx; i <= x2; i += stepx)
+                for (double i = x1 + stepx; i < x2 || Math.Abs(i - x2) < 0.001; i += stepx)
                 {
                     k = 0;
-                    for (double j = y1; j <= y2; j += stepy)
+                    for (double j = y1; j < y2 || Math.Abs(j - y2) < 0.001; j += stepy)
                     {
                         p = new Point3D((float)i, (float)j, (float)Func(i, j));
                         if (k != 0)
                         {
-                            cur_polyhedron.AddPoints(new List<Point3D> { new Point3D(buf[k - 1].X, buf[k - 1].Y, buf[k - 1].Z), new Point3D(buf[k].X, buf[k].Y, buf[k].Z), p, p_prev });
+                            cur_polyhedron.AddPoints(new List<Point3D> { new Point3D(buf[k - 1].X, buf[k - 1].Y, buf[k - 1].Z),
+                                                                         new Point3D(p_prev.X, p_prev.Y, p_prev.Z),
+                                                                         new Point3D(p.X,p.Y,p.Z)});
+                            cur_polyhedron.AddPoints(new List<Point3D> { new Point3D(buf[k - 1].X, buf[k - 1].Y, buf[k - 1].Z),
+                                                                         new Point3D(p.X,p.Y,p.Z),
+                                                                         new Point3D(buf[k].X, buf[k].Y, buf[k].Z)});
                             buf[k - 1] = new Point3D(p_prev.X, p_prev.Y, p_prev.Z);
                         }
-
                         ++k;
                         p_prev = new Point3D(p.X, p.Y, p.Z);
-                        if (j == y2)
+                        if (Math.Abs(j - y2)<0.001 && Math.Abs(i - x2) > 0.001)
                         {
                             buf[--k] = new Point3D(p_prev.X, p_prev.Y, p_prev.Z);
                         }
@@ -473,9 +486,9 @@ namespace Affin3D
                 }
                 cur_polyhedron.getMoved(new Point3D(pictureBox1.Width / 4, pictureBox1.Height / 4, 0));
                 Point3D cent = cur_polyhedron.Center();
-                double scale = (x2 - x1) < (y2 - y1) ? (x2 - x1) / pictureBox1.Width * 1.5 : (y2 - y1) / pictureBox1.Height*1.25;
+                double scale = (x2 - x1) < (y2 - y1) ? (x2 - x1) / pictureBox1.Width * 1.5 : (y2 - y1) / pictureBox1.Height * 1.25;
                 cur_polyhedron.scale(cent, scale, scale, scale);
-                Draw();
+                Draw(false);
             }
         }
 
@@ -526,6 +539,11 @@ namespace Affin3D
             RotateFigure(RAL, (int)numericUpDown1.Value);
 
             //cur_polyhedron = RotateFigure(points, RAL, (int)numericUpDown1.Value);
+        }
+
+        private void Ortxyz_CheckedChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

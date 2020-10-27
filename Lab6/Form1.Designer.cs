@@ -82,6 +82,7 @@
             this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
             this.comboBox2 = new System.Windows.Forms.ComboBox();
             this.button4 = new System.Windows.Forms.Button();
+            this.Ortxyz = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.SuspendLayout();
@@ -90,7 +91,7 @@
             // 
             this.pictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.pictureBox1.Location = new System.Drawing.Point(8, 5);
-            this.pictureBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.pictureBox1.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(813, 641);
             this.pictureBox1.TabIndex = 0;
@@ -103,7 +104,7 @@
             // 
             this.cube_button.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
             this.cube_button.Location = new System.Drawing.Point(841, 9);
-            this.cube_button.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.cube_button.Margin = new System.Windows.Forms.Padding(2);
             this.cube_button.Name = "cube_button";
             this.cube_button.Size = new System.Drawing.Size(83, 31);
             this.cube_button.TabIndex = 1;
@@ -115,7 +116,7 @@
             // 
             this.ort_button.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
             this.ort_button.Location = new System.Drawing.Point(862, 251);
-            this.ort_button.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.ort_button.Margin = new System.Windows.Forms.Padding(2);
             this.ort_button.Name = "ort_button";
             this.ort_button.Size = new System.Drawing.Size(137, 27);
             this.ort_button.TabIndex = 1;
@@ -130,7 +131,7 @@
             this.Ortxy.CheckState = System.Windows.Forms.CheckState.Checked;
             this.Ortxy.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
             this.Ortxy.Location = new System.Drawing.Point(1004, 211);
-            this.Ortxy.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Ortxy.Margin = new System.Windows.Forms.Padding(2);
             this.Ortxy.Name = "Ortxy";
             this.Ortxy.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.Ortxy.Size = new System.Drawing.Size(40, 21);
@@ -144,7 +145,7 @@
             this.Ortxz.AutoSize = true;
             this.Ortxz.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
             this.Ortxz.Location = new System.Drawing.Point(1004, 233);
-            this.Ortxz.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Ortxz.Margin = new System.Windows.Forms.Padding(2);
             this.Ortxz.Name = "Ortxz";
             this.Ortxz.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.Ortxz.Size = new System.Drawing.Size(40, 21);
@@ -158,7 +159,7 @@
             this.Ortyz.AutoSize = true;
             this.Ortyz.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
             this.Ortyz.Location = new System.Drawing.Point(1004, 255);
-            this.Ortyz.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Ortyz.Margin = new System.Windows.Forms.Padding(2);
             this.Ortyz.Name = "Ortyz";
             this.Ortyz.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.Ortyz.Size = new System.Drawing.Size(41, 21);
@@ -393,7 +394,7 @@
             // 
             this.perspective_button.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
             this.perspective_button.Location = new System.Drawing.Point(862, 282);
-            this.perspective_button.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.perspective_button.Margin = new System.Windows.Forms.Padding(2);
             this.perspective_button.Name = "perspective_button";
             this.perspective_button.Size = new System.Drawing.Size(137, 25);
             this.perspective_button.TabIndex = 1;
@@ -405,7 +406,7 @@
             // 
             this.scaleButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
             this.scaleButton.Location = new System.Drawing.Point(874, 350);
-            this.scaleButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.scaleButton.Margin = new System.Windows.Forms.Padding(2);
             this.scaleButton.Name = "scaleButton";
             this.scaleButton.Size = new System.Drawing.Size(170, 31);
             this.scaleButton.TabIndex = 29;
@@ -417,7 +418,7 @@
             // 
             this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
             this.button1.Location = new System.Drawing.Point(939, 9);
-            this.button1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.button1.Margin = new System.Windows.Forms.Padding(2);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(135, 31);
             this.button1.TabIndex = 1;
@@ -438,7 +439,7 @@
             // 
             // grx2
             // 
-            this.grx2.Location = new System.Drawing.Point(981, 99);
+            this.grx2.Location = new System.Drawing.Point(994, 98);
             this.grx2.Name = "grx2";
             this.grx2.Size = new System.Drawing.Size(37, 20);
             this.grx2.TabIndex = 34;
@@ -447,7 +448,7 @@
             // lx2
             // 
             this.lx2.AutoSize = true;
-            this.lx2.Location = new System.Drawing.Point(945, 102);
+            this.lx2.Location = new System.Drawing.Point(954, 102);
             this.lx2.Name = "lx2";
             this.lx2.Size = new System.Drawing.Size(20, 13);
             this.lx2.TabIndex = 33;
@@ -464,7 +465,7 @@
             // lx1
             // 
             this.lx1.AutoSize = true;
-            this.lx1.Location = new System.Drawing.Point(871, 105);
+            this.lx1.Location = new System.Drawing.Point(859, 102);
             this.lx1.Name = "lx1";
             this.lx1.Size = new System.Drawing.Size(20, 13);
             this.lx1.TabIndex = 31;
@@ -472,7 +473,7 @@
             // 
             // gry2
             // 
-            this.gry2.Location = new System.Drawing.Point(981, 124);
+            this.gry2.Location = new System.Drawing.Point(994, 124);
             this.gry2.Name = "gry2";
             this.gry2.Size = new System.Drawing.Size(37, 20);
             this.gry2.TabIndex = 38;
@@ -481,7 +482,7 @@
             // ly2
             // 
             this.ly2.AutoSize = true;
-            this.ly2.Location = new System.Drawing.Point(945, 128);
+            this.ly2.Location = new System.Drawing.Point(954, 128);
             this.ly2.Name = "ly2";
             this.ly2.Size = new System.Drawing.Size(20, 13);
             this.ly2.TabIndex = 37;
@@ -499,7 +500,7 @@
             // ly1
             // 
             this.ly1.AutoSize = true;
-            this.ly1.Location = new System.Drawing.Point(871, 131);
+            this.ly1.Location = new System.Drawing.Point(859, 128);
             this.ly1.Name = "ly1";
             this.ly1.Size = new System.Drawing.Size(20, 13);
             this.ly1.TabIndex = 35;
@@ -507,20 +508,20 @@
             // 
             // Y_step
             // 
-            this.Y_step.Location = new System.Drawing.Point(981, 151);
+            this.Y_step.Location = new System.Drawing.Point(994, 151);
             this.Y_step.Name = "Y_step";
             this.Y_step.Size = new System.Drawing.Size(37, 20);
             this.Y_step.TabIndex = 42;
-            this.Y_step.Text = "0,5";
+            this.Y_step.Text = "20";
             // 
             // lystep
             // 
             this.lystep.AutoSize = true;
             this.lystep.Location = new System.Drawing.Point(937, 154);
             this.lystep.Name = "lystep";
-            this.lystep.Size = new System.Drawing.Size(37, 13);
+            this.lystep.Size = new System.Drawing.Size(52, 13);
             this.lystep.TabIndex = 41;
-            this.lystep.Text = "Y step";
+            this.lystep.Text = "Y amount";
             // 
             // X_step
             // 
@@ -528,16 +529,16 @@
             this.X_step.Name = "X_step";
             this.X_step.Size = new System.Drawing.Size(34, 20);
             this.X_step.TabIndex = 40;
-            this.X_step.Text = "0,5";
+            this.X_step.Text = "20";
             // 
             // lxstep
             // 
             this.lxstep.AutoSize = true;
-            this.lxstep.Location = new System.Drawing.Point(863, 154);
+            this.lxstep.Location = new System.Drawing.Point(842, 154);
             this.lxstep.Name = "lxstep";
-            this.lxstep.Size = new System.Drawing.Size(37, 13);
+            this.lxstep.Size = new System.Drawing.Size(52, 13);
             this.lxstep.TabIndex = 39;
-            this.lxstep.Text = "X step";
+            this.lxstep.Text = "X amount";
             // 
             // Graph
             // 
@@ -593,7 +594,7 @@
             // textBox1
             // 
             this.textBox1.Location = new System.Drawing.Point(1171, 73);
-            this.textBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox1.Margin = new System.Windows.Forms.Padding(2);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(108, 70);
@@ -603,7 +604,7 @@
             // numericUpDown1
             // 
             this.numericUpDown1.Location = new System.Drawing.Point(1171, 154);
-            this.numericUpDown1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.numericUpDown1.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDown1.Name = "numericUpDown1";
             this.numericUpDown1.Size = new System.Drawing.Size(90, 20);
             this.numericUpDown1.TabIndex = 49;
@@ -616,7 +617,7 @@
             "OY",
             "OZ"});
             this.comboBox2.Location = new System.Drawing.Point(1171, 184);
-            this.comboBox2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.comboBox2.Margin = new System.Windows.Forms.Padding(2);
             this.comboBox2.Name = "comboBox2";
             this.comboBox2.Size = new System.Drawing.Size(92, 21);
             this.comboBox2.TabIndex = 50;
@@ -624,7 +625,7 @@
             // button4
             // 
             this.button4.Location = new System.Drawing.Point(1146, 228);
-            this.button4.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.button4.Margin = new System.Windows.Forms.Padding(2);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(93, 29);
             this.button4.TabIndex = 51;
@@ -632,11 +633,26 @@
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
+            // Ortxyz
+            // 
+            this.Ortxyz.AutoSize = true;
+            this.Ortxyz.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            this.Ortxyz.Location = new System.Drawing.Point(1004, 280);
+            this.Ortxyz.Margin = new System.Windows.Forms.Padding(2);
+            this.Ortxyz.Name = "Ortxyz";
+            this.Ortxyz.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.Ortxyz.Size = new System.Drawing.Size(47, 21);
+            this.Ortxyz.TabIndex = 52;
+            this.Ortxyz.Text = "xyz";
+            this.Ortxyz.UseVisualStyleBackColor = true;
+            this.Ortxyz.CheckedChanged += new System.EventHandler(this.Ortxyz_CheckedChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1295, 657);
+            this.Controls.Add(this.Ortxyz);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.comboBox2);
             this.Controls.Add(this.numericUpDown1);
@@ -690,7 +706,7 @@
             this.Controls.Add(this.button1);
             this.Controls.Add(this.cube_button);
             this.Controls.Add(this.pictureBox1);
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "Form1";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
@@ -757,6 +773,7 @@
         private System.Windows.Forms.NumericUpDown numericUpDown1;
         private System.Windows.Forms.ComboBox comboBox2;
         private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.CheckBox Ortxyz;
     }
 }
 

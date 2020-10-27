@@ -676,11 +676,12 @@ namespace Affin3D
 
         }
 
-        static public void DrawEdge(ref Graphics g, ref Bitmap bitmap, Edge e)
+        static public void DrawEdge(ref Graphics g, ref Bitmap bitmap, Edge e, bool drawpoint = true)
         {
             Pen p = new Pen(Color.Black, 1);
             g.DrawLine(p, e.start, e.end);
-            DrawPoint(ref bitmap, e.end, Color.Red);
+            if (drawpoint)
+                DrawPoint(ref bitmap, e.end, Color.Red);
         }
 
         // метод расширения для получения количества строк матрицы
