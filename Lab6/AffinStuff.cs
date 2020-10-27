@@ -57,14 +57,55 @@ namespace Affin3D
                 return (e1.X - e2.X) < e1.eps && (e1.Y - e2.Y) < e1.eps && (e1.Z - e2.Z) < e1.eps;
             }
 
-      
+
+            static public Point3D operator +(Point3D p1, Point3D p2)
+            {
+                return new Point3D(p1.X + p2.X, p1.Y + p2.Y, p1.Z + p2.Z);
+            }
+
+            static public Point3D operator -(Point3D p1, Point3D p2)
+            {
+                return new Point3D(p1.X - p2.X, p1.Y - p2.Y, p1.Z - p2.Z);
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (!(obj is Point3D)) return false;
+                return this == (obj as Point3D);
+            }
+
+            public override string ToString()
+            {
+                return "(" + X + "; " + Y + "; " + Z + ")";
+            }
+
+        }
+
+        public class Line3
+        {
+            public Point3D From { get; set; }
+            public Point3D To { get; set; }
+
+            public Line3() { From = new Point3D(); To = new Point3D(); }
+            public Line3(Point3D p1, Point3D p2) { From = p1; To = p2; }
+            public Line3(float x1, float y1, float z1, float x2, float y2, float z2)
+            {
+                From = new Point3D(x1, y1, z1); To = new Point3D(x2, y2, z2);
+            }
+            public Line3(int x1, int y1, int z1, int x2, int y2, int z2)
+            {
+                From = new Point3D(x1, y1, z1); To = new Point3D(x2, y2, z2);
+            }
         }
 
 
         public class Polyhedron
         {
             List<Point3D> points;
-            List<List<int>> polygons; 
+            List<List<int>> polygons;
+            public List<Point3D> Vertexes { get; set; } = new List<Point3D>();
+            public List<Line3> Edges { get; } = new List<Line3>();
+            public Dictionary<Point3D, List<Point3D>> AdjacencyMatrix { get; } = new Dictionary<Point3D, List<Point3D>>();
 
             public Polyhedron()
             {
@@ -107,6 +148,25 @@ namespace Affin3D
                     polygons[polygon_ind].Add(point_ind);
                 }
             }
+
+            public void AddVertex(Point3D point)
+            {
+                //if (Vertexes.Exists(p => p == point)) return;
+                Vertexes.Add(point);
+                AdjacencyMatrix.Add(point, new List<Point3D>());
+            }
+            public void AddEdge(Point3D p1, Point3D p2)
+            {
+                if (Edges.Exists(line => line.From == p1 && line.To == p2)) return;
+                if (Edges.Exists(line => line.To == p1 && line.From == p2)) return;
+                Edges.Add(new Line3(p1, p2));
+                Point3D point1 = Vertexes.Find(p => p == p1);
+                Point3D point2 = Vertexes.Find(p => p == p2);
+                if (!AdjacencyMatrix.ContainsKey(point1)) AdjacencyMatrix.Add(point1, new List<Point3D> { p2 });
+                else AdjacencyMatrix[point1].Add(p2);
+                if (!AdjacencyMatrix.ContainsKey(point2)) AdjacencyMatrix.Add(point2, new List<Point3D> { p1 });
+                else AdjacencyMatrix[point2].Add(p1);
+            }
             public HashSet<Edge3D> PreparePrint()
             {
                 HashSet<Edge3D> res = new HashSet<Edge3D>();
@@ -126,7 +186,6 @@ namespace Affin3D
                 }
                 return res;
             }
-
             
             public void RotateAroundLine(Point3D start, Point3D vector, double angle)
             {
@@ -683,6 +742,7 @@ namespace Affin3D
             if (drawpoint)
                 DrawPoint(ref bitmap, e.end, Color.Red);
         }
+
 
         // метод расширения для получения количества строк матрицы
         public static int RowsCount<T>(this T[,] matrix)
