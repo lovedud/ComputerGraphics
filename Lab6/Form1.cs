@@ -169,6 +169,7 @@ namespace Affin3D
             e_z.Text = (0).ToString();
             projector = new Projector(c);
             comboBox1.SelectedIndex = 0;
+            comboBox2.SelectedIndex = 0;
             Draw();
         }
 
@@ -616,6 +617,12 @@ namespace Affin3D
 
         private void Ortxyz_CheckedChanged(object sender, EventArgs e)
         {
+
+        }
+
+        private void load_button_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog sfd = new SaveFileDialog();
 
         }
     }

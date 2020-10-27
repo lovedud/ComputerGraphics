@@ -467,7 +467,7 @@
             this.grx2.Name = "grx2";
             this.grx2.Size = new System.Drawing.Size(48, 22);
             this.grx2.TabIndex = 34;
-            this.grx2.Text = "3";
+            this.grx2.Text = "5";
             // 
             // lx2
             // 
@@ -486,7 +486,7 @@
             this.grx1.Name = "grx1";
             this.grx1.Size = new System.Drawing.Size(44, 22);
             this.grx1.TabIndex = 32;
-            this.grx1.Text = "-3";
+            this.grx1.Text = "-5";
             // 
             // lx1
             // 
@@ -505,7 +505,7 @@
             this.gry2.Name = "gry2";
             this.gry2.Size = new System.Drawing.Size(48, 22);
             this.gry2.TabIndex = 38;
-            this.gry2.Text = "3";
+            this.gry2.Text = "5";
             // 
             // ly2
             // 
@@ -524,7 +524,7 @@
             this.gry1.Name = "gry1";
             this.gry1.Size = new System.Drawing.Size(44, 22);
             this.gry1.TabIndex = 36;
-            this.gry1.Text = "-3";
+            this.gry1.Text = "-5";
             this.gry1.TextChanged += new System.EventHandler(this.gry1_TextChanged);
             // 
             // ly1
@@ -544,7 +544,7 @@
             this.Y_step.Name = "Y_step";
             this.Y_step.Size = new System.Drawing.Size(48, 22);
             this.Y_step.TabIndex = 42;
-            this.Y_step.Text = "20";
+            this.Y_step.Text = "30";
             // 
             // lystep
             // 
@@ -563,7 +563,7 @@
             this.X_step.Name = "X_step";
             this.X_step.Size = new System.Drawing.Size(44, 22);
             this.X_step.TabIndex = 40;
-            this.X_step.Text = "20";
+            this.X_step.Text = "30";
             // 
             // lxstep
             // 
@@ -635,11 +635,26 @@
             // 
             // numericUpDown1
             // 
-            this.numericUpDown1.Location = new System.Drawing.Point(1561, 190);
-            this.numericUpDown1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.numericUpDown1.Location = new System.Drawing.Point(1171, 154);
+            this.numericUpDown1.Margin = new System.Windows.Forms.Padding(2);
+            this.numericUpDown1.Maximum = new decimal(new int[] {
+            360,
+            0,
+            0,
+            0});
+            this.numericUpDown1.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             this.numericUpDown1.Name = "numericUpDown1";
             this.numericUpDown1.Size = new System.Drawing.Size(120, 22);
             this.numericUpDown1.TabIndex = 49;
+            this.numericUpDown1.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             // 
             // comboBox2
             // 
