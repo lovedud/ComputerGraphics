@@ -580,5 +580,10 @@ namespace Affin3D
         {
 
         }
+
+        private void Ortxyz_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }
