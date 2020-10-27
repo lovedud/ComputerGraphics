@@ -536,7 +536,7 @@ namespace Affin3D
                     break;
             }
 
-            cur_polyhedron = new Polyhedron(points);
+            //cur_polyhedron = new Polyhedron(points);
             RotateFigure(RAL, (int)numericUpDown1.Value);
 
             //cur_polyhedron = RotateFigure(points, RAL, (int)numericUpDown1.Value);
