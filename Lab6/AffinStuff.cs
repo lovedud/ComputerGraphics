@@ -28,7 +28,7 @@ namespace Affin3D
             Perspective
         }
 
-        public class Point3D : IEquatable<Point3D>
+        public class Point3D
         {
             public float X { get; set; }
             public float Y { get; set; }
@@ -54,24 +54,17 @@ namespace Affin3D
             }
             public static bool operator ==(Point3D e1, Point3D e2)
             {
-                return Math.Abs(e1.X - e2.X) < e1.eps && Math.Abs(e1.Y - e2.Y) < e1.eps && Math.Abs(e1.Z - e2.Z) < e1.eps;
+                return (e1.X - e2.X) < e1.eps && (e1.Y - e2.Y) < e1.eps && (e1.Z - e2.Z) < e1.eps;
             }
-
-            public bool Equals(Point3D other)
-            {
-                return other == this;
-            }
-
             
         }
 
 
         public class Polyhedron
         {
-            public List<Point3D> points;
-            public List<List<int>> polygons; 
+            List<Point3D> points;
+            List<List<int>> polygons; 
 
-            
             public Polyhedron()
             {
                 points = new List<Point3D>();
@@ -82,9 +75,10 @@ namespace Affin3D
             {
                 points = p;
                 polygons = conn;
-                
+                //points.ForEach((x) => ToCenterCoord(ref x));
             }
-            
+
+        
             private int PointInd(Point3D p)
             {
                 int point_ind = points.IndexOf(p);

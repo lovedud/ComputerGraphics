@@ -51,25 +51,6 @@ namespace Affin3D
             res.Add(new Polyhedron(cur_points, cur_polygons));
             return res;
         }
-        public void SaveToFile(Polyhedron poly, Stream s)
-        {
-            using(StreamWriter sm = new StreamWriter(s))
-            {
-                for(var i = 0; i < poly.points.Count; i++)
-                {
-                    sm.WriteLine($"v {poly.points[0].X} {poly.points[0].Y} {poly.points[0].Z} ");
-                }
-                for (var i = 0; i < poly.polygons.Count; i++)
-                {
-                    string line = "f ";
-                    for(var j = 0; j < poly.polygons[i].Count; j++)
-                    {
-                        line += poly.polygons[i][j].ToString() + " ";
-                    }
-                    sm.WriteLine(line);
-                }
-            }
-        }
         private Point3D ParcePoint(string line)
         {
             Point3D res = new Point3D();
@@ -92,6 +73,6 @@ namespace Affin3D
             }
             return res;
         }
-        
+       
     }
 }

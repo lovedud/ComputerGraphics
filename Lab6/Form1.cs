@@ -546,11 +546,5 @@ namespace Affin3D
         {
 
         }
-
-        private void load_button_Click(object sender, EventArgs e)
-        {
-            SaveFileDialog sfd = new SaveFileDialog();
-
-        }
     }
 }
