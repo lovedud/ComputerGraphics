@@ -484,22 +484,13 @@ namespace Affin3D
 
         }
 
-        private void RotateFigure(Edge3D RAL, int count)
-        {
-            float angle = 360f / count;
-
-            for (int i = 0; i < count; ++i)
-            {
-                cur_polyhedron.RotateAroundLine(RAL.start, RAL.end, angle);
-                Draw();
-            }
-        }
-
         private void button4_Click(object sender, EventArgs e)
         {
             List<Point3D> points = new List<Point3D>();
-            Point3D center = cur_polyhedron.Center();
             var lines = textBox1.Text.Split('\n');
+            Point3D shift = new Point3D();
+            int count = (int)numericUpDown1.Value;
+            double angle = 360 / count;
 
             foreach (var p in lines)
             {
@@ -507,25 +498,69 @@ namespace Affin3D
                 points.Add(new Point3D(float.Parse(arr[0]), float.Parse(arr[1]), float.Parse(arr[2])));
             }
 
-            switch (comboBox1.SelectedItem.ToString())
+            switch (comboBox2.SelectedItem.ToString())
             {
                 case "OX":
-                    RAL = new Edge3D(new Point3D(center.X, center.Y, center.Z), new Point3D(1, 0, 0));
+                    shift = new Point3D(2, 1, 1);
                     break;
                 case "OY":
-                    RAL = new Edge3D(new Point3D(center.X, center.Y, center.Z), new Point3D(0, 1, 0));
+                    shift = new Point3D(1, 2, 1);
                     break;
                 case "OZ":
-                    RAL = new Edge3D(new Point3D(center.X, center.Y, center.Z), new Point3D(0, 0, 1));
-                    break;
-                default:
+                    shift = new Point3D(1, 1, 2);
                     break;
             }
 
-            cur_polyhedron = new Polyhedron(points);
-            RotateFigure(RAL, (int)numericUpDown1.Value);
+            cur_polyhedron = new Polyhedron();
+            float z = points[0].Z;
+            // угол между осью вращения и осью OZ всегда одинаков, т к используем у оси вращения единичный направляющий вектор
+            // косинус этого угла = 1 / (1 + sqrt(3))
+            double cos = 1 / (1 + Math.Sqrt(3));
+            for (int i = 0; i < points.Count; i++)
+            {
 
-            //cur_polyhedron = RotateFigure(points, RAL, (int)numericUpDown1.Value);
+                points[i] -= shift;
+
+                Point3D axis = new Point3D(z, z, z); // точка на оси вращения с такой же z-координатой
+
+                Point3D newPoint = points[i] - axis;
+                /* Point3D newPoint = new Point3D(); // сдвинутая на угол вращаемая точка
+                 newPoint.X = points[i].X - axis.X;
+                 newPoint.Y = points[i].Y - axis.Y;
+                 newPoint.Z = points[i].Z; //*/
+
+                //double dist = Math.Sqrt(newPoint.X * newPoint.X + newPoint.Y * newPoint.Y); // расстояние от новой точки до (0,0,0)
+
+                cur_polyhedron.AddVertex(points[i] + shift);
+                if (i != 0)
+                    cur_polyhedron.AddEdge(cur_polyhedron.Vertexes[i * count], cur_polyhedron.Vertexes[(i - 1) * count]);
+                for (int j = 1; j < count; j++)
+                {
+                    double Cos = Math.Cos(angle * 0.017 * j), Sin = Math.Sin(angle * 0.017 * j);
+                    Point3D temp = new Point3D(); // сместили на угол
+                    temp.X = (float)(newPoint.X * Cos - newPoint.Y * Sin);
+                    temp.Y = (float)(newPoint.X * Sin + newPoint.Y * Cos);
+                    temp.Z = newPoint.Z;
+
+                    // Смещаем обратно на угол
+                    /*  temp.X += axis.X;
+                      temp.Y += axis.Y;//*/
+                    temp += axis;
+
+                    // ВОзвращаем на изначальный сдвиг
+                    temp += shift;
+
+                    cur_polyhedron.AddVertex(temp);
+                    cur_polyhedron.AddEdge(cur_polyhedron.Vertexes[i * count + j], cur_polyhedron.Vertexes[i * count + j - 1]);
+                    if (i != 0)
+                        cur_polyhedron.AddEdge(cur_polyhedron.Vertexes[i * count + j], cur_polyhedron.Vertexes[(i - 1) * count + j]);
+                    if (j == count - 1)
+                        cur_polyhedron.AddEdge(cur_polyhedron.Vertexes[i * count + j], cur_polyhedron.Vertexes[i * count]);
+                }
+                points[i] += shift;
+            }
+            cur_polyhedron.getMoved(new Point3D(200, 200, 200));
+            Draw();
         }
     }
 }
