@@ -508,37 +508,96 @@ namespace Affin3D
             }
         }
 
+        private Point3D findCenterRotationFigure(List<Point3D> points, int axis)
+        {
+            double sum = 0;
+            foreach (var p in points)
+            {
+                switch (axis)
+                {
+                    case 1: sum += p.X; break;
+                    case 2: sum += p.Y; break;
+                    case 3: sum += p.Z; break;
+                }
+            }
+            switch (axis)
+            {
+                case 1: return new Point3D((float)(sum / points.Count), 0, 0);
+                case 2: return new Point3D(0, (float)(sum / points.Count), 0);
+                case 3: return new Point3D(0, 0, (float)(sum / points.Count));
+            }
+            return new Point3D();
+        }
+
+        private List<Point3D> Copy(List<Point3D> points)
+        {
+            var l = new List<Point3D>();
+            foreach (var p in points)
+                l.Add(new Point3D(p.X, p.Y, p.Z));
+            return l;
+        }
+
         private void button4_Click(object sender, EventArgs e)
         {
-            List<Point3D> points = new List<Point3D>();
-            Point3D center = cur_polyhedron.Center();
+            List<Point3D> buf = new List<Point3D>();
+
             var lines = textBox1.Text.Split('\n');
+            int count = (int)numericUpDown1.Value;
+            double angle = 360 / count;
+            Point3D axis = new Point3D(1, 0, 0);
+            Polyhedron rotated_pol = new Polyhedron();
+            
+            
+            cur_polyhedron = new Polyhedron();
+
+            switch (comboBox2.SelectedItem.ToString())
+            {
+                case "OX":
+                    axis = new Point3D(1, 0, 0);
+                    break;
+                case "OY":
+                    axis = new Point3D(0, 1, 0);
+                    break;
+                case "OZ":
+                    axis = new Point3D(0, 0, 1);
+                    break;
+            }
+
 
             foreach (var p in lines)
             {
                 var arr = ((string)p).Split(',');
-                points.Add(new Point3D(float.Parse(arr[0]), float.Parse(arr[1]), float.Parse(arr[2])));
+                buf.Add(new Point3D(float.Parse(arr[0]), float.Parse(arr[1]), float.Parse(arr[2])));
             }
 
-            switch (comboBox1.SelectedItem.ToString())
+            rotated_pol.AddPoints(buf);
+
+            for (int i = 0; i < count; ++i)
             {
-                case "OX":
-                    RAL = new Edge3D(new Point3D(center.X, center.Y, center.Z), new Point3D(1, 0, 0));
-                    break;
-                case "OY":
-                    RAL = new Edge3D(new Point3D(center.X, center.Y, center.Z), new Point3D(0, 1, 0));
-                    break;
-                case "OZ":
-                    RAL = new Edge3D(new Point3D(center.X, center.Y, center.Z), new Point3D(0, 0, 1));
-                    break;
-                default:
-                    break;
+                rotated_pol.RotateAroundLine(new Point3D(0, 0, 0), axis, angle);
+
+                for (int j = 0; j < buf.Count; ++j)
+                    {
+                        cur_polyhedron.AddPoints(new List<Point3D> { buf[j], buf[(j + 1) % buf.Count], points[j] });
+                        cur_polyhedron.AddPoints(new List<Point3D> { points[j], points[(j + 1) % buf.Count], buf[j]});
+                    }
+                
             }
 
-            cur_polyhedron = new Polyhedron(points);
-            RotateFigure(RAL, (int)numericUpDown1.Value);
+            //List<Point3D> all_points = Copy(points);
+            //int last_ind = all_points.Count() - 1;
+            //List<List<int>> polygons = new List<List<int>>();
+            //List<Point3D> temp1 = Copy(points);
 
-            //cur_polyhedron = RotateFigure(points, RAL, (int)numericUpDown1.Value);
+            //for (int i = 0; i < temp1.Count() - 1; i++)
+            //{
+            //    polygons.Add(new List<int> { last_ind - i, last_ind - i - 1, last_ind - i - 1 - temp1.Count(), last_ind - i - temp1.Count() });
+
+            //}
+
+            //cur_polyhedron.AddPoints(points);
+
+            //Draw();
         }
 
         private void Ortxyz_CheckedChanged(object sender, EventArgs e)

@@ -48,6 +48,7 @@ namespace Affin3D
                 Z = z;
                 eps = 0.01F;
             }
+
             public static bool operator !=(Point3D e1, Point3D e2)
             {
                 return !(e1 == e2);
@@ -57,7 +58,16 @@ namespace Affin3D
                 return (e1.X - e2.X) < e1.eps && (e1.Y - e2.Y) < e1.eps && (e1.Z - e2.Z) < e1.eps;
             }
 
-      
+            static public Point3D operator +(Point3D p1, Point3D p2)
+            {
+                return new Point3D(p1.X + p2.X, p1.Y + p2.Y, p1.Z + p2.Z);
+            }
+
+            static public Point3D operator -(Point3D p1, Point3D p2)
+            {
+                return new Point3D(p1.X - p2.X, p1.Y - p2.Y, p1.Z - p2.Z);
+            }
+
         }
 
 
