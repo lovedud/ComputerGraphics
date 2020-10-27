@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -543,7 +544,7 @@ namespace Affin3D
 
             var lines = textBox1.Text.Split('\n');
             int count = (int)numericUpDown1.Value;
-            double angle = 360 / count;
+            double angle = 360.0 / count;
             Point3D axis = new Point3D(1, 0, 0);
             Polyhedron rotated_pol = new Polyhedron();
             
@@ -572,15 +573,28 @@ namespace Affin3D
 
             rotated_pol.AddPoints(buf);
 
-            for (int i = 0; i < count; ++i)
+            for (int i = 0; i <= count; ++i)
             {
                 rotated_pol.RotateAroundLine(new Point3D(0, 0, 0), axis, angle);
 
                 for (int j = 0; j < buf.Count; ++j)
-                    {
-                        cur_polyhedron.AddPoints(new List<Point3D> { buf[j], buf[(j + 1) % buf.Count], points[j] });
-                        cur_polyhedron.AddPoints(new List<Point3D> { points[j], points[(j + 1) % buf.Count], buf[j]});
-                    }
+                {
+                    cur_polyhedron.AddPoints(new List<Point3D> { 
+                                                                    new Point3D(buf[j].X, buf[j].Y, buf[j].Z), 
+                                                                    new Point3D(buf[(j + 1) % buf.Count].X, buf[(j + 1) % buf.Count].Y, buf[(j + 1) % buf.Count].Z), 
+                                                                    new Point3D(rotated_pol.points[j].X, rotated_pol.points[j].Y, rotated_pol.points[j].Z) 
+                    });
+                    cur_polyhedron.AddPoints(new List<Point3D> {
+                                                                        new Point3D(rotated_pol.points[j].X, rotated_pol.points[j].Y, rotated_pol.points[j].Z),
+                                                                        new Point3D(rotated_pol.points[(j + 1) % buf.Count].X, rotated_pol.points[(j + 1) % buf.Count].Y, rotated_pol.points[(j + 1) % buf.Count].Z),
+                                                                        new Point3D(buf[(j + 1) % buf.Count].X, buf[(j + 1) % buf.Count].Y, buf[(j + 1) % buf.Count].Z)
+                    });
+                }
+
+                for (int k = 0; k < buf.Count; k++)
+                {
+                    buf[k] = new Point3D(rotated_pol.points[k].X, rotated_pol.points[k].Y, rotated_pol.points[k].Z);
+                }
                 
             }
 
@@ -597,7 +611,7 @@ namespace Affin3D
 
             //cur_polyhedron.AddPoints(points);
 
-            //Draw();
+            Draw();
         }
 
         private void Ortxyz_CheckedChanged(object sender, EventArgs e)

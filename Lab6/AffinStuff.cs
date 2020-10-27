@@ -73,8 +73,8 @@ namespace Affin3D
 
         public class Polyhedron
         {
-            List<Point3D> points;
-            List<List<int>> polygons; 
+            public List<Point3D> points;
+            public List<List<int>> polygons; 
 
             public Polyhedron()
             {

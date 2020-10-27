@@ -631,7 +631,7 @@
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(143, 85);
             this.textBox1.TabIndex = 48;
-            this.textBox1.Text = "0,0,0\r\n100,0,0\r\n0,100,0\r\n100,100,0";
+            this.textBox1.Text = "0,0,0\r\n0,100,0\r\n100,100,0\r\n100,0,0";
             // 
             // numericUpDown1
             // 
