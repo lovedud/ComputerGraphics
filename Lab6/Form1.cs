@@ -168,6 +168,7 @@ namespace Affin3D
             e_z.Text = (0).ToString();
             projector = new Projector(c);
             comboBox1.SelectedIndex = 0;
+            comboBox2.SelectedIndex = 0;
             Draw();
         }
 
