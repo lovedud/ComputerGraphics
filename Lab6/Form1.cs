@@ -607,10 +607,18 @@ namespace Affin3D
 
         }
 
-        private void load_button_Click(object sender, EventArgs e)
-        {
-            SaveFileDialog sfd = new SaveFileDialog();
 
+
+        private void save_obj_click(object sender, EventArgs e)
+        {
+            var objects = new List<Polyhedron>();
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.Filter = "Obj Files(*.obj)|*.obj";
+            if (sfd.ShowDialog() == DialogResult.OK)
+            {
+                Parcer p = new Parcer();
+                p.SaveToFile(cur_polyhedron, sfd.OpenFile());
+            }
         }
     }
 }

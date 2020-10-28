@@ -57,14 +57,14 @@ namespace Affin3D
             {
                 for(var i = 0; i < poly.points.Count; i++)
                 {
-                    sm.WriteLine($"v {poly.points[0].X} {poly.points[0].Y} {poly.points[0].Z} ");
+                    sm.WriteLine($"v {poly.points[i].X} {poly.points[i].Y} {poly.points[i].Z} ");
                 }
                 for (var i = 0; i < poly.polygons.Count; i++)
                 {
                     string line = "f ";
                     for(var j = 0; j < poly.polygons[i].Count; j++)
                     {
-                        line += poly.polygons[i][j].ToString() + " ";
+                        line += (poly.polygons[i][j] + 1).ToString() + " ";
                     }
                     sm.WriteLine(line);
                 }
