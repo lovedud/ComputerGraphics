@@ -59,9 +59,7 @@
     <Compile Include="InputForCoordinates.Designer.cs">
       <DependentUpon>InputForCoordinates.cs</DependentUpon>
     </Compile>
-    <Compile Include="Parcer.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="Projector.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
