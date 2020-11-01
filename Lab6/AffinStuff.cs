@@ -66,6 +66,39 @@ namespace Affin3D
             
         }
 
+        public class PointD
+        {
+            public double X { get; set; }
+            public double Y { get; set; }
+
+            public PointD() { X = 0; Y = 0; }
+            public PointD(double x, double y) { X = x; Y = y; }
+            public PointD(int x, int y) { X = x; Y = y; }
+            public PointD(Point p) { X = p.X; Y = p.Y; }
+
+            public Point ToPoint() { return new Point((int)X, (int)Y); }
+
+            static public bool operator ==(PointD p1, PointD p2)
+            {
+                return p1.X == p2.X && p1.Y == p2.Y;
+            }
+
+            static public bool operator !=(PointD p1, PointD p2)
+            {
+                return p1.X != p2.X || p1.Y != p2.Y;
+            }
+
+            static public PointD operator -(PointD p1, PointD p2)
+            {
+                return new PointD(p1.X - p2.X, p1.Y - p2.Y);
+            }
+
+            static public PointD operator +(PointD p1, PointD p2)
+            {
+                return new PointD(p1.X + p2.X, p1.Y + p2.Y);
+            }
+        }
+
 
         public class Polyhedron
         {
@@ -166,8 +199,6 @@ namespace Affin3D
                     x.Y = (float)res[0, 1];
                     x.Z = (float)res[0, 2];
                 }
-                
-                
             }
 
             public Point3D Center()

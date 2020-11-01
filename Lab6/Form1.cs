@@ -620,5 +620,187 @@ namespace Affin3D
                 p.SaveToFile(cur_polyhedron, sfd.OpenFile());
             }
         }
+
+
+        bool pointInRightPolygon(ref List<PointD> polygon, PointD point)
+        {
+            double x0 = polygon[0].X, y0 = polygon[0].Y, xB = polygon[1].X - x0, yB = polygon[1].Y - y0;
+
+            int sign = Math.Sign(yB * (point.X - x0) - xB * (point.Y - y0));
+
+            for (int i = 2; i < polygon.Count; i++)
+            {
+                x0 = polygon[i - 1].X;
+                y0 = polygon[i - 1].Y;
+                xB = polygon[i].X - x0;
+                yB = polygon[i].Y - y0;
+
+                if (sign * (yB * (point.X - x0) - xB * (point.Y - y0)) < 0)
+                {
+                    return false;
+                }
+            }
+            x0 = polygon[polygon.Count - 1].X;
+            y0 = polygon[polygon.Count - 1].Y;
+            xB = polygon[0].X - x0;
+            yB = polygon[0].Y - y0;
+
+            if (sign * (yB * (point.X - x0) - xB * (point.Y - y0)) < 0)
+            {
+                return false;
+            }
+            return true;
+        }
+        PointD To2D(Point3D p)
+        {
+            return (new PointD(p.X, p.Y));
+        }
+
+        int Compare(PointD p1, PointD p2)
+        {
+            if (p1.X == p2.X)
+                return p2.Y.CompareTo(p1.Y);
+            else
+                return p1.X.CompareTo(p2.X);
+        }
+
+        List<PointD> MakeShell()
+        {
+            List<PointD> points = new List<PointD>(), temp = new List<PointD>();
+            foreach (var p in cur_polyhedron.points)
+            {
+                var t = To2D(p);
+                points.Add(t);
+                temp.Add(t);
+            }
+            if (points.Count == 4) //тетраэдр
+                temp.Sort((p1, p2) => p1.X.CompareTo(p2.X));
+            else if (points.Count == 8)
+                temp.Skip(1).ToList().Sort((p1, p2) => Compare(p1, p2));
+            else
+                temp.Sort((p1, p2) => Compare(p1, p2));
+            points.Sort(Compare);
+            List<PointD> res = new List<PointD>();
+
+            res.Add(temp[0]); // Добавляем точки
+            int k = 1;
+            while (temp[0] == temp[k])
+                k++;
+            res.Add(temp[k]);
+            if (points.Count == 20)
+                res.Add(points[6]); //??????????????????????????????
+
+            int i = 0;
+            while (i < points.Count)
+            {
+                PointD p1 = res.Last(), p0 = res[res.Count - 2];
+                double cos = int.MaxValue;
+                int ind = -1;
+                i++;
+                for (int j = 0; j < points.Count; j++)
+                {
+                    double thisCos = ((p0.X - p1.X) * (points[j].X - p1.X) + (p0.Y - p1.Y) * (points[j].Y - p1.Y)) /
+                        (Math.Sqrt((p1.X - p0.X) * (p1.X - p0.X) + (p1.Y - p0.Y) * (p1.Y - p0.Y)) +
+                         Math.Sqrt((points[j].X - p1.X) * (points[j].X - p1.X) + (points[j].Y - p1.Y) * (points[j].Y - p1.Y)));
+                    if ((cos) >= (thisCos) && !res.Contains(points[j]))
+                    {
+                        cos = thisCos;
+                        ind = j;
+                    }
+                }
+                if (ind != -1)
+                {
+                    bool f = true;
+                    for (int t = 0; t < res.Count; t++)
+                        if (res[t] == points[ind])
+                            f = false;
+
+                    if (f)
+                        res.Add(points[ind]);
+                }
+                /*
+                if (res.Last() == points.Last())
+                    break;//*/
+                //*
+                p0 = res[0];
+                p1 = res.Last();
+                bool end = true;
+                for (int j = 0; j < points.Count; j++)
+                {
+                    double where = (points[j].Y - p0.Y) * (p1.X - p0.X) - (points[j].X - p0.X) * (p1.Y - p0.Y);
+                    if (where < 0 && !res.Contains(points[j]))
+                    {
+                        end = false;
+                        break;
+                    }
+                }
+
+                if (end)
+                    break;//*/
+            }
+
+            return res;
+        }
+
+
+        private void z_index_Click(object sender, EventArgs e)
+        {
+            List<List<double>> facets = new List<List<double>>(); // уравнения плоскостей
+            var myPoints = cur_polyhedron.points;
+
+            foreach (var f in cur_polyhedron.polygons)
+            {
+                double a = (myPoints[f[1]].Y - myPoints[f[0]].Y) * (myPoints[f[2]].Z - myPoints[f[0]].Z) - (myPoints[f[1]].Z - myPoints[f[0]].Z) * (myPoints[f[2]].Y - myPoints[f[0]].Y),
+                       b = (myPoints[f[1]].Z - myPoints[f[0]].Z) * (myPoints[f[2]].X - myPoints[f[0]].X) - (myPoints[f[1]].X - myPoints[f[0]].X) * (myPoints[f[2]].Z - myPoints[f[0]].Z),
+                       c = (myPoints[f[1]].X - myPoints[f[0]].X) * (myPoints[f[2]].Y - myPoints[f[0]].Y) - (myPoints[f[1]].Y - myPoints[f[0]].Y) * (myPoints[f[2]].X - myPoints[f[0]].X),
+                       d = (-1) * (a * myPoints[f[0]].X + b * myPoints[f[0]].Y + c * myPoints[f[0]].Z);
+                facets.Add(new List<double> { a, b, c, d });
+            }
+
+            var points = MakeShell();
+
+            int left = (int)(points.Min(p => p.X)), right = (int)(points.Max(p => p.X));
+            int min = (int)(points.Min(p => p.Y)), max = (int)(points.Max(p => p.Y));
+
+            int width = pictureBox1.Width, height = pictureBox1.Height;
+            int[] buf = new int[width * height];
+            for (int i = 0; i < width; i++)
+                for (int j = 0; j < height; j++)
+                    if (left <= i && i <= right && min <= j && j <= max)
+                    {
+                        buf[i + j * width] = -1;
+                        for (int k = 0; k < cur_polyhedron.polygons.Count; k++)
+                        {
+                            List<PointD> f = new List<PointD>();
+                            //foreach (var point in cur_polyhedron.points)
+                            //    f.Add(new PointD(point.X, point.Y));
+                            foreach (var t in cur_polyhedron.polygons[k])
+                                f.Add((new PointD(myPoints[t].X, myPoints[t].Y)));
+                            if (pointInRightPolygon(ref f, new PointD(i, j)))
+                            {
+                                int z = (int)Math.Abs((facets[k][0] * i + facets[k][1] * j + facets[k][3]) / (facets[k][2] * (-1))) % 255;
+                                if (buf[i + j * width] == -1 || buf[i + j * width] > z)
+                                    buf[i + j * width] = z;
+                            }
+                        }
+                        if (buf[i + j * width] == -1)
+                            buf[i + j * width] = 120;
+                    }
+
+                    else
+                        buf[i + j * width] = 120;
+
+
+
+            Bitmap picture = new Bitmap(width, height);
+
+            for (int i = 0; i < width; i++)
+                for (int j = 0; j < height; j++)
+                        picture.SetPixel(i, j, Color.FromArgb(Math.Abs(buf[i + j * width]), 0, 0, 0));
+
+            pictureBox1.Image = picture;
+            pictureBox1.Refresh();
+
+        }
     }
 }

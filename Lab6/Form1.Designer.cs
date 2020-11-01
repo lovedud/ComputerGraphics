@@ -84,6 +84,7 @@
             this.button4 = new System.Windows.Forms.Button();
             this.Ortxyz = new System.Windows.Forms.CheckBox();
             this.button5 = new System.Windows.Forms.Button();
+            this.z_index = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.SuspendLayout();
@@ -173,7 +174,7 @@
             // 
             this.clear_button.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
             this.clear_button.Location = new System.Drawing.Point(1211, 766);
-            this.clear_button.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.clear_button.Margin = new System.Windows.Forms.Padding(4);
             this.clear_button.Name = "clear_button";
             this.clear_button.Size = new System.Drawing.Size(121, 28);
             this.clear_button.TabIndex = 1;
@@ -185,7 +186,7 @@
             // 
             this.iso_button.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
             this.iso_button.Location = new System.Drawing.Point(1149, 271);
-            this.iso_button.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.iso_button.Margin = new System.Windows.Forms.Padding(4);
             this.iso_button.Name = "iso_button";
             this.iso_button.Size = new System.Drawing.Size(183, 32);
             this.iso_button.TabIndex = 1;
@@ -208,7 +209,7 @@
             // 
             this.rotateAroundLine.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
             this.rotateAroundLine.Location = new System.Drawing.Point(1165, 475);
-            this.rotateAroundLine.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.rotateAroundLine.Margin = new System.Windows.Forms.Padding(4);
             this.rotateAroundLine.Name = "rotateAroundLine";
             this.rotateAroundLine.Size = new System.Drawing.Size(227, 55);
             this.rotateAroundLine.TabIndex = 3;
@@ -220,7 +221,7 @@
             // 
             this.OX.Enabled = false;
             this.OX.Location = new System.Drawing.Point(1204, 539);
-            this.OX.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.OX.Margin = new System.Windows.Forms.Padding(4);
             this.OX.Name = "OX";
             this.OX.Size = new System.Drawing.Size(41, 28);
             this.OX.TabIndex = 4;
@@ -232,7 +233,7 @@
             // 
             this.OY.Enabled = false;
             this.OY.Location = new System.Drawing.Point(1257, 539);
-            this.OY.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.OY.Margin = new System.Windows.Forms.Padding(4);
             this.OY.Name = "OY";
             this.OY.Size = new System.Drawing.Size(41, 28);
             this.OY.TabIndex = 5;
@@ -244,7 +245,7 @@
             // 
             this.OZ.Enabled = false;
             this.OZ.Location = new System.Drawing.Point(1308, 539);
-            this.OZ.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.OZ.Margin = new System.Windows.Forms.Padding(4);
             this.OZ.Name = "OZ";
             this.OZ.Size = new System.Drawing.Size(41, 28);
             this.OZ.TabIndex = 6;
@@ -257,7 +258,7 @@
             this.Custom.Enabled = false;
             this.Custom.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
             this.Custom.Location = new System.Drawing.Point(1164, 576);
-            this.Custom.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Custom.Margin = new System.Windows.Forms.Padding(4);
             this.Custom.Name = "Custom";
             this.Custom.Size = new System.Drawing.Size(228, 46);
             this.Custom.TabIndex = 7;
@@ -300,7 +301,7 @@
             // s_x
             // 
             this.s_x.Location = new System.Drawing.Point(1175, 657);
-            this.s_x.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.s_x.Margin = new System.Windows.Forms.Padding(4);
             this.s_x.Name = "s_x";
             this.s_x.Size = new System.Drawing.Size(44, 22);
             this.s_x.TabIndex = 13;
@@ -309,7 +310,7 @@
             // s_y
             // 
             this.s_y.Location = new System.Drawing.Point(1252, 657);
-            this.s_y.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.s_y.Margin = new System.Windows.Forms.Padding(4);
             this.s_y.Name = "s_y";
             this.s_y.Size = new System.Drawing.Size(48, 22);
             this.s_y.TabIndex = 15;
@@ -328,7 +329,7 @@
             // s_z
             // 
             this.s_z.Location = new System.Drawing.Point(1332, 657);
-            this.s_z.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.s_z.Margin = new System.Windows.Forms.Padding(4);
             this.s_z.Name = "s_z";
             this.s_z.Size = new System.Drawing.Size(45, 22);
             this.s_z.TabIndex = 17;
@@ -347,7 +348,7 @@
             // e_z
             // 
             this.e_z.Location = new System.Drawing.Point(1332, 720);
-            this.e_z.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.e_z.Margin = new System.Windows.Forms.Padding(4);
             this.e_z.Name = "e_z";
             this.e_z.Size = new System.Drawing.Size(45, 22);
             this.e_z.TabIndex = 23;
@@ -366,7 +367,7 @@
             // e_y
             // 
             this.e_y.Location = new System.Drawing.Point(1252, 720);
-            this.e_y.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.e_y.Margin = new System.Windows.Forms.Padding(4);
             this.e_y.Name = "e_y";
             this.e_y.Size = new System.Drawing.Size(47, 22);
             this.e_y.TabIndex = 21;
@@ -385,7 +386,7 @@
             // e_x
             // 
             this.e_x.Location = new System.Drawing.Point(1175, 720);
-            this.e_x.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.e_x.Margin = new System.Windows.Forms.Padding(4);
             this.e_x.Name = "e_x";
             this.e_x.Size = new System.Drawing.Size(44, 22);
             this.e_x.TabIndex = 19;
@@ -405,7 +406,7 @@
             // 
             this.button3.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
             this.button3.Location = new System.Drawing.Point(1165, 389);
-            this.button3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button3.Margin = new System.Windows.Forms.Padding(4);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(227, 36);
             this.button3.TabIndex = 3;
@@ -456,7 +457,7 @@
             "Sin(x) + Sin(y)",
             "Sin(x)*Cos(y)"});
             this.comboBox1.Location = new System.Drawing.Point(1175, 89);
-            this.comboBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.comboBox1.Margin = new System.Windows.Forms.Padding(4);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(199, 24);
             this.comboBox1.TabIndex = 30;
@@ -464,7 +465,7 @@
             // grx2
             // 
             this.grx2.Location = new System.Drawing.Point(1325, 121);
-            this.grx2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.grx2.Margin = new System.Windows.Forms.Padding(4);
             this.grx2.Name = "grx2";
             this.grx2.Size = new System.Drawing.Size(48, 22);
             this.grx2.TabIndex = 34;
@@ -483,7 +484,7 @@
             // grx1
             // 
             this.grx1.Location = new System.Drawing.Point(1200, 122);
-            this.grx1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.grx1.Margin = new System.Windows.Forms.Padding(4);
             this.grx1.Name = "grx1";
             this.grx1.Size = new System.Drawing.Size(44, 22);
             this.grx1.TabIndex = 32;
@@ -502,7 +503,7 @@
             // gry2
             // 
             this.gry2.Location = new System.Drawing.Point(1325, 153);
-            this.gry2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.gry2.Margin = new System.Windows.Forms.Padding(4);
             this.gry2.Name = "gry2";
             this.gry2.Size = new System.Drawing.Size(48, 22);
             this.gry2.TabIndex = 38;
@@ -521,7 +522,7 @@
             // gry1
             // 
             this.gry1.Location = new System.Drawing.Point(1200, 154);
-            this.gry1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.gry1.Margin = new System.Windows.Forms.Padding(4);
             this.gry1.Name = "gry1";
             this.gry1.Size = new System.Drawing.Size(44, 22);
             this.gry1.TabIndex = 36;
@@ -541,7 +542,7 @@
             // Y_step
             // 
             this.Y_step.Location = new System.Drawing.Point(1325, 186);
-            this.Y_step.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Y_step.Margin = new System.Windows.Forms.Padding(4);
             this.Y_step.Name = "Y_step";
             this.Y_step.Size = new System.Drawing.Size(48, 22);
             this.Y_step.TabIndex = 42;
@@ -560,7 +561,7 @@
             // X_step
             // 
             this.X_step.Location = new System.Drawing.Point(1200, 186);
-            this.X_step.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.X_step.Margin = new System.Windows.Forms.Padding(4);
             this.X_step.Name = "X_step";
             this.X_step.Size = new System.Drawing.Size(44, 22);
             this.X_step.TabIndex = 40;
@@ -580,7 +581,7 @@
             // 
             this.Graph.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.Graph.Location = new System.Drawing.Point(1219, 218);
-            this.Graph.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Graph.Margin = new System.Windows.Forms.Padding(4);
             this.Graph.Name = "Graph";
             this.Graph.Size = new System.Drawing.Size(108, 33);
             this.Graph.TabIndex = 43;
@@ -707,11 +708,22 @@
             this.button5.UseVisualStyleBackColor = true;
             this.button5.Click += new System.EventHandler(this.save_obj_click);
             // 
+            // z_index
+            // 
+            this.z_index.Location = new System.Drawing.Point(1464, 431);
+            this.z_index.Name = "z_index";
+            this.z_index.Size = new System.Drawing.Size(127, 38);
+            this.z_index.TabIndex = 53;
+            this.z_index.Text = "Z index";
+            this.z_index.UseVisualStyleBackColor = true;
+            this.z_index.Click += new System.EventHandler(this.z_index_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1727, 809);
+            this.Controls.Add(this.z_index);
             this.Controls.Add(this.Ortxyz);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.comboBox2);
@@ -836,6 +848,7 @@
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.CheckBox Ortxyz;
         private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.Button z_index;
     }
 }
 
