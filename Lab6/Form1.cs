@@ -596,7 +596,7 @@ namespace Affin3D
                 {
                     buf[k] = new Point3D(rotated_pol.points[k].X, rotated_pol.points[k].Y, rotated_pol.points[k].Z);
                 }
-                
+
             }
 
             Draw();
