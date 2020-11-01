@@ -40,14 +40,15 @@ namespace Affin3D
         Point3D start_point;
         int c = 1600;
         Projector projector;
+        Point3D viewVector = new Point3D(0,0,1);
 
         public void Draw(bool drawpoint = true, bool update = true)
         {
             g.Clear(Color.White);
             if (cur_polyhedron is null)
                 return;
-            List<Edge> edges = projector.Project(cur_mode, cur_polyhedron);
-            
+            List<Edge> edges = projector.Project(cur_mode, cur_polyhedron, viewVector);
+
             //DrawAxis(start_point); убрал, так как сломались ( становятся не по центру объекта)
             foreach (var edge in edges)
             {
@@ -137,6 +138,7 @@ namespace Affin3D
         private void Ort_Button_Click(object sender, EventArgs e)
         {
             cur_mode = Mode.Orthographic;
+            viewVector = new Point3D(0, 0, 1);
             ort_button.Enabled = false;
             iso_button.Enabled = true;
             perspective_button.Enabled = true;
@@ -372,6 +374,7 @@ namespace Affin3D
             ort_button.Enabled = true;
             iso_button.Enabled = true;
             perspective_button.Enabled = false;
+            viewVector = new Point3D(0,0, 1);
             Draw();
         }
 
@@ -571,25 +574,33 @@ namespace Affin3D
             }
 
             rotated_pol.AddPoints(buf);
-
             for (int i = 0; i <= count; ++i)
             {
                 rotated_pol.RotateAroundLine(new Point3D(0, 0, 0), axis, angle);
 
                 for (int j = 0; j < buf.Count; ++j)
                 {
+                    //if (rotated_pol.points[j] != buf[j])
+                    //    cur_polyhedron.AddPoints(new List<Point3D> { 
+                    //                                                new Point3D(buf[j].X, buf[j].Y, buf[j].Z), 
+                    //                                                new Point3D(buf[(j + 1) % buf.Count].X, buf[(j + 1) % buf.Count].Y, buf[(j + 1) % buf.Count].Z), 
+                    //                                                new Point3D(rotated_pol.points[j].X, rotated_pol.points[j].Y, rotated_pol.points[j].Z) 
+                    //});
+                    //if (rotated_pol.points[(j + 1) % buf.Count] != buf[(j + 1) % buf.Count])
+                    //    cur_polyhedron.AddPoints(new List<Point3D> {
+                    //                                                    new Point3D(rotated_pol.points[j].X, rotated_pol.points[j].Y, rotated_pol.points[j].Z),
+                    //                                                    new Point3D(rotated_pol.points[(j + 1) % buf.Count].X, rotated_pol.points[(j + 1) % buf.Count].Y, rotated_pol.points[(j + 1) % buf.Count].Z),
+                    //                                                    new Point3D(buf[(j + 1) % buf.Count].X, buf[(j + 1) % buf.Count].Y, buf[(j + 1) % buf.Count].Z)
+                    //});
                     if (rotated_pol.points[j] != buf[j])
-                        cur_polyhedron.AddPoints(new List<Point3D> { 
-                                                                    new Point3D(buf[j].X, buf[j].Y, buf[j].Z), 
-                                                                    new Point3D(buf[(j + 1) % buf.Count].X, buf[(j + 1) % buf.Count].Y, buf[(j + 1) % buf.Count].Z), 
-                                                                    new Point3D(rotated_pol.points[j].X, rotated_pol.points[j].Y, rotated_pol.points[j].Z) 
-                    });
+                        cur_polyhedron.AddPoints(new List<Point3D> { new Point3D(buf[j].X, buf[j].Y, buf[j].Z),
+                                                                     new Point3D(rotated_pol.points[j].X, rotated_pol.points[j].Y, rotated_pol.points[j].Z),
+                                                                     new Point3D(buf[(j + 1) % buf.Count].X, buf[(j + 1) % buf.Count].Y, buf[(j + 1) % buf.Count].Z)});
+
                     if (rotated_pol.points[(j + 1) % buf.Count] != buf[(j + 1) % buf.Count])
-                        cur_polyhedron.AddPoints(new List<Point3D> {
-                                                                        new Point3D(rotated_pol.points[j].X, rotated_pol.points[j].Y, rotated_pol.points[j].Z),
-                                                                        new Point3D(rotated_pol.points[(j + 1) % buf.Count].X, rotated_pol.points[(j + 1) % buf.Count].Y, rotated_pol.points[(j + 1) % buf.Count].Z),
-                                                                        new Point3D(buf[(j + 1) % buf.Count].X, buf[(j + 1) % buf.Count].Y, buf[(j + 1) % buf.Count].Z)
-                    });
+                        cur_polyhedron.AddPoints(new List<Point3D> { new Point3D(rotated_pol.points[j].X, rotated_pol.points[j].Y, rotated_pol.points[j].Z),
+                                                                     new Point3D(rotated_pol.points[(j + 1) % buf.Count].X, rotated_pol.points[(j + 1) % buf.Count].Y, rotated_pol.points[(j + 1) % buf.Count].Z),
+                                                                     new Point3D(buf[(j + 1) % buf.Count].X, buf[(j + 1) % buf.Count].Y, buf[(j + 1) % buf.Count].Z)});
                 }
 
                 for (int k = 0; k < buf.Count; k++)
@@ -598,7 +609,8 @@ namespace Affin3D
                 }
                 
             }
-
+            cur_polyhedron.getMoved(new Point3D(pictureBox1.Width / 2, pictureBox1.Height / 2, 0));
+            cur_polyhedron.RotateAroundLine(cur_polyhedron.Center(), new Point3D(0,1,0), 90);
             Draw();
         }
 
@@ -619,6 +631,18 @@ namespace Affin3D
                 Parcer p = new Parcer();
                 p.SaveToFile(cur_polyhedron, sfd.OpenFile());
             }
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            cur_polyhedron = CreateTetrahedron(new Point3D(0, 0, 0), 100);
+            Draw();
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            cur_polyhedron = CreateTestFigure(new Point3D(0, 0, 0), 100);
+            Draw();
         }
     }
 }

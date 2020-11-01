@@ -13,8 +13,8 @@ namespace Affin3D
     
     static class AffinStuff
     {
-        const int BOX_WIDTH = 1071;
-        const int BOX_HEIGHT = 712;
+        const int BOX_WIDTH = 1;
+        const int BOX_HEIGHT = 1;
         public enum OrtMode
         {
             XY,
@@ -63,27 +63,36 @@ namespace Affin3D
                 return other == this;
             }
 
-            
+            public bool ObtuseAngle(Point3D v)
+            {
+                double a = Math.Sqrt(X * X + Y * Y + Z * Z) * Math.Sqrt(v.X * v.X + v.Y * v.Y + v.Z * v.Z);
+                double b = X * v.X + Y * v.Y + Z * v.Z;
+                double c = b / a;
+                double d = Math.Acos(c) * 180 / Math.PI;
+                return ((int)Math.Abs(d)) >= 90;
+            }
+
         }
 
 
         public class Polyhedron
         {
             public List<Point3D> points;
-            public List<List<int>> polygons; 
+            public List<List<int>> polygons;
+            public List<Point3D> normals;
 
             
             public Polyhedron()
             {
                 points = new List<Point3D>();
                 polygons = new List<List<int>>();
-                
+                normals = new List<Point3D>();
             }
-            public Polyhedron(List<Point3D> p, List<List<int>> conn)
+            public Polyhedron(List<Point3D> p, List<List<int>> conn, List<Point3D> norm)
             {
                 points = p;
                 polygons = conn;
-                
+                normals = norm;
             }
             
             private int PointInd(Point3D p)
@@ -106,13 +115,16 @@ namespace Affin3D
                     int point_ind = PointInd(p);
                     polygons[polygon_ind].Add(point_ind);
                 }
+                AddNormal(polygon);
             }
-            public HashSet<Edge3D> PreparePrint()
+            public HashSet<Edge3D> PreparePrint(Point3D viewVector)
             {
+                int polycount = -1;
                 HashSet<Edge3D> res = new HashSet<Edge3D>();
                 foreach (var c in polygons)
                 {
-                    if (c.Count < 3)
+                    ++polycount;
+                    if (c.Count < 3 || ((viewVector.X != 0 || viewVector.Y != 0 || viewVector.Z != 0) && !(normals[polycount].ObtuseAngle(viewVector))))//////////////////////////////////////////
                         continue;
                     Point3D prev = ToCenterCoord(points[c[0]]);
                     for (var i = 1; i < c.Count; i++)
@@ -127,7 +139,21 @@ namespace Affin3D
                 return res;
             }
 
-            
+            public void AddNormal(List<Point3D> polygon)
+            {
+                normals.Add(CreateNormal(polygon));
+            }
+
+            public Point3D CreateNormal(List<Point3D> polygon)
+            {
+                Point3D v1 = new Point3D(polygon[0].X - polygon[1].X, polygon[0].Y - polygon[1].Y, polygon[0].Z - polygon[1].Z);
+                Point3D v2 = new Point3D(polygon[2].X - polygon[1].X, polygon[2].Y - polygon[1].Y, polygon[2].Z - polygon[1].Z);
+                //Point3D normalv = new Point3D(v1.Y * v2.Z - v1.Z * v2.Y, v1.Z * v2.X - v1.X * v2.Z, v1.X * v2.Y - v1.Y * v2.X); //если против часовой
+                Point3D normalv = new Point3D(v1.Z * v2.Y - v1.Y * v2.Z, v1.X * v2.Z - v1.Z * v2.X, v1.Y * v2.X - v1.X * v2.Y); //если по часовой
+                return NormalizedVector(new Edge3D(new Point3D(0, 0, 0), normalv));
+            }
+
+
             public void RotateAroundLine(Point3D start, Point3D vector, double angle)
             {
                 angle = angle * (Math.PI / 180.0);
@@ -166,8 +192,26 @@ namespace Affin3D
                     x.Y = (float)res[0, 1];
                     x.Z = (float)res[0, 2];
                 }
-                
-                
+
+                foreach (var x in normals)
+                {
+                    double[,] vec = new double[1, 4] { { x.X, x.Y, x.Z, 1 } };
+                    var res = MatrixMultiplication(vec, matr);
+                    x.X = (float)res[0, 0];
+                    x.Y = (float)res[0, 1];
+                    x.Z = (float)res[0, 2];
+                }
+                //int polycount = 0;
+                //foreach(var x in polygons)
+                //{
+                //    List<Point3D> polys = new List<Point3D>();
+                //    foreach(var y in x)
+                //    {
+                //        polys.Add(points[y]);
+                //    }
+                //    normals[polycount] = CreateNormal(polys);
+                //    polycount++;
+                //}
             }
 
             public Point3D Center()
@@ -204,6 +248,13 @@ namespace Affin3D
                     var resMatrix = MatrixMultiplication(pointMatr, moveMatrix);
                     points[i] = new Point3D((float)resMatrix[0, 0], (float)resMatrix[0, 1], (float)resMatrix[0, 2]);
                 }
+
+                //for (int i = 0; i < normals.Count; i++)
+                //{
+                //    var pointMatr = new double[1, 4] { { normals[i].X, normals[i].Y, normals[i].Z, 1 } };
+                //    var resMatrix = MatrixMultiplication(pointMatr, moveMatrix);
+                //    normals[i] = new Point3D((float)resMatrix[0, 0], (float)resMatrix[0, 1], (float)resMatrix[0, 2]);
+                //}
             }
             
 
@@ -241,6 +292,15 @@ namespace Affin3D
                     resMatrix = MatrixMultiplication(resMatrix, moveMatr);
                     points[i] = new Point3D((float)resMatrix[0, 0], (float)resMatrix[0, 1], (float)resMatrix[0, 2]);
                 }
+
+                //for (int i = 0; i < normals.Count; i++)
+                //{
+                //    var pointMatr = new double[1, 4] { { normals[i].X, normals[i].Y, normals[i].Z, 1 } };
+                //    var resMatrix = MatrixMultiplication(pointMatr, moveMatrToZero);
+                //    resMatrix = MatrixMultiplication(resMatrix, scaleMatr);
+                //    resMatrix = MatrixMultiplication(resMatrix, moveMatr);
+                //    normals[i] = new Point3D((float)resMatrix[0, 0], (float)resMatrix[0, 1], (float)resMatrix[0, 2]);
+                //}
             }
         }
         static public Point3D ToCenterCoord(Point3D p)
@@ -283,9 +343,97 @@ namespace Affin3D
             List<Point3D> face1 = new List<Point3D>() {start, p2, p4, p1 };
             List<Point3D> face2 = new List<Point3D>() { start, p3, p5, p2 };
             List<Point3D> face3 = new List<Point3D>() { p2, p5, p7, p4 };
-            List<Point3D> face4 = new List<Point3D>() { p1, p6, p7, p4 };
-            List<Point3D> face5 = new List<Point3D>() { start, p3, p6, p1 };
-            List<Point3D> face6 = new List<Point3D>() { p3, p5, p7, p6 };
+            List<Point3D> face4 = new List<Point3D>() { p1, p4, p7, p6 };
+            List<Point3D> face5 = new List<Point3D>() { start, p1, p6, p3 };
+            List<Point3D> face6 = new List<Point3D>() { p3, p6, p7, p5 };
+            res.AddPoints(face1);
+            res.AddPoints(face2);
+            res.AddPoints(face3);
+            res.AddPoints(face4);
+            res.AddPoints(face5);
+            res.AddPoints(face6);
+            return res;
+        }
+
+        static public Polyhedron CreateTetrahedron(Point3D start, float a)
+        {
+            Polyhedron res = new Polyhedron();
+            Point3D p1 = new Point3D(start.X, start.Y + a, start.Z + a);
+            Point3D p2 = new Point3D(start.X+a, start.Y + a, start.Z);
+            Point3D p3 = new Point3D(start.X+a, start.Y, start.Z + a);
+
+            List<Point3D> face1 = new List<Point3D>() { start, p1, p2 };
+            List<Point3D> face2 = new List<Point3D>() { start, p2, p3 };
+            List<Point3D> face3 = new List<Point3D>() { start, p3, p1 };
+            List<Point3D> face4 = new List<Point3D>() { p3, p2, p1 };
+
+            res.AddPoints(face1);
+            res.AddPoints(face2);
+            res.AddPoints(face3);
+            res.AddPoints(face4);
+
+            return res;
+        }
+
+        static public Polyhedron CreateTestFigure(Point3D start, float a)
+        {
+            //Polyhedron res = new Polyhedron();
+            //Point3D p1 = new Point3D(start.X, start.Y+a*3, start.Z);
+            //Point3D p2 = new Point3D(start.X+a, start.Y+a*3, start.Z);
+            //Point3D p3 = new Point3D(start.X+a, start.Y+a*2, start.Z);
+            //Point3D p4 = new Point3D(start.X+a*2, start.Y+a*2, start.Z);
+            //Point3D p5 = new Point3D(start.X+a*2, start.Y+a, start.Z);
+            //Point3D p6 = new Point3D(start.X+a, start.Y+a, start.Z);
+            //Point3D p7 = new Point3D(start.X+a, start.Y, start.Z);
+
+            //Point3D p8 = new Point3D(start.X, start.Y, start.Z + a);
+            //Point3D p9 = new Point3D(start.X, start.Y + a * 3, start.Z + a);
+            //Point3D p10 = new Point3D(start.X + a, start.Y + a * 3, start.Z + a);
+            //Point3D p11 = new Point3D(start.X + a, start.Y + a * 2, start.Z + a);
+            //Point3D p12 = new Point3D(start.X + a * 2, start.Y + a * 2, start.Z + a);
+            //Point3D p13 = new Point3D(start.X + a * 2, start.Y + a, start.Z + a);
+            //Point3D p14 = new Point3D(start.X + a, start.Y + a, start.Z + a);
+            //Point3D p15 = new Point3D(start.X + a, start.Y, start.Z + a);
+
+            //List<Point3D> face1 = new List<Point3D>() { start, p1, p2, p3, p4, p5, p6, p7 };
+            //List<Point3D> face2 = new List<Point3D>() { p15, p14, p13, p12, p11, p10, p9, p8 };
+            //List<Point3D> face3 = new List<Point3D>() { p1, p9, p10, p2 };
+            //List<Point3D> face4 = new List<Point3D>() { p2, p10, p11, p3 };
+            //List<Point3D> face5 = new List<Point3D>() { p3, p11, p12, p4 };
+            //List<Point3D> face6 = new List<Point3D>() { p4, p12, p5, p13 };
+            //List<Point3D> face7 = new List<Point3D>() { p6, p5, p13, p14 };
+            //List<Point3D> face8 = new List<Point3D>() { p6, p14, p15, p7 };
+            //List<Point3D> face9 = new List<Point3D>() { start, p7, p15, p8 };
+            //List<Point3D> face10 = new List<Point3D>() { start, p8, p9, p1 };
+
+            //res.AddPoints(face1);
+            //res.AddPoints(face2);
+            //res.AddPoints(face3);
+            //res.AddPoints(face4);
+            //res.AddPoints(face5);
+            //res.AddPoints(face6);
+            //res.AddPoints(face7);
+            //res.AddPoints(face8);
+            //res.AddPoints(face9);
+            //res.AddPoints(face10);
+
+            //return res;
+
+            Polyhedron res = new Polyhedron();
+            Point3D p1 = new Point3D(start.X + a, start.Y, start.Z);
+            Point3D p2 = new Point3D(start.X, start.Y + a, start.Z-a/2);
+            Point3D p3 = new Point3D(start.X, start.Y, start.Z + a);
+            Point3D p4 = new Point3D(start.X + a + a/2, start.Y + a, start.Z-a/2);
+            Point3D p5 = new Point3D(start.X, start.Y + a, start.Z + a+a/2);
+            Point3D p6 = new Point3D(start.X + a, start.Y, start.Z + a);
+            Point3D p7 = new Point3D(start.X + a + a/2, start.Y + a, start.Z + a + a/2);
+
+            List<Point3D> face1 = new List<Point3D>() { start, p2, p4, p1 };
+            List<Point3D> face2 = new List<Point3D>() { start, p3, p5, p2 };
+            List<Point3D> face3 = new List<Point3D>() { p2, p5, p7, p4 };
+            List<Point3D> face4 = new List<Point3D>() { p1, p4, p7, p6 };
+            List<Point3D> face5 = new List<Point3D>() { start, p1, p6, p3 };
+            List<Point3D> face6 = new List<Point3D>() { p3, p6, p7, p5 };
             res.AddPoints(face1);
             res.AddPoints(face2);
             res.AddPoints(face3);
@@ -303,7 +451,7 @@ namespace Affin3D
             return new Point3D(xs, ys, zs);
         }
 
-        static public List<Edge> GetAxis(Point3D center, Mode projection, Projector pr)
+        public static List<Edge> GetAxis(Point3D center, Mode projection, Projector pr)
         {
             List<Edge> res = new List<Edge>();
             res.Add(pr.Project(projection, new Edge3D(center, new Point3D(center.X + 200, center.Y, center.Z))));

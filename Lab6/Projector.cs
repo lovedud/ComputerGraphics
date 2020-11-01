@@ -56,16 +56,16 @@ namespace Affin3D
             }
             
         }
-        public List<Edge> Project(Mode m, Polyhedron p)
+        public List<Edge> Project(Mode m, Polyhedron p, Point3D viewVector)
         {
             switch (m)
             {
                 case Mode.Orthographic:
-                    return ToOrtographics(p);
+                    return ToOrtographics(p, viewVector);
                 case Mode.Isometric:
                     return ToIsometric(p);
                 case Mode.Perspective:
-                    return ToPerspective(p);
+                    return ToPerspective(p, viewVector);
                 default:
                     return new List<Edge>();
 
@@ -153,27 +153,31 @@ namespace Affin3D
         private List<Edge> ToIsometric(Polyhedron ph)
         {
             List<Edge> res = new List<Edge>();
-            var edges_3d = ph.PreparePrint();
+            var edges_3d = ph.PreparePrint(new Point3D(0,0,0));
             foreach (var edge in edges_3d)
             {
                 res.Add(Project(Mode.Isometric, edge));
             }
             return res;
         }
-        private List<Edge> ToPerspective(Polyhedron ph)
+        private List<Edge> ToPerspective(Polyhedron ph, Point3D viewVector)
         {
             List<Edge> res = new List<Edge>();
-            var edges_3d = ph.PreparePrint();
+            //var viewVector_4 = MatrixMultiplication(PointToVector(viewVector), perspective_matr);
+            //viewVector.X = (float)viewVector_4[0, 0];
+            //viewVector.Y = (float)viewVector_4[0, 1];
+            //viewVector.Z = (float)viewVector_4[0, 3];
+            var edges_3d = ph.PreparePrint(viewVector);
             foreach (var edge in edges_3d)
             {
                 res.Add(Project(Mode.Perspective, edge));
             }
             return res;
         }
-        private List<Edge> ToOrtographics(Polyhedron ph)
+        private List<Edge> ToOrtographics(Polyhedron ph, Point3D viewVector)
         {
             List<Edge> edges = new List<Edge>();
-            var edges_3d = ph.PreparePrint();
+            var edges_3d = ph.PreparePrint(viewVector);
             foreach (var edge in edges_3d)
             {
                 edges.Add(Project(Mode.Orthographic, edge));
