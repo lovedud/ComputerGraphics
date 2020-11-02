@@ -13,8 +13,8 @@ namespace Affin3D
     
     static class AffinStuff
     {
-        const int BOX_WIDTH = 1071;
-        const int BOX_HEIGHT = 712;
+        const int BOX_WIDTH = 0;
+        const int BOX_HEIGHT = 0;
         public enum OrtMode
         {
             XY,
@@ -25,7 +25,8 @@ namespace Affin3D
         {
             Isometric,
             Orthographic,
-            Perspective
+            Perspective,
+            Camera
         }
 
         public class Point3D : IEquatable<Point3D>
@@ -78,6 +79,11 @@ namespace Affin3D
                 points = new List<Point3D>();
                 polygons = new List<List<int>>();
                 
+            }
+            public Polyhedron(Polyhedron p)
+            {
+                points = new List<Point3D>(p.points);
+                polygons = new List<List<int>>(p.polygons);
             }
             public Polyhedron(List<Point3D> p, List<List<int>> conn)
             {
@@ -243,6 +249,7 @@ namespace Affin3D
                 }
             }
         }
+        
         static public Point3D ToCenterCoord(Point3D p)
         {
             var moveMatrix = new double[4, 4]
@@ -315,6 +322,11 @@ namespace Affin3D
         static public double[,] PointToVector(Point3D p)
         {
             return new double[1, 4] { { p.X, p.Y, p.Z, 1 } };
+        }
+        static public Point3D VectorToPoint3D(double[,] vec)
+        {
+            var w = vec[0, 3] == 0 ? 1 : vec[0, 3];
+            return new Point3D((float)(vec[0, 0] / w), (float)(vec[0, 1] / w), (float)(vec[0, 2] / w));
         }
         static public PointF VectorToPoint(double[,] vec)
         {
@@ -400,30 +412,7 @@ namespace Affin3D
                 else return Position.Right;
             }
         }
-        //Класс полигона
-        public class Polygon3D
-        {
-            public Polygon3D(List<Point3D> ps)
-            {
-                Points = ps;
-            }
-
-            public Polygon3D(Point3D start_Point3D)
-            {
-                Points = new List<Point3D>();
-                Points.Add(start_Point3D);
-            }
-
-            public void AddPoint(Point3D e)
-            {
-                if (!Points.Contains(e))
-                    Points.Add(e);
-            }
-
-
-            public List<Point3D> Points;
-            
-        }
+        
         //Класс полигона
         public class Polygon
         {
@@ -613,7 +602,13 @@ namespace Affin3D
 
             return matrixC;
         }
-
+        static public double SinBetweenVectorPlain(Point3D plain, Point3D vector)
+        {
+            double kek = Math.Abs(plain.X * vector.X + plain.Y * vector.Y + plain.Z * vector.Z);
+            double lol = Math.Sqrt(plain.X * plain.X + plain.Y * plain.Y + plain.Z * plain.Z);
+            double cheburek = Math.Sqrt(vector.X * vector.X + vector.Y * vector.Y + vector.Z * vector.Z);
+            return kek / (lol * cheburek);
+        }
         static public bool SamePointF(PointF p1, PointF p2)
         {
             if (Math.Abs(p1.X - p2.X) <= 3 && Math.Abs(p1.Y - p2.Y) <= 3)
