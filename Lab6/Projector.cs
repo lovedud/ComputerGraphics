@@ -29,25 +29,6 @@ namespace Affin3D
             FormIsometricMatr();
             FormPerspectiveMatr(z_length);
         }
-
-<<<<<<< HEAD
-=======
-        public PointF Project(Mode m, Point3D p)
-        {
-            
-            switch(m)
-            {
-                case Mode.Orthographic:
-                    return ToOrtographics(p, ort_mode);
-                case Mode.Isometric:
-                    return ToIsometric(p);
-                case Mode.Perspective:
-                    return ToPerspective(p);
-                default:
-                    return new PointF(-1, -1);
-            }
-        }
->>>>>>> 8a7afe0bf69b2e20f97cd2d7d9bc5ad8a4c8dd20
         public Edge Project(Mode m, Edge3D e)
         {
             switch (m)
@@ -70,19 +51,11 @@ namespace Affin3D
             switch (m)
             {
                 case Mode.Orthographic:
-<<<<<<< HEAD
                     return ToOrtographics(copy_p, viewVector);
                 case Mode.Isometric:
                     return ToIsometric(copy_p);
                 case Mode.Perspective:
                     return ToPerspective(copy_p, viewVector);
-=======
-                    return ToOrtographics(copy_p);
-                case Mode.Isometric:
-                    return ToIsometric(copy_p);
-                case Mode.Perspective:
-                    return ToPerspective(copy_p);
->>>>>>> 8a7afe0bf69b2e20f97cd2d7d9bc5ad8a4c8dd20
                 case Mode.Camera:
                     return ProjectFromCamera(copy_p);
                 default:
@@ -105,11 +78,7 @@ namespace Affin3D
             affin_transformer.Perspective(ref copy_p, camera.Z);
             return 
                 copy_p
-<<<<<<< HEAD
                 .PreparePrint(view_vector)
-=======
-                .PreparePrint()
->>>>>>> 8a7afe0bf69b2e20f97cd2d7d9bc5ad8a4c8dd20
                 .Select((edge3d) => 
                 new Edge(new PointF(edge3d.start.X, edge3d.start.Y), 
                             new PointF(edge3d.end.X, edge3d.end.Y)))
