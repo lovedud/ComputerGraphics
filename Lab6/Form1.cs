@@ -239,6 +239,7 @@ namespace Affin3D
         {
             point_angle.X = e.X-50;
             point_angle.Y = e.Y;
+            var x = Math.Sin(90);
             m_down = true;
             if (cur_state == State.RotateAroundLine)
             {
@@ -643,6 +644,19 @@ namespace Affin3D
         {
             cur_polyhedron = CreateTestFigure(new Point3D(0, 0, 0), 100);
             Draw();
+        }
+
+        private void ChangeViewVector(object sender, EventArgs e)
+        {
+            float x,y,z;
+            if (float.TryParse(view_x.Text, out x) && float.TryParse(view_y.Text, out y) && float.TryParse(view_z.Text, out z)
+                && (x != 0 || y != 0 || z != 0))
+            {
+                viewVector.X = x;
+                viewVector.Y = y;
+                viewVector.Z = z;
+                Draw(false);
+            }
         }
     }
 }

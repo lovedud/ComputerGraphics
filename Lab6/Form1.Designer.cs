@@ -86,12 +86,12 @@
             this.button5 = new System.Windows.Forms.Button();
             this.button6 = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
-            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.view_x = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
-            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.view_y = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
-            this.textBox4 = new System.Windows.Forms.TextBox();
+            this.view_z = new System.Windows.Forms.TextBox();
             this.button7 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
@@ -704,13 +704,14 @@
             this.label5.TabIndex = 54;
             this.label5.Text = "Вектор обзора";
             // 
-            // textBox2
+            // view_x
             // 
-            this.textBox2.Location = new System.Drawing.Point(1110, 304);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(27, 20);
-            this.textBox2.TabIndex = 55;
-            this.textBox2.Text = "0";
+            this.view_x.Location = new System.Drawing.Point(1110, 304);
+            this.view_x.Name = "view_x";
+            this.view_x.Size = new System.Drawing.Size(27, 20);
+            this.view_x.TabIndex = 55;
+            this.view_x.Text = "0";
+            this.view_x.TextChanged += new System.EventHandler(this.ChangeViewVector);
             // 
             // label6
             // 
@@ -730,13 +731,14 @@
             this.label7.TabIndex = 58;
             this.label7.Text = "Y";
             // 
-            // textBox3
+            // view_y
             // 
-            this.textBox3.Location = new System.Drawing.Point(1169, 304);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(27, 20);
-            this.textBox3.TabIndex = 57;
-            this.textBox3.Text = "0";
+            this.view_y.Location = new System.Drawing.Point(1169, 304);
+            this.view_y.Name = "view_y";
+            this.view_y.Size = new System.Drawing.Size(27, 20);
+            this.view_y.TabIndex = 57;
+            this.view_y.Text = "0";
+            this.view_y.TextChanged += new System.EventHandler(this.ChangeViewVector);
             // 
             // label8
             // 
@@ -747,13 +749,14 @@
             this.label8.TabIndex = 60;
             this.label8.Text = "Z";
             // 
-            // textBox4
+            // view_z
             // 
-            this.textBox4.Location = new System.Drawing.Point(1228, 304);
-            this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(27, 20);
-            this.textBox4.TabIndex = 59;
-            this.textBox4.Text = "1";
+            this.view_z.Location = new System.Drawing.Point(1228, 304);
+            this.view_z.Name = "view_z";
+            this.view_z.Size = new System.Drawing.Size(27, 20);
+            this.view_z.TabIndex = 59;
+            this.view_z.Text = "1";
+            this.view_z.TextChanged += new System.EventHandler(this.ChangeViewVector);
             // 
             // button7
             // 
@@ -772,11 +775,11 @@
             this.ClientSize = new System.Drawing.Size(1295, 657);
             this.Controls.Add(this.button7);
             this.Controls.Add(this.label8);
-            this.Controls.Add(this.textBox4);
+            this.Controls.Add(this.view_z);
             this.Controls.Add(this.label7);
-            this.Controls.Add(this.textBox3);
+            this.Controls.Add(this.view_y);
             this.Controls.Add(this.label6);
-            this.Controls.Add(this.textBox2);
+            this.Controls.Add(this.view_x);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.button6);
             this.Controls.Add(this.Ortxyz);
@@ -905,12 +908,12 @@
         private System.Windows.Forms.Button button5;
         private System.Windows.Forms.Button button6;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.TextBox view_x;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.TextBox textBox3;
+        private System.Windows.Forms.TextBox view_y;
         private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.TextBox textBox4;
+        private System.Windows.Forms.TextBox view_z;
         private System.Windows.Forms.Button button7;
     }
 }

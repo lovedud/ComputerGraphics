@@ -377,47 +377,6 @@ namespace Affin3D
 
         static public Polyhedron CreateTestFigure(Point3D start, float a)
         {
-            //Polyhedron res = new Polyhedron();
-            //Point3D p1 = new Point3D(start.X, start.Y+a*3, start.Z);
-            //Point3D p2 = new Point3D(start.X+a, start.Y+a*3, start.Z);
-            //Point3D p3 = new Point3D(start.X+a, start.Y+a*2, start.Z);
-            //Point3D p4 = new Point3D(start.X+a*2, start.Y+a*2, start.Z);
-            //Point3D p5 = new Point3D(start.X+a*2, start.Y+a, start.Z);
-            //Point3D p6 = new Point3D(start.X+a, start.Y+a, start.Z);
-            //Point3D p7 = new Point3D(start.X+a, start.Y, start.Z);
-
-            //Point3D p8 = new Point3D(start.X, start.Y, start.Z + a);
-            //Point3D p9 = new Point3D(start.X, start.Y + a * 3, start.Z + a);
-            //Point3D p10 = new Point3D(start.X + a, start.Y + a * 3, start.Z + a);
-            //Point3D p11 = new Point3D(start.X + a, start.Y + a * 2, start.Z + a);
-            //Point3D p12 = new Point3D(start.X + a * 2, start.Y + a * 2, start.Z + a);
-            //Point3D p13 = new Point3D(start.X + a * 2, start.Y + a, start.Z + a);
-            //Point3D p14 = new Point3D(start.X + a, start.Y + a, start.Z + a);
-            //Point3D p15 = new Point3D(start.X + a, start.Y, start.Z + a);
-
-            //List<Point3D> face1 = new List<Point3D>() { start, p1, p2, p3, p4, p5, p6, p7 };
-            //List<Point3D> face2 = new List<Point3D>() { p15, p14, p13, p12, p11, p10, p9, p8 };
-            //List<Point3D> face3 = new List<Point3D>() { p1, p9, p10, p2 };
-            //List<Point3D> face4 = new List<Point3D>() { p2, p10, p11, p3 };
-            //List<Point3D> face5 = new List<Point3D>() { p3, p11, p12, p4 };
-            //List<Point3D> face6 = new List<Point3D>() { p4, p12, p5, p13 };
-            //List<Point3D> face7 = new List<Point3D>() { p6, p5, p13, p14 };
-            //List<Point3D> face8 = new List<Point3D>() { p6, p14, p15, p7 };
-            //List<Point3D> face9 = new List<Point3D>() { start, p7, p15, p8 };
-            //List<Point3D> face10 = new List<Point3D>() { start, p8, p9, p1 };
-
-            //res.AddPoints(face1);
-            //res.AddPoints(face2);
-            //res.AddPoints(face3);
-            //res.AddPoints(face4);
-            //res.AddPoints(face5);
-            //res.AddPoints(face6);
-            //res.AddPoints(face7);
-            //res.AddPoints(face8);
-            //res.AddPoints(face9);
-            //res.AddPoints(face10);
-
-            //return res;
 
             Polyhedron res = new Polyhedron();
             Point3D p1 = new Point3D(start.X + a, start.Y, start.Z);
