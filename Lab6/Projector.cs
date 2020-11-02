@@ -15,32 +15,21 @@ namespace Affin3D
 
         private double[,] isometric_matr;
         private double[,] perspective_matr;
-        int z_length;
+        int z_length = 1600;
 
-        public Projector(int c, OrtMode om = OrtMode.XY)
+        Point3D camera = null;
+        Point3D camera_view_pos = null;
+        Point3D center;
+        
+        public Projector(Point3D coord_center)
         {
-            z_length = c;
-            ort_mode = om;
+            center = coord_center;
+            ort_mode = OrtMode.XY;
             FormOrtoghraphicsMatr(ort_mode);
             FormIsometricMatr();
             FormPerspectiveMatr(z_length);
         }
 
-        public PointF Project(Mode m, Point3D p)
-        {
-            
-            switch(m)
-            {
-                case Mode.Orthographic:
-                    return ToOrtographics(p, ort_mode);
-                case Mode.Isometric:
-                    return ToIsometric(p);
-                case Mode.Perspective:
-                    return ToPerspective(p, z_length);
-                default:
-                    return new PointF(-1, -1);
-            }
-        }
         public Edge Project(Mode m, Edge3D e)
         {
             switch (m)
@@ -58,20 +47,49 @@ namespace Affin3D
         }
         public List<Edge> Project(Mode m, Polyhedron p, Point3D viewVector)
         {
+            var copy_p = new Polyhedron(p);
+            ToCenterCoord(ref copy_p);
             switch (m)
             {
                 case Mode.Orthographic:
-                    return ToOrtographics(p, viewVector);
+                    return ToOrtographics(copy_p, viewVector);
                 case Mode.Isometric:
-                    return ToIsometric(p);
+                    return ToIsometric(copy_p);
                 case Mode.Perspective:
-                    return ToPerspective(p, viewVector);
+                    return ToPerspective(copy_p, viewVector);
+                case Mode.Camera:
+                    return ProjectFromCamera(copy_p);
                 default:
                     return new List<Edge>();
 
             }
         }
-
+        public List<Edge> ProjectFromCamera(Polyhedron p)
+        {
+            AffinTransformator affin_transformer = new AffinTransformator(p.Center());
+            var view_vector = NormalizedVector(new Edge3D(camera, camera_view_pos));
+            var sin_angle_x = SinBetweenVectorPlain(new Point3D(1, 0, 0), view_vector);
+            var sin_angle_y = SinBetweenVectorPlain(new Point3D(0, 1, 0), view_vector);
+            var sin_angle_z = SinBetweenVectorPlain(new Point3D(0, 0, 1), view_vector);
+            var copy_p = new Polyhedron(p);
+            affin_transformer.Rotate(ref copy_p, view_vector, sin_angle_x, Math.Sqrt(1 - sin_angle_x * sin_angle_x));
+            affin_transformer.Rotate(ref copy_p, view_vector, sin_angle_y, Math.Sqrt(1 - sin_angle_y * sin_angle_y));
+            affin_transformer.Rotate(ref copy_p, view_vector, sin_angle_z, Math.Sqrt(1 - sin_angle_z * sin_angle_z));
+            affin_transformer.Scale(ref copy_p, 1, 1, camera.Z);
+            affin_transformer.Perspective(ref copy_p, camera.Z);
+            return 
+                copy_p
+                .PreparePrint(view_vector)
+                .Select((edge3d) => 
+                new Edge(new PointF(edge3d.start.X, edge3d.start.Y), 
+                            new PointF(edge3d.end.X, edge3d.end.Y)))
+                .ToList();
+        }
+        private void ToCenterCoord(ref Polyhedron poly)
+        {
+            AffinTransformator affin_transformer = new AffinTransformator(center);
+            affin_transformer.Move(ref poly, center);
+        }
         private Edge ToOrtographics(Edge3D e)
         {
             var new_start = VectorToPoint(MatrixMultiplication(PointToVector(e.start), ortographics_matr));
@@ -125,7 +143,7 @@ namespace Affin3D
         private void FormPerspectiveMatr(int c)
         {
             perspective_matr = new double[4, 4]
-             {{ 1, 0, 0, 0      },
+            {{ 1, 0, 0, 0      },
              { 0, 1, 0, 0       },
              { 0, 0, 0, 1.0 / c },
              { 0, 0, 0, 1       } };
@@ -137,7 +155,7 @@ namespace Affin3D
             var new_vector_p = MatrixMultiplication(vector_p, isometric_matr);
             return VectorToPoint(new_vector_p);
         }
-        private PointF ToPerspective(Point3D p, int c)
+        private PointF ToPerspective(Point3D p)
         {
             var vector_p = PointToVector(p);
             var new_vector_p = MatrixMultiplication(vector_p, perspective_matr);
@@ -188,6 +206,25 @@ namespace Affin3D
         public void Update(OrtMode om)
         {
             ort_mode = om;
+        }
+        public void UpdateCamera(Point3D cam_pos, Point3D view_pos)
+        {
+            camera = cam_pos;
+            camera_view_pos = view_pos;
+        }
+        public void UpdateCamera(Point3D cam_pos)
+        {
+            camera = cam_pos;
+        }
+        public void UpdatePointOfView(Point3D view_pos)
+        {
+            camera_view_pos = view_pos;
+        }
+        public void MoveCamera(Point3D d)
+        {
+            camera.X += d.X;
+            camera.Y += d.Y;
+            camera.Z += d.Z;
         }
     }
 }

@@ -26,7 +26,8 @@ namespace Affin3D
         {
             RotateAroundLine,
             MoveP,
-            Scale
+            Scale,
+            Camera
         }
         
 
@@ -38,15 +39,20 @@ namespace Affin3D
         Bitmap bm;
         Graphics g;
         Point3D start_point;
-        int c = 1600;
         Projector projector;
+
         Point3D viewVector = new Point3D(0,0,1);
+
+        AffinTransformator aff_trans;
+        Point3D default_camera;
 
         public void Draw(bool drawpoint = true, bool update = true)
         {
             g.Clear(Color.White);
             if (cur_polyhedron is null)
                 return;
+
+            projector.UpdatePointOfView(cur_polyhedron.Center());
             List<Edge> edges = projector.Project(cur_mode, cur_polyhedron, viewVector);
 
             //DrawAxis(start_point); убрал, так как сломались ( становятся не по центру объекта)
@@ -69,7 +75,8 @@ namespace Affin3D
         public void Clear()
         {
             g.Clear(Color.White);
-
+            cur_polyhedron = CreateCube(start_point, 100);
+            projector.UpdateCamera(default_camera);
             pictureBox1.Image = bm;
         }
 
@@ -100,6 +107,7 @@ namespace Affin3D
             {
                 Ortxz.Checked = false;
                 Ortyz.Checked = false;
+                Ortxyz.Checked = false;
                 cur_ort_mode = OrtMode.XY;
                 projector.Update(cur_ort_mode);
                 //ort_button.Enabled = true;
@@ -115,6 +123,7 @@ namespace Affin3D
             {
                 Ortxy.Checked = false;
                 Ortyz.Checked = false;
+                Ortxyz.Checked = false;
                 cur_ort_mode = OrtMode.XZ;
                 projector.Update(cur_ort_mode);
                 //ort_button.Enabled = true;
@@ -128,21 +137,33 @@ namespace Affin3D
             {
                 Ortxz.Checked = false;
                 Ortxy.Checked = false;
+                Ortxyz.Checked = false;
                 cur_ort_mode = OrtMode.YZ;
                 projector.Update(cur_ort_mode);
                 //ort_button.Enabled = true;
                 Draw();
             } else OrtButtonAvailability();
         }
+        private void Ortxyz_CheckedChanged(object sender, EventArgs e)
+        {
+            if (Ortxyz.Checked)
+            {
+                Ortxz.Checked = false;
+                Ortxy.Checked = false;
+                Ortyz.Checked = false;
+                //ort_button.Enabled = true;
+                Draw();
+            }
+            else OrtButtonAvailability();
 
+        }
         private void Ort_Button_Click(object sender, EventArgs e)
         {
             cur_mode = Mode.Orthographic;
             viewVector = new Point3D(0, 0, 1);
+            SwitchModeButtons(true);
             ort_button.Enabled = false;
-            iso_button.Enabled = true;
-            perspective_button.Enabled = true;
-            Draw();
+            Draw(false);
         }
 
 
@@ -159,7 +180,7 @@ namespace Affin3D
             start_point = new Point3D(pictureBox1.Width / 2 - 50, pictureBox1.Height / 2 - 50, 300);
 
             cur_state = State.MoveP;
-            button3.Enabled = false;
+            move_button.Enabled = false;
 
             cur_polyhedron = CreateCube(new Point3D(0 , 0, 0), 100);
             s_x.Text = (pictureBox1.Width / 2).ToString();
@@ -169,7 +190,13 @@ namespace Affin3D
             e_x.Text = (1).ToString();
             e_y.Text = (0).ToString();
             e_z.Text = (0).ToString();
-            projector = new Projector(c);
+            default_camera = new Point3D(pictureBox1.Width / 2 - 250, pictureBox1.Height / 2 - 250, 300);
+
+            projector = new Projector(start_point);
+            projector.UpdateCamera(default_camera);
+
+            aff_trans = new AffinTransformator(start_point);
+
             comboBox1.SelectedIndex = 0;
             comboBox2.SelectedIndex = 0;
             Draw();
@@ -178,13 +205,12 @@ namespace Affin3D
         private void Rota_Click(object sender, EventArgs e)
         {
             cur_state = State.RotateAroundLine;
-            rotateAroundLine.Enabled = false;
             OX.Enabled = false;
             OY.Enabled = true;
             OZ.Enabled = true;
             Custom.Enabled = true;
-            button3.Enabled = true;
-            scaleButton.Enabled = true;
+            SwitchStateButtons(true);
+            rotateAroundLine.Enabled = false;
             Point3D center = cur_polyhedron.Center();
             RAL = new Edge3D(new Point3D(center.X, center.Y, center.Z), new Point3D(1, 0, 0));
         }
@@ -251,91 +277,112 @@ namespace Affin3D
 
             prevMouseMove = new Point3D(e.X, e.Y, 0);
         }
+        private void RotatingLine(Point e)
+        {
+            int angle = AngleBetweenPoints(point_angle, new Point(e.X, e.Y));
+            aff_trans.Rotate(ref cur_polyhedron, RAL.end, prev_angle - angle);
+            prev_angle = angle;
+            Draw(false, false);
+            DrawPoint(ref bm, new PointF(point_angle.X, point_angle.Y), Color.Orange);
 
+            //var edge = projector.Project(cur_mode, RAL_toDraw);
+            //g.DrawLine(new Pen(Color.Orange, 1), edge.start, edge.end); //Не работает из-за нового центрирования
+
+            pictureBox1.Image = bm;
+
+        }
+        private void MovingPoly(Point e)
+        {
+            Point3D mouseMove = prevMouseMove;
+            if (Ortxy.Checked)
+            {
+                mouseMove = new Point3D(e.X - prevMouseMove.X, e.Y - prevMouseMove.Y, 0);
+            }
+            else if (Ortxz.Checked)
+            {
+                mouseMove = new Point3D(e.X - prevMouseMove.X, 0, e.Y - prevMouseMove.Y);
+            }
+            else if (Ortyz.Checked)
+            {
+                mouseMove = new Point3D(0, e.X - prevMouseMove.X, e.Y - prevMouseMove.Y);
+            }
+            aff_trans.Move(ref cur_polyhedron, mouseMove);
+            prevMouseMove.X = e.X;
+            prevMouseMove.Y = e.Y;
+            Draw(false);
+        }
+        private void ScalingPoly(Point e)
+        {
+            Point3D mouseMove = prevMouseMove;
+            double ky = 0;
+            if (Ortxyz.Checked)
+            {
+                mouseMove = new Point3D(e.X - prevMouseMove.X, e.X - prevMouseMove.X, e.X - prevMouseMove.X);
+                ky = 1 - mouseMove.X * 0.01;
+            }
+            else if (Ortxy.Checked)
+            {
+                mouseMove = new Point3D(e.X - prevMouseMove.X, e.Y - prevMouseMove.Y, 0);
+            }
+            else if (Ortxz.Checked)
+            {
+                mouseMove = new Point3D(e.X - prevMouseMove.X, 0, e.Y - prevMouseMove.Y);
+            }
+            else if (Ortyz.Checked)
+            {
+                mouseMove = new Point3D(0, e.X - prevMouseMove.X, e.Y - prevMouseMove.Y);
+            }
+            ky = ky == 0 ? 1 + mouseMove.Y * 0.01 : ky;
+            aff_trans.Scale(ref cur_polyhedron, 1 - mouseMove.X * 0.01, ky, 1 - mouseMove.Z * 0.01);
+            prevMouseMove.X = e.X;
+            prevMouseMove.Y = e.Y;
+
+            Draw(false);
+        }
+        private void CameraMoving(Point e)
+        {
+            Point3D mouseMove = prevMouseMove;
+            if (Ortxy.Checked)
+            {
+                mouseMove = new Point3D(e.X - prevMouseMove.X, e.Y - prevMouseMove.Y, 0);
+            }
+            else if (Ortxz.Checked)
+            {
+                mouseMove = new Point3D(e.X - prevMouseMove.X, 0, e.Y - prevMouseMove.Y);
+            }
+            else if (Ortyz.Checked)
+            {
+                mouseMove = new Point3D(0, e.X - prevMouseMove.X, e.Y - prevMouseMove.Y);
+            }
+            projector.MoveCamera(mouseMove);
+            projector.UpdatePointOfView(cur_polyhedron.Center());
+            prevMouseMove.X = e.X;
+            prevMouseMove.Y = e.Y;
+            Draw(false);
+        }
         private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
         {
-            if (m_down && cur_state == State.RotateAroundLine && !(cur_polyhedron is null))
-            {
-                int angle = AngleBetweenPoints(point_angle, new Point(e.X, e.Y));
-                cur_polyhedron.RotateAroundLine(RAL.start, RAL.end, prev_angle - angle);
-                prev_angle = angle;
-                Draw(false,false);
-                DrawPoint(ref bm, new PointF(point_angle.X, point_angle.Y), Color.Orange);
-
-                //var edge = projector.Project(cur_mode, RAL_toDraw);
-                //g.DrawLine(new Pen(Color.Orange, 1), edge.start, edge.end); //Не работает из-за нового центрирования
+            if (cur_polyhedron is null || !m_down)
+                return;
                 
-                pictureBox1.Image = bm;
-
-                pictureBox1.Update();
-            }
-            if (m_down && cur_state == State.MoveP && !(cur_polyhedron is null))
+            aff_trans.center = cur_polyhedron.Center();
+            switch(cur_state)
             {
-                if (Ortxy.Checked)
-                {
-                    Point3D center = cur_polyhedron.Center();
-                    Point3D mouseMove = new Point3D(e.X - prevMouseMove.X, e.Y - prevMouseMove.Y, 0);
+                case State.MoveP:
+                    MovingPoly(e.Location);
+                    break;
+                case State.RotateAroundLine:
+                    RotatingLine(e.Location);
+                    break;
+                case State.Scale:
+                    ScalingPoly(e.Location);
+                    break;
+                case State.Camera:
+                    CameraMoving(e.Location);
+                    break;
 
-                    cur_polyhedron.getMoved(mouseMove);
-                    Draw(false);
-                }
-                else if (Ortxz.Checked)
-                {
-                    Point3D center = cur_polyhedron.Center();
-                    Point3D mouseMove = new Point3D(e.X - prevMouseMove.X, 0, e.Y - prevMouseMove.Y);
-
-                    cur_polyhedron.getMoved(mouseMove);
-                    Draw(false);
-                }
-                else if (Ortyz.Checked)
-                {
-                    Point3D center = cur_polyhedron.Center();
-                    Point3D mouseMove = new Point3D(0, e.X - prevMouseMove.X, e.Y - prevMouseMove.Y);
-
-                    cur_polyhedron.getMoved(mouseMove);
-                    Draw(false);
-                    
-                }
-
-                prevMouseMove.X = e.X;
-                prevMouseMove.Y = e.Y;
-
-                pictureBox1.Image = bm;
             }
-            if (m_down && cur_state == State.Scale && !(cur_polyhedron is null))
-            {
-                if (Ortxyz.Checked)
-                {
-                    Point3D center = cur_polyhedron.Center();
-                    Point3D mouseMove = new Point3D(e.X - prevMouseMove.X, e.X - prevMouseMove.X, e.X - prevMouseMove.X);
-                    cur_polyhedron.scale(center, 1 - mouseMove.X * 0.01, 1 - mouseMove.X * 0.01, 1 - mouseMove.X * 0.01);
-                }
-                else if (Ortxy.Checked)
-                {
-                    Point3D center = cur_polyhedron.Center();
-                    Point3D mouseMove = new Point3D(e.X - prevMouseMove.X, e.Y - prevMouseMove.Y, 0);
-                    cur_polyhedron.scale(center, 1 - mouseMove.X * 0.01, 1 + mouseMove.Y * 0.01, 1 - mouseMove.Z * 0.01);
-                }
-                else if (Ortxz.Checked)
-                {
-                    Point3D center = cur_polyhedron.Center();
-                    Point3D mouseMove = new Point3D(e.X - prevMouseMove.X, 0, e.Y - prevMouseMove.Y);
-                    cur_polyhedron.scale(center, 1 - mouseMove.X * 0.01, 1 + mouseMove.Y * 0.01, 1 - mouseMove.Z * 0.01);
-                }
-                else if (Ortyz.Checked)
-                {
-                    Point3D center = cur_polyhedron.Center();
-                    Point3D mouseMove = new Point3D(0, e.X - prevMouseMove.X, e.Y - prevMouseMove.Y);
-                    cur_polyhedron.scale(center, 1 - mouseMove.X * 0.01, 1 + mouseMove.Y * 0.01, 1 - mouseMove.Z * 0.01);
-                }
-                
-
-                prevMouseMove.X = e.X;
-                prevMouseMove.Y = e.Y;
-
-                Draw(false);
-                
-            }
+           
         }
 
         private void pictureBox1_MouseUp(object sender, MouseEventArgs e)
@@ -346,10 +393,9 @@ namespace Affin3D
         private void iso_button_Click(object sender, EventArgs e)
         {
             cur_mode = Mode.Isometric;
-            ort_button.Enabled = true;
+            SwitchModeButtons(true);
             iso_button.Enabled = false;
-            perspective_button.Enabled = true;
-            Draw();
+            Draw(false);
         }
         private void button3_Click(object sender, EventArgs e)
         {
@@ -359,48 +405,46 @@ namespace Affin3D
             OY.Enabled = false;
             OZ.Enabled = false;
             Custom.Enabled = false;
-            button3.Enabled = false;
+            move_button.Enabled = false;
             scaleButton.Enabled = true;
         }
         private void Cub_Button_Click(object sender, EventArgs e)
         {
             cur_polyhedron = CreateCube(new Point3D(0, 0, 0), 100);
-            Draw();
+            Draw(false);
         }
        
 
         private void perspective_button_Click(object sender, EventArgs e)
         {
             cur_mode = Mode.Perspective;
-            ort_button.Enabled = true;
-            iso_button.Enabled = true;
+            SwitchModeButtons(true);
             perspective_button.Enabled = false;
             viewVector = new Point3D(0,0, 1);
             Draw();
         }
 
-        private void scaleButton_Click(object sender, EventArgs e)
+        private void ScaleButton_Click(object sender, EventArgs e)
         {
             cur_state = State.Scale;
-            rotateAroundLine.Enabled = true;
             OX.Enabled = false;
             OY.Enabled = false;
             OZ.Enabled = false;
             Custom.Enabled = false;
-            button3.Enabled = true;
+            SwitchStateButtons(true);
             scaleButton.Enabled = false;
+
         }
 
         private void CheckForCustomLine(object sender, EventArgs e)
         {
-            float x1, y1, z1, x2, y2, z2;
             if ((s_x.Text != e_x.Text || s_y.Text != e_y.Text || s_z.Text != e_z.Text)
-                && float.TryParse(s_x.Text, out x1) && float.TryParse(s_y.Text, out y1)
-                && float.TryParse(s_z.Text, out z1) && float.TryParse(e_x.Text, out x2)
-                && float.TryParse(e_y.Text, out y2) && float.TryParse(e_z.Text, out z2)
+                && float.TryParse(s_x.Text, out float x1) && float.TryParse(s_y.Text, out float y1)
+                && float.TryParse(s_z.Text, out float z1) && float.TryParse(e_x.Text, out float x2)
+                && float.TryParse(e_y.Text, out float y2) && float.TryParse(e_z.Text, out float z2)
                 && (x2 != 0 || y2 != 0 || z2 != 0))
-            { 
-                RAL = new Edge3D(new Point3D(x1, y1, z1), NormalizedVector(new Edge3D(new Point3D(0,0,0), new Point3D(x2, y2, z2))));
+            {
+                RAL = new Edge3D(new Point3D(x1, y1, z1), NormalizedVector(new Edge3D(new Point3D(0, 0, 0), new Point3D(x2, y2, z2))));
                 RAL_toDraw = new Edge3D(new Point3D(RAL.start.X - RAL.end.X * 500, RAL.start.Y - RAL.end.Y * 500, RAL.start.Z - RAL.end.Z * 500),
                                         new Point3D(RAL.start.X + RAL.end.X * 500, RAL.start.Y + RAL.end.Y * 500, RAL.start.Z + RAL.end.Z * 500));
             }
@@ -437,18 +481,12 @@ namespace Affin3D
 
         private void Graph_Click(object sender, EventArgs e)
         {
-            double x1 = 0;
-            double x2 = 0;
-            double y1 = 0;
-            double y2 = 0;
-            int amountx = 0;
-            int amounty = 0;
-            if (double.TryParse(grx1.Text, out x1) &&
-                double.TryParse(grx2.Text, out x2) &&
-                double.TryParse(gry1.Text, out y1) &&
-                double.TryParse(gry2.Text, out y2) &&
-                int.TryParse(X_step.Text, out amountx) &&
-                int.TryParse(Y_step.Text, out amounty))
+            if (double.TryParse(grx1.Text, out double x1) &&
+                double.TryParse(grx2.Text, out double x2) &&
+                double.TryParse(gry1.Text, out double y1) &&
+                double.TryParse(gry2.Text, out double y2) &&
+                int.TryParse(X_step.Text, out int amountx) &&
+                int.TryParse(Y_step.Text, out int amounty))
             {
                 double stepx = (x2 - x1) / amountx;
                 double stepy = (y2 - y1) / amounty;
@@ -482,7 +520,7 @@ namespace Affin3D
                         }
                         ++k;
                         p_prev = new Point3D(p.X, p.Y, p.Z);
-                        if (Math.Abs(j - y2)<0.001 && Math.Abs(i - x2) > 0.001)
+                        if (Math.Abs(j - y2) < 0.001 && Math.Abs(i - x2) > 0.001)
                         {
                             buf[--k] = new Point3D(p_prev.X, p_prev.Y, p_prev.Z);
                         }
@@ -496,50 +534,6 @@ namespace Affin3D
             }
         }
 
-        private void gry1_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void RotateFigure(Edge3D RAL, int count)
-        {
-            float angle = 360f / count;
-
-            for (int i = 0; i < count; ++i)
-            {
-                cur_polyhedron.RotateAroundLine(RAL.start, RAL.end, angle);
-                Draw();
-            }
-        }
-
-        private Point3D findCenterRotationFigure(List<Point3D> points, int axis)
-        {
-            double sum = 0;
-            foreach (var p in points)
-            {
-                switch (axis)
-                {
-                    case 1: sum += p.X; break;
-                    case 2: sum += p.Y; break;
-                    case 3: sum += p.Z; break;
-                }
-            }
-            switch (axis)
-            {
-                case 1: return new Point3D((float)(sum / points.Count), 0, 0);
-                case 2: return new Point3D(0, (float)(sum / points.Count), 0);
-                case 3: return new Point3D(0, 0, (float)(sum / points.Count));
-            }
-            return new Point3D();
-        }
-
-        private List<Point3D> Copy(List<Point3D> points)
-        {
-            var l = new List<Point3D>();
-            foreach (var p in points)
-                l.Add(new Point3D(p.X, p.Y, p.Z));
-            return l;
-        }
 
         private void button4_Click(object sender, EventArgs e)
         {
@@ -615,13 +609,6 @@ namespace Affin3D
             Draw();
         }
 
-        private void Ortxyz_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
-
-
-
         private void save_obj_click(object sender, EventArgs e)
         {
             var objects = new List<Polyhedron>();
@@ -633,7 +620,6 @@ namespace Affin3D
                 p.SaveToFile(cur_polyhedron, sfd.OpenFile());
             }
         }
-
         private void button6_Click(object sender, EventArgs e)
         {
             cur_polyhedron = CreateTetrahedron(new Point3D(0, 0, 0), 100);
@@ -656,6 +642,43 @@ namespace Affin3D
                 viewVector.Y = y;
                 viewVector.Z = z;
                 Draw(false);
+            }
+        }
+        public void SwitchStateButtons(bool on)
+        {
+            rotateAroundLine.Enabled = on;
+            move_button.Enabled = on;
+            scaleButton.Enabled = on;
+            camera_button.Enabled = on;
+
+        }
+        public void SwitchModeButtons(bool on)
+        {
+            iso_button.Enabled = on;
+            ort_button.Enabled = on;
+            perspective_button.Enabled = on;
+            camera_button.Enabled = on;
+
+        }
+        private void Camera_Click(object sender, EventArgs e)
+        {
+            cur_mode = Mode.Camera;
+            cur_state = State.Camera;
+            SwitchModeButtons(true);
+            SwitchStateButtons(true);
+            camera_button.Enabled = false;
+            Draw(false);
+        }
+
+        private void Form1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.Control && e.KeyCode == Keys.S)
+            {
+                save_obj_click(sender, e);
+            }
+            else if (e.Control && e.KeyCode == Keys.O)
+            {
+                load_obj_click(sender, e);
             }
         }
     }

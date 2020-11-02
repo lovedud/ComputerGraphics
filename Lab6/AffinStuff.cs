@@ -13,8 +13,6 @@ namespace Affin3D
     
     static class AffinStuff
     {
-        const int BOX_WIDTH = 1;
-        const int BOX_HEIGHT = 1;
         public enum OrtMode
         {
             XY,
@@ -25,7 +23,8 @@ namespace Affin3D
         {
             Isometric,
             Orthographic,
-            Perspective
+            Perspective,
+            Camera
         }
 
         public class Point3D : IEquatable<Point3D>
@@ -94,7 +93,12 @@ namespace Affin3D
                 polygons = conn;
                 normals = norm;
             }
-            
+            public Polyhedron(Polyhedron p)
+            {
+                points = new List<Point3D>(p.points);
+                polygons = new List<List<int>>(p.polygons);
+                normals = new List<Point3D>(p.normals);
+            }
             private int PointInd(Point3D p)
             {
                 int point_ind = points.IndexOf(p);
@@ -124,16 +128,17 @@ namespace Affin3D
                 foreach (var c in polygons)
                 {
                     ++polycount;
-                    if (c.Count < 3 || ((viewVector.X != 0 || viewVector.Y != 0 || viewVector.Z != 0) && !(normals[polycount].ObtuseAngle(viewVector))))//////////////////////////////////////////
+                    if (c.Count < 3 ||
+                        ((viewVector.X != 0 || viewVector.Y != 0 || viewVector.Z != 0) && !normals[polycount].ObtuseAngle(viewVector)))
                         continue;
-                    Point3D prev = ToCenterCoord(points[c[0]]);
+                    Point3D prev = points[c[0]];
                     for (var i = 1; i < c.Count; i++)
                     {
-                        Point3D cur = ToCenterCoord(points[c[i]]);
+                        Point3D cur = points[c[i]];
                         res.Add(new Edge3D(prev, cur));
                         prev = cur;
                     }
-                    Edge3D last = new Edge3D(prev, ToCenterCoord(points[c[0]]));
+                    Edge3D last = new Edge3D(prev, points[c[0]]);
                     res.Add(last);
                 }
                 return res;
@@ -293,28 +298,9 @@ namespace Affin3D
                     points[i] = new Point3D((float)resMatrix[0, 0], (float)resMatrix[0, 1], (float)resMatrix[0, 2]);
                 }
 
-                //for (int i = 0; i < normals.Count; i++)
-                //{
-                //    var pointMatr = new double[1, 4] { { normals[i].X, normals[i].Y, normals[i].Z, 1 } };
-                //    var resMatrix = MatrixMultiplication(pointMatr, moveMatrToZero);
-                //    resMatrix = MatrixMultiplication(resMatrix, scaleMatr);
-                //    resMatrix = MatrixMultiplication(resMatrix, moveMatr);
-                //    normals[i] = new Point3D((float)resMatrix[0, 0], (float)resMatrix[0, 1], (float)resMatrix[0, 2]);
-                //}
             }
         }
-        static public Point3D ToCenterCoord(Point3D p)
-        {
-            var moveMatrix = new double[4, 4]
-            {
-                    { 1,               0,                   0, 0 },
-                    { 0,               1,                   0, 0 },
-                    { 0,               0,                   1, 0 },
-                    { BOX_WIDTH / 4.0, BOX_HEIGHT / 4.0,    0, 1 }
-            };
-            var resMatrix = MatrixMultiplication(PointToVector(p), moveMatrix);
-            return new Point3D((float)resMatrix[0, 0], (float)resMatrix[0, 1], (float)resMatrix[0, 2]);
-        }
+     
         
         public static Point3D NormalizedVector(Edge3D line)
         {
@@ -423,6 +409,11 @@ namespace Affin3D
         {
             return new double[1, 4] { { p.X, p.Y, p.Z, 1 } };
         }
+        static public Point3D VectorToPoint3D(double[,] vec)
+        {
+            var w = vec[0, 3] == 0 ? 1 : vec[0, 3];
+            return new Point3D((float)(vec[0, 0] / w), (float)(vec[0, 1] / w), (float)(vec[0, 2] / w));
+        }
         static public PointF VectorToPoint(double[,] vec)
         {
             var w = vec[0, 3] == 0 ? 1 : vec[0, 3];
@@ -507,30 +498,7 @@ namespace Affin3D
                 else return Position.Right;
             }
         }
-        //Класс полигона
-        public class Polygon3D
-        {
-            public Polygon3D(List<Point3D> ps)
-            {
-                Points = ps;
-            }
-
-            public Polygon3D(Point3D start_Point3D)
-            {
-                Points = new List<Point3D>();
-                Points.Add(start_Point3D);
-            }
-
-            public void AddPoint(Point3D e)
-            {
-                if (!Points.Contains(e))
-                    Points.Add(e);
-            }
-
-
-            public List<Point3D> Points;
-            
-        }
+        
         //Класс полигона
         public class Polygon
         {
@@ -720,7 +688,13 @@ namespace Affin3D
 
             return matrixC;
         }
-
+        static public double SinBetweenVectorPlain(Point3D plain, Point3D vector)
+        {
+            double kek = Math.Abs(plain.X * vector.X + plain.Y * vector.Y + plain.Z * vector.Z);
+            double lol = Math.Sqrt(plain.X * plain.X + plain.Y * plain.Y + plain.Z * plain.Z);
+            double cheburek = Math.Sqrt(vector.X * vector.X + vector.Y * vector.Y + vector.Z * vector.Z);
+            return kek / (lol * cheburek);
+        }
         static public bool SamePointF(PointF p1, PointF p2)
         {
             if (Math.Abs(p1.X - p2.X) <= 3 && Math.Abs(p1.Y - p2.Y) <= 3)
