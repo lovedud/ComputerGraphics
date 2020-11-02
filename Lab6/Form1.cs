@@ -40,6 +40,7 @@ namespace Affin3D
         Graphics g;
         Point3D start_point;
         Projector projector;
+        AffinTransformator aff_trans;
 
         Point3D viewVector = new Point3D(0,0,1);
 
@@ -51,10 +52,16 @@ namespace Affin3D
             g.Clear(Color.White);
             if (cur_polyhedron is null)
                 return;
+<<<<<<< HEAD
 
             projector.UpdatePointOfView(cur_polyhedron.Center());
             List<Edge> edges = projector.Project(cur_mode, cur_polyhedron, viewVector);
 
+=======
+            projector.UpdatePointOfView(cur_polyhedron.Center());
+            List<Edge> edges = projector.Project(cur_mode, cur_polyhedron);
+            
+>>>>>>> 8a7afe0bf69b2e20f97cd2d7d9bc5ad8a4c8dd20
             //DrawAxis(start_point); убрал, так как сломались ( становятся не по центру объекта)
             foreach (var edge in edges)
             {
@@ -76,7 +83,11 @@ namespace Affin3D
         {
             g.Clear(Color.White);
             cur_polyhedron = CreateCube(start_point, 100);
+<<<<<<< HEAD
             projector.UpdateCamera(default_camera);
+=======
+            projector.UpdateCamera(new Point3D(0, 0, 0));
+>>>>>>> 8a7afe0bf69b2e20f97cd2d7d9bc5ad8a4c8dd20
             pictureBox1.Image = bm;
         }
 
@@ -160,7 +171,10 @@ namespace Affin3D
         private void Ort_Button_Click(object sender, EventArgs e)
         {
             cur_mode = Mode.Orthographic;
+<<<<<<< HEAD
             viewVector = new Point3D(0, 0, 1);
+=======
+>>>>>>> 8a7afe0bf69b2e20f97cd2d7d9bc5ad8a4c8dd20
             SwitchModeButtons(true);
             ort_button.Enabled = false;
             Draw(false);
@@ -190,12 +204,20 @@ namespace Affin3D
             e_x.Text = (1).ToString();
             e_y.Text = (0).ToString();
             e_z.Text = (0).ToString();
+<<<<<<< HEAD
             default_camera = new Point3D(pictureBox1.Width / 2 - 250, pictureBox1.Height / 2 - 250, 300);
 
             projector = new Projector(start_point);
             projector.UpdateCamera(default_camera);
 
             aff_trans = new AffinTransformator(start_point);
+=======
+
+            projector = new Projector(start_point);
+            projector.UpdateCamera(start_point);
+
+            aff_trans = new AffinTransformator(new Point3D(0, 0, 0));
+>>>>>>> 8a7afe0bf69b2e20f97cd2d7d9bc5ad8a4c8dd20
 
             comboBox1.SelectedIndex = 0;
             comboBox2.SelectedIndex = 0;
@@ -313,24 +335,44 @@ namespace Affin3D
         }
         private void ScalingPoly(Point e)
         {
+<<<<<<< HEAD
+=======
+            //Point3D center = cur_polyhedron.Center();
+>>>>>>> 8a7afe0bf69b2e20f97cd2d7d9bc5ad8a4c8dd20
             Point3D mouseMove = prevMouseMove;
             double ky = 0;
             if (Ortxyz.Checked)
             {
                 mouseMove = new Point3D(e.X - prevMouseMove.X, e.X - prevMouseMove.X, e.X - prevMouseMove.X);
                 ky = 1 - mouseMove.X * 0.01;
+<<<<<<< HEAD
+=======
+                //cur_polyhedron.scale(center, 1 - mouseMove.X * 0.01, 1 - mouseMove.X * 0.01, 1 - mouseMove.X * 0.01);
+>>>>>>> 8a7afe0bf69b2e20f97cd2d7d9bc5ad8a4c8dd20
             }
             else if (Ortxy.Checked)
             {
                 mouseMove = new Point3D(e.X - prevMouseMove.X, e.Y - prevMouseMove.Y, 0);
+<<<<<<< HEAD
+=======
+                //cur_polyhedron.scale(center, 1 - mouseMove.X * 0.01, 1 + mouseMove.Y * 0.01, 1 - mouseMove.Z * 0.01);
+>>>>>>> 8a7afe0bf69b2e20f97cd2d7d9bc5ad8a4c8dd20
             }
             else if (Ortxz.Checked)
             {
                 mouseMove = new Point3D(e.X - prevMouseMove.X, 0, e.Y - prevMouseMove.Y);
+<<<<<<< HEAD
+=======
+                //cur_polyhedron.scale(center, 1 - mouseMove.X * 0.01, 1 + mouseMove.Y * 0.01, 1 - mouseMove.Z * 0.01);
+>>>>>>> 8a7afe0bf69b2e20f97cd2d7d9bc5ad8a4c8dd20
             }
             else if (Ortyz.Checked)
             {
                 mouseMove = new Point3D(0, e.X - prevMouseMove.X, e.Y - prevMouseMove.Y);
+<<<<<<< HEAD
+=======
+                //cur_polyhedron.scale(center, 1 - mouseMove.X * 0.01, 1 + mouseMove.Y * 0.01, 1 - mouseMove.Z * 0.01);
+>>>>>>> 8a7afe0bf69b2e20f97cd2d7d9bc5ad8a4c8dd20
             }
             ky = ky == 0 ? 1 + mouseMove.Y * 0.01 : ky;
             aff_trans.Scale(ref cur_polyhedron, 1 - mouseMove.X * 0.01, ky, 1 - mouseMove.Z * 0.01);
@@ -620,6 +662,7 @@ namespace Affin3D
                 p.SaveToFile(cur_polyhedron, sfd.OpenFile());
             }
         }
+<<<<<<< HEAD
         private void button6_Click(object sender, EventArgs e)
         {
             cur_polyhedron = CreateTetrahedron(new Point3D(0, 0, 0), 100);
@@ -644,6 +687,8 @@ namespace Affin3D
                 Draw(false);
             }
         }
+=======
+>>>>>>> 8a7afe0bf69b2e20f97cd2d7d9bc5ad8a4c8dd20
         public void SwitchStateButtons(bool on)
         {
             rotateAroundLine.Enabled = on;
@@ -680,6 +725,10 @@ namespace Affin3D
             {
                 load_obj_click(sender, e);
             }
+<<<<<<< HEAD
+=======
+            
+>>>>>>> 8a7afe0bf69b2e20f97cd2d7d9bc5ad8a4c8dd20
         }
     }
 }

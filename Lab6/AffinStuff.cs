@@ -13,6 +13,11 @@ namespace Affin3D
     
     static class AffinStuff
     {
+<<<<<<< HEAD
+=======
+        const int BOX_WIDTH = 0;
+        const int BOX_HEIGHT = 0;
+>>>>>>> 8a7afe0bf69b2e20f97cd2d7d9bc5ad8a4c8dd20
         public enum OrtMode
         {
             XY,
@@ -87,7 +92,16 @@ namespace Affin3D
                 polygons = new List<List<int>>();
                 normals = new List<Point3D>();
             }
+<<<<<<< HEAD
             public Polyhedron(List<Point3D> p, List<List<int>> conn, List<Point3D> norm)
+=======
+            public Polyhedron(Polyhedron p)
+            {
+                points = new List<Point3D>(p.points);
+                polygons = new List<List<int>>(p.polygons);
+            }
+            public Polyhedron(List<Point3D> p, List<List<int>> conn)
+>>>>>>> 8a7afe0bf69b2e20f97cd2d7d9bc5ad8a4c8dd20
             {
                 points = p;
                 polygons = conn;
@@ -300,7 +314,23 @@ namespace Affin3D
 
             }
         }
+<<<<<<< HEAD
      
+=======
+        
+        static public Point3D ToCenterCoord(Point3D p)
+        {
+            var moveMatrix = new double[4, 4]
+            {
+                    { 1,               0,                   0, 0 },
+                    { 0,               1,                   0, 0 },
+                    { 0,               0,                   1, 0 },
+                    { BOX_WIDTH / 4.0, BOX_HEIGHT / 4.0,    0, 1 }
+            };
+            var resMatrix = MatrixMultiplication(PointToVector(p), moveMatrix);
+            return new Point3D((float)resMatrix[0, 0], (float)resMatrix[0, 1], (float)resMatrix[0, 2]);
+        }
+>>>>>>> 8a7afe0bf69b2e20f97cd2d7d9bc5ad8a4c8dd20
         
         public static Point3D NormalizedVector(Edge3D line)
         {

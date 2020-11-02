@@ -86,6 +86,7 @@ namespace Affin3D
             var new_vector_p = MatrixMultiplication(vector_p, rotate_matr);
             p = VectorToPoint3D(new_vector_p);
             Move(ref p);
+<<<<<<< HEAD
             
         }
         private Point3D RotateNormal(Point3D p)
@@ -93,6 +94,8 @@ namespace Affin3D
             var vector_p = PointToVector(p);
             var new_vector_p = MatrixMultiplication(vector_p, rotate_matr);
             return VectorToPoint3D(new_vector_p);
+=======
+>>>>>>> 8a7afe0bf69b2e20f97cd2d7d9bc5ad8a4c8dd20
         }
         private Point3D Rotate(Point3D p)
         {
@@ -167,7 +170,10 @@ namespace Affin3D
             UpdateBackMoveMatr();
             UpdateRotateMatr(vector, sin, cos);
             poly.points = poly.points.Select((x) => Rotate(x)).ToList();
+<<<<<<< HEAD
             poly.normals = poly.normals.Select((x) => RotateNormal(x)).ToList();
+=======
+>>>>>>> 8a7afe0bf69b2e20f97cd2d7d9bc5ad8a4c8dd20
         }
         public void Perspective(ref Polyhedron poly, double c)
         {
