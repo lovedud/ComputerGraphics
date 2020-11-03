@@ -68,8 +68,12 @@ namespace Affin3D
                 double a = Math.Sqrt(X * X + Y * Y + Z * Z) * Math.Sqrt(v.X * v.X + v.Y * v.Y + v.Z * v.Z);
                 double b = X * v.X + Y * v.Y + Z * v.Z;
                 double c = b / a;
-                double d = Math.Acos(c) * 180 / Math.PI;
-                return ((int)Math.Abs(d)) >= 90;
+                if (c < 0)
+                    return true;
+                else
+                    return false;
+                //double d = Math.Acos(c) * 180 / Math.PI;
+                //return ((int)Math.Abs(d)) >= 90;
             }
 
         }
@@ -201,17 +205,6 @@ namespace Affin3D
                     x.Y = (float)res[0, 1];
                     x.Z = (float)res[0, 2];
                 }
-                //int polycount = 0;
-                //foreach(var x in polygons)
-                //{
-                //    List<Point3D> polys = new List<Point3D>();
-                //    foreach(var y in x)
-                //    {
-                //        polys.Add(points[y]);
-                //    }
-                //    normals[polycount] = CreateNormal(polys);
-                //    polycount++;
-                //}
             }
 
             public Point3D Center()
