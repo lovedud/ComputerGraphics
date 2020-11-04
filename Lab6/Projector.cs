@@ -44,48 +44,54 @@ namespace Affin3D
             }
             
         }
-        public List<Edge> Project(Mode m, Polyhedron p, Point3D viewVector)
+        public IEnumerable<Rastr> Project(Mode m, Polyhedron p, Point3D viewVector)
         {
+            List<Rastr> res = new List<Rastr>();
             var copy_p = new Polyhedron(p);
             ToCenterCoord(ref copy_p);
-            switch (m)
+            foreach(var poly in ToIsometric(copy_p, viewVector))
             {
-                case Mode.Orthographic:
-                    return ToOrtographics(copy_p, viewVector);
-                case Mode.Isometric:
-                    return ToIsometric(copy_p, viewVector);
-                case Mode.Perspective:
-                    return ToPerspective(copy_p, viewVector);
-                case Mode.Camera:
-                    return ProjectFromCamera(copy_p);
-                default:
-                    return new List<Edge>();
-
+                res.AddRange(BilinearPolygonInterpolation(poly.ToList()));
             }
+            return res;
+            //switch (m)
+            //{
+            //    case Mode.Orthographic:
+            //        return ToOrtographics(copy_p, viewVector);
+            //    case Mode.Isometric:
+            //        return ToIsometric(copy_p, viewVector);
+            //    case Mode.Perspective:
+            //        return ToPerspective(copy_p, viewVector);
+            //    case Mode.Camera:
+            //        return ProjectFromCamera(copy_p);
+            //    default:
+            //        return new List<Edge>();
+
+            //}
         }
-        public List<Edge> ProjectFromCamera(Polyhedron p)
-        {
-            AffinTransformator affin_transformer = new AffinTransformator(p.Center());
+        //public List<Edge> ProjectFromCamera(Polyhedron p)
+        //{
+        //    AffinTransformator affin_transformer = new AffinTransformator(p.Center());
             
-            var view_vector = NormalizedVector(new Edge3D(ToCenterCoord(camera), ToCenterCoord(camera_view_pos)));
-            var sin_angle_x = SinBetweenVectorPlain(new Point3D(1, 0, 0), view_vector);
-            var sin_angle_y = SinBetweenVectorPlain(new Point3D(0, 1, 0), view_vector);
-            var sin_angle_z = SinBetweenVectorPlain(new Point3D(0, 0, 1), view_vector);
-            var copy_p = new Polyhedron(p);
-            var visible_polys = copy_p.PolyClipping(view_vector);
-            affin_transformer.Rotate(ref copy_p, view_vector, sin_angle_x, Math.Sqrt(1 - sin_angle_x * sin_angle_x));
-            affin_transformer.Rotate(ref copy_p, view_vector, sin_angle_y, Math.Sqrt(1 - sin_angle_y * sin_angle_y));
-            affin_transformer.Rotate(ref copy_p, view_vector, sin_angle_z, Math.Sqrt(1 - sin_angle_z * sin_angle_z));
-            affin_transformer.Scale(ref copy_p, 1, 1, camera.Z);
-            //affin_transformer.Perspective(ref copy_p, camera.Z);
-            return 
-                copy_p
-                .PreparePrint(visible_polys)
-                .Select((edge3d) => 
-                new Edge(new PointF(edge3d.start.X, edge3d.start.Y), 
-                            new PointF(edge3d.end.X, edge3d.end.Y)))
-                .ToList();
-        }
+        //    var view_vector = NormalizedVector(new Edge3D(ToCenterCoord(camera), ToCenterCoord(camera_view_pos)));
+        //    var sin_angle_x = SinBetweenVectorPlain(new Point3D(1, 0, 0), view_vector);
+        //    var sin_angle_y = SinBetweenVectorPlain(new Point3D(0, 1, 0), view_vector);
+        //    var sin_angle_z = SinBetweenVectorPlain(new Point3D(0, 0, 1), view_vector);
+        //    var copy_p = new Polyhedron(p);
+        //    var visible_polys = copy_p.PolyClipping(view_vector);
+        //    affin_transformer.Rotate(ref copy_p, view_vector, sin_angle_x, Math.Sqrt(1 - sin_angle_x * sin_angle_x));
+        //    affin_transformer.Rotate(ref copy_p, view_vector, sin_angle_y, Math.Sqrt(1 - sin_angle_y * sin_angle_y));
+        //    affin_transformer.Rotate(ref copy_p, view_vector, sin_angle_z, Math.Sqrt(1 - sin_angle_z * sin_angle_z));
+        //    affin_transformer.Scale(ref copy_p, 1, 1, camera.Z);
+        //    //affin_transformer.Perspective(ref copy_p, camera.Z);
+        //    return 
+        //        copy_p
+        //        .PreparePrint(visible_polys)
+        //        .Select((edge3d) => 
+        //        new Edge(new PointF(edge3d.start.X, edge3d.start.Y), 
+        //                    new PointF(edge3d.end.X, edge3d.end.Y)))
+        //        .ToList();
+        //}
         private void ToCenterCoord(ref Polyhedron poly)
         {
             AffinTransformator affin_transformer = new AffinTransformator(center);
@@ -175,40 +181,36 @@ namespace Affin3D
             return VectorToPoint(new_vector_p);
         }
 
-        private List<Edge> ToIsometric(Polyhedron ph, Point3D viewVector)
+        private IEnumerable<IEnumerable<Point>> ToIsometric(Polyhedron ph, Point3D viewVector)
         {
-            List<Edge> res = new List<Edge>();
-            var edges_3d = ph.PreparePrint(ph.PolyClipping(viewVector));
-            foreach (var edge in edges_3d)
-            {
-                res.Add(Project(Mode.Isometric, edge));
-            }
-            return res;
+            List<List<Point>> res = new List<List<Point>>();
+            return ph.PreparePrint(ph.PolyClipping(viewVector))
+                .Select((x) => x.Select((y) => ToIsometric(y)).Select((pf) => new Point((int)pf.X, (int)pf.Y)));
         }
-        private List<Edge> ToPerspective(Polyhedron ph, Point3D viewVector)
-        {
-            List<Edge> res = new List<Edge>();
-            //var viewVector_4 = MatrixMultiplication(PointToVector(viewVector), perspective_matr);
-            //viewVector.X = (float)viewVector_4[0, 0];
-            //viewVector.Y = (float)viewVector_4[0, 1];
-            //viewVector.Z = (float)viewVector_4[0, 3];
-            var edges_3d = ph.PreparePrint(ph.PolyClipping(viewVector));
-            foreach (var edge in edges_3d)
-            {
-                res.Add(Project(Mode.Perspective, edge));
-            }
-            return res;
-        }
-        private List<Edge> ToOrtographics(Polyhedron ph, Point3D viewVector)
-        {
-            List<Edge> edges = new List<Edge>();
-            var edges_3d = ph.PreparePrint(ph.PolyClipping(viewVector));
-            foreach (var edge in edges_3d)
-            {
-                edges.Add(Project(Mode.Orthographic, edge));
-            }
-            return edges;
-        }
+        //private List<Edge> ToPerspective(Polyhedron ph, Point3D viewVector)
+        //{
+        //    List<Edge> res = new List<Edge>();
+        //    //var viewVector_4 = MatrixMultiplication(PointToVector(viewVector), perspective_matr);
+        //    //viewVector.X = (float)viewVector_4[0, 0];
+        //    //viewVector.Y = (float)viewVector_4[0, 1];
+        //    //viewVector.Z = (float)viewVector_4[0, 3];
+        //    var edges_3d = ph.PreparePrint(ph.PolyClipping(viewVector));
+        //    foreach (var edge in edges_3d)
+        //    {
+        //        res.Add(Project(Mode.Perspective, edge));
+        //    }
+        //    return res;
+        //}
+        //private List<Edge> ToOrtographics(Polyhedron ph, Point3D viewVector)
+        //{
+        //    List<Edge> edges = new List<Edge>();
+        //    var edges_3d = ph.PreparePrint(ph.PolyClipping(viewVector));
+        //    foreach (var edge in edges_3d)
+        //    {
+        //        edges.Add(Project(Mode.Orthographic, edge));
+        //    }
+        //    return edges;
+        //}
 
         public void Update(OrtMode om)
         {

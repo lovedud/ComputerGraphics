@@ -27,6 +27,32 @@ namespace Affin3D
             Camera
         }
 
+        public class Rastr
+        {
+            public int X { get; set; }
+            public int Y { get; set; }
+            public int H { get; set; }
+
+            public Rastr()
+            {
+                X = -1;
+                Y = -1;
+                H = -1;
+            }
+            public Rastr(Rastr p)
+            {
+                X = p.X;
+                Y = p.Y;
+                H = p.H;
+            }
+            public Rastr(int x, int y)
+            {
+                X = x;
+                Y = y;
+                H = -1;
+            }
+        }
+
         public class Point3D : IEquatable<Point3D>
         {
             public float X { get; set; }
@@ -113,11 +139,24 @@ namespace Affin3D
                     if (polygons[poly].Count > 3)
                     {
                         AddPoints(polygons[poly].Take(3).Select((x) => points[x]).ToList());
-                        polygons[poly].RemoveRange(0, 3);
+                        polygons[poly].RemoveAt(1);
                         //normals[poly] = CreateNormal(polygons[poly].Select();
                     }
                 }
             }
+            
+            public IEnumerable<Rastr> RastrPolyhedron()
+            {
+                List<Rastr> res = new List<Rastr>();
+                var polygons_2d = PrepareToRastr(new List<int>());
+                for (int poly = 0; poly < polygons_2d.Count; poly++)
+                {
+                    res.Concat(BilinearPolygonInterpolation(polygons_2d[poly]));
+                }
+                return res;
+            }
+
+
             private int PointInd(Point3D p)
             {
                 int point_ind = points.IndexOf(p);
@@ -152,25 +191,40 @@ namespace Affin3D
                 }
                 return visible_poly;
             }
-            public HashSet<Edge3D> PreparePrint(List<int> visible_polys)
+            public List<List<Point3D>> PreparePrint(List<int> visible_polys)
             {
-                HashSet<Edge3D> res = new HashSet<Edge3D>();
+                List<List<Point3D>> res = new List<List<Point3D>>();
                 for(var poly = 0; poly < polygons.Count(); poly++)
                 {
                     if (polygons[poly].Count < 3)// || !visible_polys.Contains(poly))
                         continue;
-                    Point3D prev = points[polygons[poly][0]];
-                    for (var i = 1; i < polygons[poly].Count; i++)
+                    res.Add(new List<Point3D>());
+                    for (var i = 0; i < polygons[poly].Count; i++)
                     {
-                        Point3D cur = points[polygons[poly][i]];
-                        res.Add(new Edge3D(prev, cur));
-                        prev = cur;
+                        //var cur_3d = points[polygons[poly][i]];
+                        res[poly].Add(points[polygons[poly][i]]);
                     }
-                    Edge3D last = new Edge3D(prev, points[polygons[poly][0]]);
-                    res.Add(last);
                 }
                 return res;
             }
+            public List<List<Point>> PrepareToRastr(List<int> visible_polys)
+            {
+                List<List<Point>> res = new List<List<Point>>();
+                for (var poly = 0; poly < polygons.Count(); poly++)
+                {
+                    //if (polygons[poly].Count < 3)// || !visible_polys.Contains(poly))
+                    //    continue;
+                    res.Add(new List<Point>());
+                    for (var i = 0; i < polygons[poly].Count; i++)
+                    {
+                        var cur_3d = points[polygons[poly][i]];
+                        res[poly].Add(new Point((int)cur_3d.X, (int)cur_3d.Y));
+                    }
+                   
+                }
+                return res;
+            }
+
 
             public void AddNormal(List<Point3D> polygon)
             {
@@ -186,66 +240,6 @@ namespace Affin3D
                 return NormalizedVector(new Edge3D(new Point3D(0, 0, 0), normalv));
             }
 
-
-            public void RotateAroundLine(Point3D start, Point3D vector, double angle)
-            {
-                angle = angle * (Math.PI / 180.0);
-
-                double l = vector.X;
-                double m = vector.Y;
-                double n = vector.Z;
-
-                double l_2 = l * l;
-                double m_2 = m * m;
-                double n_2 = n * n;
-
-                double cos = Math.Cos(angle);
-                double sin = Math.Sin(angle);
-
-                double[,] matrMoveToZero = new double[4, 4] { { 1,0,0,0 },
-                                                        { 0,1,0,0 },
-                                                        { 0,0,1,0 },
-                                                        { - start.X, - start.Y, - start.Z, 1 } };
-
-                double[,] matrMoveBack = new double[4, 4] { { 1,0,0,0 },
-                                                        { 0,1,0,0 },
-                                                        { 0,0,1,0 },
-                                                        { start.X, start.Y, start.Z, 1 } };
-
-                double[,] matr = new double[4, 4] { { l_2 + cos*(1-l_2), l*(1 - cos)*m + n * sin, l*(1 - cos)*n - m * sin, 0},
-                                                    { l * (1 - cos)*m - n*sin, m_2 + cos*(1 - m_2), m*(1-cos)*n + l*sin, 0 },
-                                                    {l*(1-cos)*n+m*sin, m*(1-cos)*n-l*sin, n_2+cos*(1-n_2),0 },
-                                                    { 0, 0, 0, 1 } };
-
-                foreach (var x in points)
-                {
-                    double[,] vec = new double[1, 4] { { x.X, x.Y, x.Z, 1 } };
-                    var res = MatrixMultiplication(MatrixMultiplication(MatrixMultiplication(vec, matrMoveToZero), matr), matrMoveBack);
-                    x.X = (float)res[0, 0];
-                    x.Y = (float)res[0, 1];
-                    x.Z = (float)res[0, 2];
-                }
-
-                foreach (var x in normals)
-                {
-                    double[,] vec = new double[1, 4] { { x.X, x.Y, x.Z, 1 } };
-                    var res = MatrixMultiplication(vec, matr);
-                    x.X = (float)res[0, 0];
-                    x.Y = (float)res[0, 1];
-                    x.Z = (float)res[0, 2];
-                }
-                //int polycount = 0;
-                //foreach(var x in polygons)
-                //{
-                //    List<Point3D> polys = new List<Point3D>();
-                //    foreach(var y in x)
-                //    {
-                //        polys.Add(points[y]);
-                //    }
-                //    normals[polycount] = CreateNormal(polys);
-                //    polycount++;
-                //}
-            }
 
             public Point3D Center()
             {
@@ -265,70 +259,93 @@ namespace Affin3D
                 zs /= counter;
                 return new Point3D((float)xs, (float)ys, (float)zs);
             }
-
-            public void getMoved(Point3D p)
-            {
-                var moveMatrix = new double[4, 4]
-                {
-                    { 1, 0, 0, 0 },
-                    { 0, 1, 0, 0 },
-                    { 0, 0, 1, 0 },
-                    { p.X, p.Y, p.Z, 1 }
-                };
-                for (int i = 0; i < points.Count; i++)
-                {
-                    var pointMatr = new double[1, 4] { { points[i].X, points[i].Y, points[i].Z, 1 } };
-                    var resMatrix = MatrixMultiplication(pointMatr, moveMatrix);
-                    points[i] = new Point3D((float)resMatrix[0, 0], (float)resMatrix[0, 1], (float)resMatrix[0, 2]);
-                }
-
-                //for (int i = 0; i < normals.Count; i++)
-                //{
-                //    var pointMatr = new double[1, 4] { { normals[i].X, normals[i].Y, normals[i].Z, 1 } };
-                //    var resMatrix = MatrixMultiplication(pointMatr, moveMatrix);
-                //    normals[i] = new Point3D((float)resMatrix[0, 0], (float)resMatrix[0, 1], (float)resMatrix[0, 2]);
-                //}
-            }
             
-
-            public void scale(Point3D p, double kx, double ky, double kz)
+        }
+        static public int PointComparison(Point p1, Point p2)
+        {
+            var y_comp = p1.Y.CompareTo(p2.Y);
+            if (y_comp > 1)
             {
-                var moveMatr = new double[4, 4] 
-                { 
-                    { 1, 0, 0, 0}, 
-                    { 0, 1, 0, 0 },
-                    { 0, 0, 1, 0 },
-                    { p.X, p.Y, p.Z, 1 } 
-                };
+                return 1;
+            }
+            else
+            {
+                if (y_comp == 0)
+                    return p1.X.CompareTo(p2.X);
+            }
+            return -1;
+        }
+        static public IEnumerable<Rastr> BilinearPolygonInterpolation(List<Point> polygon)
+        {
+            var copy_polygon = polygon.OrderBy((x) => x.Y).ToList();
+            //var copy_polygon = new List<Point>(polygon);
+            //copy_polygon.Sort((p1, p2) => p1.Y > p2.Y ? -1 : p1.Y == p2.Y ? -p1.X.CompareTo(p2.X) : -1);
+            copy_polygon.Sort(PointComparison); 
 
-                var moveMatrToZero = new double[4, 4]
+            var long_edge = Interpolation(copy_polygon[0].Y, copy_polygon[0].X,
+                copy_polygon[2].Y, copy_polygon[2].X).ToList();
+
+            var short_edge1 = Interpolation(copy_polygon[0].Y, copy_polygon[0].X,
+                copy_polygon[1].Y, copy_polygon[1].X).ToList();
+            var short_edge2 = Interpolation(copy_polygon[1].Y, copy_polygon[1].X,
+                copy_polygon[2].Y, copy_polygon[2].X).ToList();
+            //short_edge2.Remove(short_edge2[short_edge2.Count - 1]); //remove repeated element(repeated in short_edge2)
+            var short_edges = short_edge1.Concat(short_edge2).ToList();
+
+            var middle = short_edges.Count() / 2;
+            var x_left = long_edge;
+            var x_right = short_edges;
+            if (long_edge[middle] > short_edges[middle])
+            {
+                x_right = long_edge;
+                x_left = short_edges;
+            }
+            var y0 = copy_polygon[0].Y;
+            var yn = copy_polygon[2].Y;
+            List<Rastr> res = new List<Rastr>();
+            for (int y = y0; y < yn; y++)
+            {
+                for (int x = x_left[y - y0]; x < x_right[y - y0]; x++)
                 {
-                    { 1, 0, 0, 0},
-                    { 0, 1, 0, 0 },
-                    { 0, 0, 1, 0 },
-                    { -p.X, -p.Y, -p.Z, 1 } 
-                };
-
-                var scaleMatr = new double[4, 4] 
-                { 
-                    { 1 / kx, 0, 0, 0 }, 
-                    { 0, 1 / ky, 0, 0 },
-                    { 0, 0, 1 / kz, 0 },
-                    { 0, 0, 0, 1 } 
-                };
-
-                for (int i = 0; i < points.Count; i++)
-                {
-                    var pointMatr = new double[1, 4] { { points[i].X, points[i].Y, points[i].Z, 1 } };
-                    var resMatrix = MatrixMultiplication(pointMatr, moveMatrToZero);
-                    resMatrix = MatrixMultiplication(resMatrix, scaleMatr);
-                    resMatrix = MatrixMultiplication(resMatrix, moveMatr);
-                    points[i] = new Point3D((float)resMatrix[0, 0], (float)resMatrix[0, 1], (float)resMatrix[0, 2]);
+                    res.Add(new Rastr(x, y));
                 }
-
+            }
+            return res;
+        }
+        static public IEnumerable<int> InterpolationBetweenPoints(Point p1, Point p2)
+        {
+            if ( Math.Abs(p1.X - p2.X) > Math.Abs(p1.Y - p2.Y)) //more horizontal
+            {
+                if(p1.X - p2.X < 0)//choose left and right points
+                {
+                    return Interpolation((int)p1.X, (int)p1.Y, (int)p2.X, (int)p2.Y);
+                }
+                else return Interpolation((int)p2.X, (int)p2.Y, (int)p1.X, (int)p1.Y);
+            }
+            else //more vertical
+            {
+                if (p1.Y - p2.Y < 0) //choose left and right points
+                {
+                    return Interpolation((int)p1.Y, (int)p1.X, (int)p2.Y, (int)p2.X);
+                }
+                else return Interpolation((int)p2.Y, (int)p2.X, (int)p1.Y, (int)p1.X);
             }
         }
-        
+        static private IEnumerable<int> Interpolation(int i1, int d1, int i2, int d2)
+        {
+            List<int> res = new List<int>();
+            //if (i1 == i2)
+            //    return res;
+            double k =((d2 - d1) * 1.0 / (i2 - i1));
+            double d = d1;
+            for(var t = i1; t < i2; t++)
+            {
+                res.Add((int)d);
+                d += k;
+            }
+            return res;
+        }
+
         public static Point3D NormalizedVector(Edge3D line)
         {
             Point3D lvector = new Point3D(line.end.X - line.start.X, line.end.Y - line.start.Y, line.end.Z - line.start.Z);

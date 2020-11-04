@@ -52,13 +52,16 @@ namespace Affin3D
                 return;
             projector.UpdatePointOfView(cur_polyhedron.Center());
             cur_polyhedron.Triangulate();
-            List<Edge> edges = projector.Project(cur_mode, cur_polyhedron, viewVector);
+            var edges = projector.Project(cur_mode, cur_polyhedron, viewVector);
 
+            
             //DrawAxis(start_point); убрал, так как сломались ( становятся не по центру объекта)
-            foreach (var edge in edges)
+            foreach (var rast in edges)
             {
-                DrawEdge(ref g, ref bm, edge, drawpoint);
+                bm.SetPixel(rast.X, rast.Y, Color.Aqua);
+                //DrawEdge(ref g, ref bm, edge, drawpoint);
             }
+            
             pictureBox1.Image = bm;
             if (update)
                 pictureBox1.Update();
@@ -173,7 +176,7 @@ namespace Affin3D
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            cur_mode = Mode.Orthographic;
+            cur_mode = Mode.Isometric;
             ort_button.Enabled = false;
 
             start_point = new Point3D(pictureBox1.Width / 2 - 50, pictureBox1.Height / 2 - 50, 300);
@@ -467,7 +470,7 @@ namespace Affin3D
                     foreach (var o in objects)
                     {
                         cur_polyhedron = o;
-                        cur_polyhedron.scale(cur_polyhedron.Center(), 1 / 50.0, 1 / 50.0, 1 / 50.0);
+                        aff_trans.Scale(ref cur_polyhedron, 1 / 50.0, 1 / 50.0, 1 / 50.0);
                         Draw();
                     }
                 }
@@ -529,15 +532,14 @@ namespace Affin3D
                             }
                         }
                     }
-                    cur_polyhedron.getMoved(new Point3D(pictureBox1.Width / 4, pictureBox1.Height / 4, 0));
+                    //aff_trans.Move(ref cur_polyhedron, new Point3D(pictureBox1.Width / 4, pictureBox1.Height / 4, 0));
                     Point3D cent = cur_polyhedron.Center();
                     double scale = (x2 - x1) < (y2 - y1) ? (x2 - x1) / pictureBox1.Width * 1.5 : (y2 - y1) / pictureBox1.Height * 1.25;
-                    cur_polyhedron.scale(cent, scale, scale, scale);
-                    Draw(false);
+                    //aff_trans.Scale(cur_polyhedron, scale, scale, scale);
+                    Draw(false, false);
                 }
             }
-
-
+        
             private void button4_Click(object sender, EventArgs e)
             {
                 List<Point3D> buf = new List<Point3D>();
@@ -574,8 +576,8 @@ namespace Affin3D
                 rotated_pol.AddPoints(buf);
                 for (int i = 0; i <= count; ++i)
                 {
-                    rotated_pol.RotateAroundLine(new Point3D(0, 0, 0), axis, angle);
-
+                    aff_trans.Rotate(ref rotated_pol, axis, angle);
+                    
                     for (int j = 0; j < buf.Count; ++j)
                     {
                         //if (rotated_pol.points[j] != buf[j])
@@ -607,8 +609,8 @@ namespace Affin3D
                     }
 
                 }
-                cur_polyhedron.getMoved(new Point3D(pictureBox1.Width / 2, pictureBox1.Height / 2, 0));
-                cur_polyhedron.RotateAroundLine(cur_polyhedron.Center(), new Point3D(0, 1, 0), 90);
+                aff_trans.Move(ref cur_polyhedron, new Point3D(pictureBox1.Width / 2, pictureBox1.Height / 2, 0));
+                aff_trans.Rotate(ref cur_polyhedron, new Point3D(0, 1, 0), 90);
                 Draw();
             }
 
