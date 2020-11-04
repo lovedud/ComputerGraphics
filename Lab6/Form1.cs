@@ -331,13 +331,13 @@ namespace Affin3D
             {
                 mouseMove = new Point3D(0, e.X - prevMouseMove.X, e.Y - prevMouseMove.Y);
             }
-                ky = ky == 0 ? 1 + mouseMove.Y * 0.01 : ky;
-                aff_trans.Scale(ref cur_polyhedron, 1 - mouseMove.X * 0.01, ky, 1 - mouseMove.Z * 0.01);
-                prevMouseMove.X = e.X;
-                prevMouseMove.Y = e.Y;
+            ky = ky == 0 ? 1 + mouseMove.Y * 0.01 : ky;
+            aff_trans.Scale(ref cur_polyhedron, 1 - mouseMove.X * 0.01, ky, 1 - mouseMove.Z * 0.01);
+            prevMouseMove.X = e.X;
+            prevMouseMove.Y = e.Y;
 
-                Draw(false);
-            }
+            Draw(false);
+        }
             private void CameraMoving(Point e)
             {
                 Point3D mouseMove = prevMouseMove;
@@ -354,6 +354,9 @@ namespace Affin3D
                     mouseMove = new Point3D(0, e.X - prevMouseMove.X, e.Y - prevMouseMove.Y);
                 }
                 projector.MoveCamera(mouseMove);
+                view_x.Text = projector.camera.X.ToString();
+                view_y.Text = projector.camera.Y.ToString();
+                view_z.Text = projector.camera.Z.ToString();
                 projector.UpdatePointOfView(cur_polyhedron.Center());
                 prevMouseMove.X = e.X;
                 prevMouseMove.Y = e.Y;
@@ -680,5 +683,7 @@ namespace Affin3D
                     load_obj_click(sender, e);
                 }
             }
+
+        
     }
 }

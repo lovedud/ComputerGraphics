@@ -56,7 +56,7 @@ namespace Affin3D
             var new_vector_p = MatrixMultiplication(vector_p, move_matr);
             p = VectorToPoint3D(new_vector_p);
         }
-        private Point3D Move(Point3D p)
+        public Point3D Move(Point3D p)
         {
             var vector_p = PointToVector(p);
             var new_vector_p = MatrixMultiplication(vector_p, move_matr);
@@ -140,7 +140,7 @@ namespace Affin3D
             UpdateMoveMatr(center.X, center.Y, center.Z);
             UpdateBackMoveMatr();
             UpdateScaleMatr(kx, ky, kz);
-            copy_poly.points.ForEach((x) => Scale(ref x));
+            poly.points = poly.points.Select((x) => Scale(x)).ToList();
             return copy_poly;
         }
         public void Scale(ref Polyhedron poly, double kx, double ky, double kz)
@@ -174,7 +174,7 @@ namespace Affin3D
             UpdatePerspectiveMatr(c);
             poly.points = poly.points.Select((x) => Perspect(x)).ToList();
         }
-        private void UpdateMoveMatr(float x, float y, float z)
+        public void UpdateMoveMatr(float x, float y, float z)
         {
             move_matr[3, 0] = x;
             move_matr[3, 1] = y;

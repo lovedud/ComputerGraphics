@@ -17,7 +17,7 @@ namespace Affin3D
         private double[,] perspective_matr;
         int z_length = 1600;
 
-        Point3D camera = null;
+        public Point3D camera = null;
         Point3D camera_view_pos = null;
         Point3D center;
         
@@ -53,7 +53,7 @@ namespace Affin3D
                 case Mode.Orthographic:
                     return ToOrtographics(copy_p, viewVector);
                 case Mode.Isometric:
-                    return ToIsometric(copy_p);
+                    return ToIsometric(copy_p, viewVector);
                 case Mode.Perspective:
                     return ToPerspective(copy_p, viewVector);
                 case Mode.Camera:
@@ -66,19 +66,21 @@ namespace Affin3D
         public List<Edge> ProjectFromCamera(Polyhedron p)
         {
             AffinTransformator affin_transformer = new AffinTransformator(p.Center());
-            var view_vector = NormalizedVector(new Edge3D(camera, camera_view_pos));
+            
+            var view_vector = NormalizedVector(new Edge3D(ToCenterCoord(camera), ToCenterCoord(camera_view_pos)));
             var sin_angle_x = SinBetweenVectorPlain(new Point3D(1, 0, 0), view_vector);
             var sin_angle_y = SinBetweenVectorPlain(new Point3D(0, 1, 0), view_vector);
             var sin_angle_z = SinBetweenVectorPlain(new Point3D(0, 0, 1), view_vector);
             var copy_p = new Polyhedron(p);
+            var visible_polys = copy_p.PolyClipping(view_vector);
             affin_transformer.Rotate(ref copy_p, view_vector, sin_angle_x, Math.Sqrt(1 - sin_angle_x * sin_angle_x));
             affin_transformer.Rotate(ref copy_p, view_vector, sin_angle_y, Math.Sqrt(1 - sin_angle_y * sin_angle_y));
             affin_transformer.Rotate(ref copy_p, view_vector, sin_angle_z, Math.Sqrt(1 - sin_angle_z * sin_angle_z));
             affin_transformer.Scale(ref copy_p, 1, 1, camera.Z);
-            affin_transformer.Perspective(ref copy_p, camera.Z);
+            //affin_transformer.Perspective(ref copy_p, camera.Z);
             return 
                 copy_p
-                .PreparePrint(view_vector)
+                .PreparePrint(visible_polys)
                 .Select((edge3d) => 
                 new Edge(new PointF(edge3d.start.X, edge3d.start.Y), 
                             new PointF(edge3d.end.X, edge3d.end.Y)))
@@ -88,6 +90,12 @@ namespace Affin3D
         {
             AffinTransformator affin_transformer = new AffinTransformator(center);
             affin_transformer.Move(ref poly, center);
+        }
+        private Point3D ToCenterCoord(Point3D p)
+        {
+            AffinTransformator affin_transformer = new AffinTransformator(center);
+            affin_transformer.UpdateMoveMatr(center.X, center.Y, center.Z);
+            return affin_transformer.Move(p);
         }
         private Edge ToOrtographics(Edge3D e)
         {
@@ -167,10 +175,10 @@ namespace Affin3D
             return VectorToPoint(new_vector_p);
         }
 
-        private List<Edge> ToIsometric(Polyhedron ph)
+        private List<Edge> ToIsometric(Polyhedron ph, Point3D viewVector)
         {
             List<Edge> res = new List<Edge>();
-            var edges_3d = ph.PreparePrint(new Point3D(0,0,0));
+            var edges_3d = ph.PreparePrint(ph.PolyClipping(viewVector));
             foreach (var edge in edges_3d)
             {
                 res.Add(Project(Mode.Isometric, edge));
@@ -184,7 +192,7 @@ namespace Affin3D
             //viewVector.X = (float)viewVector_4[0, 0];
             //viewVector.Y = (float)viewVector_4[0, 1];
             //viewVector.Z = (float)viewVector_4[0, 3];
-            var edges_3d = ph.PreparePrint(viewVector);
+            var edges_3d = ph.PreparePrint(ph.PolyClipping(viewVector));
             foreach (var edge in edges_3d)
             {
                 res.Add(Project(Mode.Perspective, edge));
@@ -194,7 +202,7 @@ namespace Affin3D
         private List<Edge> ToOrtographics(Polyhedron ph, Point3D viewVector)
         {
             List<Edge> edges = new List<Edge>();
-            var edges_3d = ph.PreparePrint(viewVector);
+            var edges_3d = ph.PreparePrint(ph.PolyClipping(viewVector));
             foreach (var edge in edges_3d)
             {
                 edges.Add(Project(Mode.Orthographic, edge));
