@@ -51,6 +51,7 @@ namespace Affin3D
             if (cur_polyhedron is null)
                 return;
             projector.UpdatePointOfView(cur_polyhedron.Center());
+            cur_polyhedron.Triangulate();
             List<Edge> edges = projector.Project(cur_mode, cur_polyhedron, viewVector);
 
             //DrawAxis(start_point); убрал, так как сломались ( становятся не по центру объекта)

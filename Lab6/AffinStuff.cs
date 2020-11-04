@@ -99,6 +99,18 @@ namespace Affin3D
                 polygons = new List<List<int>>(p.polygons);
                 normals = new List<Point3D>(p.normals);
             }
+            public void Triangulate()
+            {
+                for(var poly = 0; poly < polygons.Count; poly++)
+                {
+                    if (polygons[poly].Count > 3)
+                    {
+                        AddPoints(polygons[poly].Take(3).Select((x) => points[x]).ToList());
+                        polygons[poly].RemoveRange(0, 3);
+                        //normals[poly] = CreateNormal(polygons[poly].Select();
+                    }
+                }
+            }
             private int PointInd(Point3D p)
             {
                 int point_ind = points.IndexOf(p);
@@ -128,8 +140,7 @@ namespace Affin3D
                 foreach (var c in polygons)
                 {
                     ++polycount;
-                    if (c.Count < 3 ||
-                        ((viewVector.X != 0 || viewVector.Y != 0 || viewVector.Z != 0) && !normals[polycount].ObtuseAngle(viewVector)))
+                    if (c.Count < 3)
                         continue;
                     Point3D prev = points[c[0]];
                     for (var i = 1; i < c.Count; i++)
