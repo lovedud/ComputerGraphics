@@ -140,7 +140,7 @@
             this.Ortxy.Checked = true;
             this.Ortxy.CheckState = System.Windows.Forms.CheckState.Checked;
             this.Ortxy.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            this.Ortxy.Location = new System.Drawing.Point(1382, 322);
+            this.Ortxy.Location = new System.Drawing.Point(1316, 322);
             this.Ortxy.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.Ortxy.Name = "Ortxy";
             this.Ortxy.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
@@ -154,7 +154,7 @@
             // 
             this.Ortxz.AutoSize = true;
             this.Ortxz.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            this.Ortxz.Location = new System.Drawing.Point(1378, 374);
+            this.Ortxz.Location = new System.Drawing.Point(1315, 350);
             this.Ortxz.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.Ortxz.Name = "Ortxz";
             this.Ortxz.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
@@ -168,7 +168,7 @@
             // 
             this.Ortyz.AutoSize = true;
             this.Ortyz.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            this.Ortyz.Location = new System.Drawing.Point(1381, 430);
+            this.Ortyz.Location = new System.Drawing.Point(1315, 378);
             this.Ortyz.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.Ortyz.Name = "Ortyz";
             this.Ortyz.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
@@ -181,8 +181,8 @@
             // clear_button
             // 
             this.clear_button.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            this.clear_button.Location = new System.Drawing.Point(1132, 873);
-            this.clear_button.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.clear_button.Location = new System.Drawing.Point(963, 808);
+            this.clear_button.Margin = new System.Windows.Forms.Padding(5);
             this.clear_button.Name = "clear_button";
             this.clear_button.Size = new System.Drawing.Size(121, 28);
             this.clear_button.TabIndex = 1;
@@ -194,7 +194,7 @@
             // 
             this.iso_button.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
             this.iso_button.Location = new System.Drawing.Point(1119, 322);
-            this.iso_button.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.iso_button.Margin = new System.Windows.Forms.Padding(5);
             this.iso_button.Name = "iso_button";
             this.iso_button.Size = new System.Drawing.Size(183, 32);
             this.iso_button.TabIndex = 1;
@@ -216,10 +216,10 @@
             // rotateAroundLine
             // 
             this.rotateAroundLine.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            this.rotateAroundLine.Location = new System.Drawing.Point(1119, 573);
-            this.rotateAroundLine.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.rotateAroundLine.Location = new System.Drawing.Point(1118, 542);
+            this.rotateAroundLine.Margin = new System.Windows.Forms.Padding(5);
             this.rotateAroundLine.Name = "rotateAroundLine";
-            this.rotateAroundLine.Size = new System.Drawing.Size(248, 40);
+            this.rotateAroundLine.Size = new System.Drawing.Size(248, 28);
             this.rotateAroundLine.TabIndex = 3;
             this.rotateAroundLine.Text = "Вращение вокруг прямой";
             this.rotateAroundLine.UseVisualStyleBackColor = true;
@@ -228,8 +228,8 @@
             // OX
             // 
             this.OX.Enabled = false;
-            this.OX.Location = new System.Drawing.Point(1248, 623);
-            this.OX.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.OX.Location = new System.Drawing.Point(1248, 580);
+            this.OX.Margin = new System.Windows.Forms.Padding(5);
             this.OX.Name = "OX";
             this.OX.Size = new System.Drawing.Size(41, 28);
             this.OX.TabIndex = 4;
@@ -240,8 +240,8 @@
             // OY
             // 
             this.OY.Enabled = false;
-            this.OY.Location = new System.Drawing.Point(1185, 623);
-            this.OY.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.OY.Location = new System.Drawing.Point(1185, 580);
+            this.OY.Margin = new System.Windows.Forms.Padding(5);
             this.OY.Name = "OY";
             this.OY.Size = new System.Drawing.Size(41, 28);
             this.OY.TabIndex = 5;
@@ -252,8 +252,8 @@
             // OZ
             // 
             this.OZ.Enabled = false;
-            this.OZ.Location = new System.Drawing.Point(1122, 623);
-            this.OZ.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.OZ.Location = new System.Drawing.Point(1122, 580);
+            this.OZ.Margin = new System.Windows.Forms.Padding(5);
             this.OZ.Name = "OZ";
             this.OZ.Size = new System.Drawing.Size(41, 28);
             this.OZ.TabIndex = 6;
@@ -265,10 +265,10 @@
             // 
             this.Custom.Enabled = false;
             this.Custom.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            this.Custom.Location = new System.Drawing.Point(1103, 661);
-            this.Custom.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.Custom.Location = new System.Drawing.Point(1103, 618);
+            this.Custom.Margin = new System.Windows.Forms.Padding(5);
             this.Custom.Name = "Custom";
-            this.Custom.Size = new System.Drawing.Size(275, 44);
+            this.Custom.Size = new System.Drawing.Size(275, 33);
             this.Custom.TabIndex = 7;
             this.Custom.Text = "Произвольная прямая";
             this.Custom.UseVisualStyleBackColor = true;
@@ -278,7 +278,7 @@
             // 
             this.lab1.AutoSize = true;
             this.lab1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            this.lab1.Location = new System.Drawing.Point(1178, 709);
+            this.lab1.Location = new System.Drawing.Point(1170, 656);
             this.lab1.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
             this.lab1.Name = "lab1";
             this.lab1.Size = new System.Drawing.Size(116, 20);
@@ -289,7 +289,7 @@
             // 
             this.lab9.AutoSize = true;
             this.lab9.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            this.lab9.Location = new System.Drawing.Point(1178, 787);
+            this.lab9.Location = new System.Drawing.Point(1141, 724);
             this.lab9.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
             this.lab9.Name = "lab9";
             this.lab9.Size = new System.Drawing.Size(185, 20);
@@ -299,7 +299,7 @@
             // lab2
             // 
             this.lab2.AutoSize = true;
-            this.lab2.Location = new System.Drawing.Point(1128, 745);
+            this.lab2.Location = new System.Drawing.Point(1098, 690);
             this.lab2.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
             this.lab2.Name = "lab2";
             this.lab2.Size = new System.Drawing.Size(17, 17);
@@ -308,8 +308,8 @@
             // 
             // s_x
             // 
-            this.s_x.Location = new System.Drawing.Point(1162, 739);
-            this.s_x.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.s_x.Location = new System.Drawing.Point(1132, 684);
+            this.s_x.Margin = new System.Windows.Forms.Padding(5);
             this.s_x.Name = "s_x";
             this.s_x.Size = new System.Drawing.Size(44, 22);
             this.s_x.TabIndex = 13;
@@ -317,8 +317,8 @@
             // 
             // s_y
             // 
-            this.s_y.Location = new System.Drawing.Point(1262, 739);
-            this.s_y.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.s_y.Location = new System.Drawing.Point(1232, 684);
+            this.s_y.Margin = new System.Windows.Forms.Padding(5);
             this.s_y.Name = "s_y";
             this.s_y.Size = new System.Drawing.Size(48, 22);
             this.s_y.TabIndex = 15;
@@ -327,7 +327,7 @@
             // lab5
             // 
             this.lab5.AutoSize = true;
-            this.lab5.Location = new System.Drawing.Point(1231, 745);
+            this.lab5.Location = new System.Drawing.Point(1201, 690);
             this.lab5.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
             this.lab5.Name = "lab5";
             this.lab5.Size = new System.Drawing.Size(17, 17);
@@ -336,8 +336,8 @@
             // 
             // s_z
             // 
-            this.s_z.Location = new System.Drawing.Point(1372, 739);
-            this.s_z.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.s_z.Location = new System.Drawing.Point(1323, 685);
+            this.s_z.Margin = new System.Windows.Forms.Padding(5);
             this.s_z.Name = "s_z";
             this.s_z.Size = new System.Drawing.Size(45, 22);
             this.s_z.TabIndex = 17;
@@ -346,7 +346,7 @@
             // lab6
             // 
             this.lab6.AutoSize = true;
-            this.lab6.Location = new System.Drawing.Point(1339, 745);
+            this.lab6.Location = new System.Drawing.Point(1296, 687);
             this.lab6.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
             this.lab6.Name = "lab6";
             this.lab6.Size = new System.Drawing.Size(17, 17);
@@ -355,8 +355,8 @@
             // 
             // e_z
             // 
-            this.e_z.Location = new System.Drawing.Point(1372, 817);
-            this.e_z.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.e_z.Location = new System.Drawing.Point(1325, 761);
+            this.e_z.Margin = new System.Windows.Forms.Padding(5);
             this.e_z.Name = "e_z";
             this.e_z.Size = new System.Drawing.Size(45, 22);
             this.e_z.TabIndex = 23;
@@ -365,7 +365,7 @@
             // lab3
             // 
             this.lab3.AutoSize = true;
-            this.lab3.Location = new System.Drawing.Point(1339, 824);
+            this.lab3.Location = new System.Drawing.Point(1296, 765);
             this.lab3.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
             this.lab3.Name = "lab3";
             this.lab3.Size = new System.Drawing.Size(17, 17);
@@ -374,8 +374,8 @@
             // 
             // e_y
             // 
-            this.e_y.Location = new System.Drawing.Point(1262, 817);
-            this.e_y.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.e_y.Location = new System.Drawing.Point(1232, 762);
+            this.e_y.Margin = new System.Windows.Forms.Padding(5);
             this.e_y.Name = "e_y";
             this.e_y.Size = new System.Drawing.Size(47, 22);
             this.e_y.TabIndex = 21;
@@ -384,7 +384,7 @@
             // lab7
             // 
             this.lab7.AutoSize = true;
-            this.lab7.Location = new System.Drawing.Point(1231, 820);
+            this.lab7.Location = new System.Drawing.Point(1201, 765);
             this.lab7.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
             this.lab7.Name = "lab7";
             this.lab7.Size = new System.Drawing.Size(17, 17);
@@ -393,8 +393,8 @@
             // 
             // e_x
             // 
-            this.e_x.Location = new System.Drawing.Point(1162, 816);
-            this.e_x.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.e_x.Location = new System.Drawing.Point(1132, 761);
+            this.e_x.Margin = new System.Windows.Forms.Padding(5);
             this.e_x.Name = "e_x";
             this.e_x.Size = new System.Drawing.Size(44, 22);
             this.e_x.TabIndex = 19;
@@ -403,7 +403,7 @@
             // lab8
             // 
             this.lab8.AutoSize = true;
-            this.lab8.Location = new System.Drawing.Point(1128, 822);
+            this.lab8.Location = new System.Drawing.Point(1098, 767);
             this.lab8.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
             this.lab8.Name = "lab8";
             this.lab8.Size = new System.Drawing.Size(17, 17);
@@ -414,9 +414,9 @@
             // 
             this.move_button.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
             this.move_button.Location = new System.Drawing.Point(1119, 467);
-            this.move_button.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.move_button.Margin = new System.Windows.Forms.Padding(5);
             this.move_button.Name = "move_button";
-            this.move_button.Size = new System.Drawing.Size(244, 44);
+            this.move_button.Size = new System.Drawing.Size(244, 30);
             this.move_button.TabIndex = 3;
             this.move_button.Text = "Смещение";
             this.move_button.UseVisualStyleBackColor = true;
@@ -437,10 +437,10 @@
             // scaleButton
             // 
             this.scaleButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            this.scaleButton.Location = new System.Drawing.Point(1119, 518);
+            this.scaleButton.Location = new System.Drawing.Point(1119, 504);
             this.scaleButton.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.scaleButton.Name = "scaleButton";
-            this.scaleButton.Size = new System.Drawing.Size(244, 47);
+            this.scaleButton.Size = new System.Drawing.Size(244, 31);
             this.scaleButton.TabIndex = 29;
             this.scaleButton.Text = "Масштабирование";
             this.scaleButton.UseVisualStyleBackColor = true;
@@ -453,7 +453,7 @@
             "Sin(x) + Sin(y)",
             "Sin(x)*Cos(y)"});
             this.comboBox1.Location = new System.Drawing.Point(1119, 2);
-            this.comboBox1.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.comboBox1.Margin = new System.Windows.Forms.Padding(5);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(199, 24);
             this.comboBox1.TabIndex = 30;
@@ -461,7 +461,7 @@
             // grx2
             // 
             this.grx2.Location = new System.Drawing.Point(1330, 40);
-            this.grx2.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.grx2.Margin = new System.Windows.Forms.Padding(5);
             this.grx2.Name = "grx2";
             this.grx2.Size = new System.Drawing.Size(48, 22);
             this.grx2.TabIndex = 34;
@@ -480,7 +480,7 @@
             // grx1
             // 
             this.grx1.Location = new System.Drawing.Point(1182, 40);
-            this.grx1.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.grx1.Margin = new System.Windows.Forms.Padding(5);
             this.grx1.Name = "grx1";
             this.grx1.Size = new System.Drawing.Size(44, 22);
             this.grx1.TabIndex = 32;
@@ -499,7 +499,7 @@
             // gry2
             // 
             this.gry2.Location = new System.Drawing.Point(1330, 75);
-            this.gry2.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.gry2.Margin = new System.Windows.Forms.Padding(5);
             this.gry2.Name = "gry2";
             this.gry2.Size = new System.Drawing.Size(48, 22);
             this.gry2.TabIndex = 38;
@@ -518,7 +518,7 @@
             // gry1
             // 
             this.gry1.Location = new System.Drawing.Point(1182, 75);
-            this.gry1.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.gry1.Margin = new System.Windows.Forms.Padding(5);
             this.gry1.Name = "gry1";
             this.gry1.Size = new System.Drawing.Size(44, 22);
             this.gry1.TabIndex = 36;
@@ -537,7 +537,7 @@
             // Y_step
             // 
             this.Y_step.Location = new System.Drawing.Point(1330, 115);
-            this.Y_step.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.Y_step.Margin = new System.Windows.Forms.Padding(5);
             this.Y_step.Name = "Y_step";
             this.Y_step.Size = new System.Drawing.Size(48, 22);
             this.Y_step.TabIndex = 42;
@@ -556,7 +556,7 @@
             // X_step
             // 
             this.X_step.Location = new System.Drawing.Point(1182, 114);
-            this.X_step.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.X_step.Margin = new System.Windows.Forms.Padding(5);
             this.X_step.Name = "X_step";
             this.X_step.Size = new System.Drawing.Size(44, 22);
             this.X_step.TabIndex = 40;
@@ -576,7 +576,7 @@
             // 
             this.Graph.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.Graph.Location = new System.Drawing.Point(1119, 150);
-            this.Graph.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.Graph.Margin = new System.Windows.Forms.Padding(5);
             this.Graph.Name = "Graph";
             this.Graph.Size = new System.Drawing.Size(244, 33);
             this.Graph.TabIndex = 43;
@@ -685,7 +685,7 @@
             // 
             this.Ortxyz.AutoSize = true;
             this.Ortxyz.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            this.Ortxyz.Location = new System.Drawing.Point(1373, 482);
+            this.Ortxyz.Location = new System.Drawing.Point(1307, 406);
             this.Ortxyz.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.Ortxyz.Name = "Ortxyz";
             this.Ortxyz.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
@@ -695,7 +695,7 @@
             this.Ortxyz.UseVisualStyleBackColor = true;
             this.Ortxyz.CheckedChanged += new System.EventHandler(this.Ortxyz_CheckedChanged);
             // 
-            // camera_button
+            // button5
             // 
             this.button5.Location = new System.Drawing.Point(0, 0);
             this.button5.Name = "button5";
@@ -705,10 +705,10 @@
             // button6
             // 
             this.button6.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            this.button6.Location = new System.Drawing.Point(761, -1);
-            this.button6.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button6.Location = new System.Drawing.Point(1122, 232);
+            this.button6.Margin = new System.Windows.Forms.Padding(4);
             this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(111, 30);
+            this.button6.Size = new System.Drawing.Size(241, 30);
             this.button6.TabIndex = 53;
             this.button6.Text = "Тетраэдр";
             this.button6.UseVisualStyleBackColor = true;
@@ -717,7 +717,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(1477, 498);
+            this.label5.Location = new System.Drawing.Point(623, 803);
             this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(106, 17);
@@ -726,8 +726,8 @@
             // 
             // view_x
             // 
-            this.view_x.Location = new System.Drawing.Point(1432, 527);
-            this.view_x.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.view_x.Location = new System.Drawing.Point(762, 800);
+            this.view_x.Margin = new System.Windows.Forms.Padding(4);
             this.view_x.Name = "view_x";
             this.view_x.Size = new System.Drawing.Size(35, 22);
             this.view_x.TabIndex = 55;
@@ -737,7 +737,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(1397, 531);
+            this.label6.Location = new System.Drawing.Point(737, 803);
             this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(17, 17);
@@ -747,7 +747,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(1476, 531);
+            this.label7.Location = new System.Drawing.Point(805, 803);
             this.label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(17, 17);
@@ -756,8 +756,8 @@
             // 
             // view_y
             // 
-            this.view_y.Location = new System.Drawing.Point(1511, 527);
-            this.view_y.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.view_y.Location = new System.Drawing.Point(830, 800);
+            this.view_y.Margin = new System.Windows.Forms.Padding(4);
             this.view_y.Name = "view_y";
             this.view_y.Size = new System.Drawing.Size(35, 22);
             this.view_y.TabIndex = 57;
@@ -767,7 +767,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(1555, 531);
+            this.label8.Location = new System.Drawing.Point(877, 803);
             this.label8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(17, 17);
@@ -776,8 +776,8 @@
             // 
             // view_z
             // 
-            this.view_z.Location = new System.Drawing.Point(1589, 527);
-            this.view_z.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.view_z.Location = new System.Drawing.Point(902, 800);
+            this.view_z.Margin = new System.Windows.Forms.Padding(4);
             this.view_z.Name = "view_z";
             this.view_z.Size = new System.Drawing.Size(35, 22);
             this.view_z.TabIndex = 59;
@@ -787,7 +787,7 @@
             // button7
             // 
             this.button7.Location = new System.Drawing.Point(1395, 573);
-            this.button7.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button7.Margin = new System.Windows.Forms.Padding(4);
             this.button7.Name = "button7";
             this.button7.Size = new System.Drawing.Size(152, 28);
             this.button7.TabIndex = 61;
@@ -799,7 +799,7 @@
             // 
             this.camera_button.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.camera_button.Location = new System.Drawing.Point(1119, 271);
-            this.camera_button.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.camera_button.Margin = new System.Windows.Forms.Padding(5);
             this.camera_button.Name = "camera_button";
             this.camera_button.Size = new System.Drawing.Size(244, 41);
             this.camera_button.TabIndex = 43;

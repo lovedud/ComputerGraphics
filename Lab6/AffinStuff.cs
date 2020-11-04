@@ -40,6 +40,12 @@ namespace Affin3D
                 Y = -1;
                 Z = -1;
             }
+            public Point3D(Point3D p)
+            {
+                X = p.X;
+                Y = p.Y;
+                Z = p.Z;
+            }
             public Point3D(float x, float y, float z)
             {
                 X = x;
@@ -67,8 +73,9 @@ namespace Affin3D
                 double a = Math.Sqrt(X * X + Y * Y + Z * Z) * Math.Sqrt(v.X * v.X + v.Y * v.Y + v.Z * v.Z);
                 double b = X * v.X + Y * v.Y + Z * v.Z;
                 double c = b / a;
-                double d = Math.Acos(c) * 180 / Math.PI;
-                return ((int)Math.Abs(d)) >= 90;
+                return c < 0 ? true : false;
+                // d = Math.Acos(c) * 180 / Math.PI;
+                //return ((int)Math.Abs(d)) >= 90;
             }
 
         }
@@ -133,23 +140,33 @@ namespace Affin3D
                 }
                 AddNormal(polygon);
             }
-            public HashSet<Edge3D> PreparePrint(Point3D viewVector)
+            public List<int> PolyClipping(Point3D viewVector)
             {
-                int polycount = -1;
-                HashSet<Edge3D> res = new HashSet<Edge3D>();
-                foreach (var c in polygons)
+                List<int> visible_poly = new List<int>();
+                for(var i = 0; i < polygons.Count(); i++)
                 {
-                    ++polycount;
-                    if (c.Count < 3)
-                        continue;
-                    Point3D prev = points[c[0]];
-                    for (var i = 1; i < c.Count; i++)
+                    if ((viewVector.X != 0 || viewVector.Y != 0 || viewVector.Z != 0) && normals[i].ObtuseAngle(viewVector))
                     {
-                        Point3D cur = points[c[i]];
+                        visible_poly.Add(i);
+                    }
+                }
+                return visible_poly;
+            }
+            public HashSet<Edge3D> PreparePrint(List<int> visible_polys)
+            {
+                HashSet<Edge3D> res = new HashSet<Edge3D>();
+                for(var poly = 0; poly < polygons.Count(); poly++)
+                {
+                    if (polygons[poly].Count < 3)// || !visible_polys.Contains(poly))
+                        continue;
+                    Point3D prev = points[polygons[poly][0]];
+                    for (var i = 1; i < polygons[poly].Count; i++)
+                    {
+                        Point3D cur = points[polygons[poly][i]];
                         res.Add(new Edge3D(prev, cur));
                         prev = cur;
                     }
-                    Edge3D last = new Edge3D(prev, points[c[0]]);
+                    Edge3D last = new Edge3D(prev, points[polygons[poly][0]]);
                     res.Add(last);
                 }
                 return res;
