@@ -44,6 +44,12 @@ namespace Affin3D
 
         Point3D viewVector = new Point3D(0, 0, 1);
         Point3D default_camera;
+        Light light;
+
+        private Color DimeColor(Color c, double sat)
+        {
+            return Color.FromArgb((int)(c.R * sat), (int)(c.G * sat), (int)(c.B * sat));
+        }
 
         public void Draw(bool drawpoint = true, bool update = true)
         {
@@ -52,15 +58,15 @@ namespace Affin3D
                 return;
             projector.UpdatePointOfView(cur_polyhedron.Center());
             cur_polyhedron.Triangulate();
-            var rastrs = projector.Project(cur_mode, cur_polyhedron, viewVector);
+            var rastrs = projector.Project(cur_mode, cur_polyhedron, viewVector, light);
 
             //DrawAxis(start_point); убрал, так как сломались ( становятся не по центру объекта)
-            foreach (var rast in rastrs)
+            foreach (var rastr in rastrs)
             {
-                if (rast.X < 0 || rast.Y < 0 || rast.X >= pictureBox1.Width || rast.Y >= pictureBox1.Height )
+                if (rastr.X < 0 || rastr.Y < 0 || rastr.X >= pictureBox1.Width || rastr.Y >= pictureBox1.Height )
                     continue;
-                bm.SetPixel(rast.X, rast.Y, Color.Aqua);
-                //DrawEdge(ref g, ref bm, edge, drawpoint);
+                var rastr_color = DimeColor(Color.Aqua, rastr.H);
+                bm.SetPixel(rastr.X, rastr.Y, rastr_color);
             }
             
             pictureBox1.Image = bm;
@@ -177,7 +183,7 @@ namespace Affin3D
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            cur_mode = Mode.Isometric;
+            cur_mode = Mode.Orthographic;
             ort_button.Enabled = false;
 
             start_point = new Point3D(pictureBox1.Width / 2 - 50, pictureBox1.Height / 2 - 50, 300);
@@ -197,6 +203,7 @@ namespace Affin3D
 
             projector = new Projector(start_point);
             projector.UpdateCamera(default_camera);
+            light = new Light(default_camera.X, default_camera.Y, default_camera.Z);
 
             aff_trans = new AffinTransformator(start_point);
 
@@ -688,6 +695,14 @@ namespace Affin3D
                 }
             }
 
-        
+        private void light_create_button_Click(object sender, EventArgs e)
+        {
+            
+            float.TryParse(x_light_box.Text, out float x);
+            float.TryParse(y_light_box.Text, out float y);
+            float.TryParse(z_light_box.Text, out float z);
+            float.TryParse(luminosity_box.Text, out float h);
+            light = new Light(x, y, z, h);
+        }
     }
 }

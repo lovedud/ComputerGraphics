@@ -93,6 +93,16 @@
             this.view_z = new System.Windows.Forms.TextBox();
             this.button7 = new System.Windows.Forms.Button();
             this.camera_button = new System.Windows.Forms.Button();
+            this.light_label = new System.Windows.Forms.Label();
+            this.x_light_box = new System.Windows.Forms.TextBox();
+            this.x_light_label = new System.Windows.Forms.Label();
+            this.y_light_box = new System.Windows.Forms.TextBox();
+            this.label11 = new System.Windows.Forms.Label();
+            this.z_light_box = new System.Windows.Forms.TextBox();
+            this.label12 = new System.Windows.Forms.Label();
+            this.luminosity_box = new System.Windows.Forms.TextBox();
+            this.luminosity_label = new System.Windows.Forms.Label();
+            this.light_create_button = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.SuspendLayout();
@@ -807,17 +817,127 @@
             this.camera_button.UseVisualStyleBackColor = true;
             this.camera_button.Click += new System.EventHandler(this.Camera_Click);
             // 
+            // light_label
+            // 
+            this.light_label.AutoSize = true;
+            this.light_label.Location = new System.Drawing.Point(222, 800);
+            this.light_label.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.light_label.Name = "light_label";
+            this.light_label.Size = new System.Drawing.Size(112, 17);
+            this.light_label.TabIndex = 54;
+            this.light_label.Text = "Источник света";
+            // 
+            // x_light_box
+            // 
+            this.x_light_box.Location = new System.Drawing.Point(432, 800);
+            this.x_light_box.Margin = new System.Windows.Forms.Padding(4);
+            this.x_light_box.Name = "x_light_box";
+            this.x_light_box.Size = new System.Drawing.Size(35, 22);
+            this.x_light_box.TabIndex = 55;
+            this.x_light_box.Text = "0";
+            this.x_light_box.TextChanged += new System.EventHandler(this.ChangeViewVector);
+            // 
+            // x_light_label
+            // 
+            this.x_light_label.AutoSize = true;
+            this.x_light_label.Location = new System.Drawing.Point(407, 803);
+            this.x_light_label.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.x_light_label.Name = "x_light_label";
+            this.x_light_label.Size = new System.Drawing.Size(17, 17);
+            this.x_light_label.TabIndex = 56;
+            this.x_light_label.Text = "X";
+            // 
+            // y_light_box
+            // 
+            this.y_light_box.Location = new System.Drawing.Point(500, 800);
+            this.y_light_box.Margin = new System.Windows.Forms.Padding(4);
+            this.y_light_box.Name = "y_light_box";
+            this.y_light_box.Size = new System.Drawing.Size(35, 22);
+            this.y_light_box.TabIndex = 57;
+            this.y_light_box.Text = "0";
+            this.y_light_box.TextChanged += new System.EventHandler(this.ChangeViewVector);
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(475, 803);
+            this.label11.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(17, 17);
+            this.label11.TabIndex = 58;
+            this.label11.Text = "Y";
+            // 
+            // z_light_box
+            // 
+            this.z_light_box.Location = new System.Drawing.Point(572, 800);
+            this.z_light_box.Margin = new System.Windows.Forms.Padding(4);
+            this.z_light_box.Name = "z_light_box";
+            this.z_light_box.Size = new System.Drawing.Size(35, 22);
+            this.z_light_box.TabIndex = 59;
+            this.z_light_box.Text = "1";
+            this.z_light_box.TextChanged += new System.EventHandler(this.ChangeViewVector);
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(547, 803);
+            this.label12.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(17, 17);
+            this.label12.TabIndex = 60;
+            this.label12.Text = "Z";
+            // 
+            // luminosity_box
+            // 
+            this.luminosity_box.Location = new System.Drawing.Point(364, 800);
+            this.luminosity_box.Margin = new System.Windows.Forms.Padding(4);
+            this.luminosity_box.Name = "luminosity_box";
+            this.luminosity_box.Size = new System.Drawing.Size(35, 22);
+            this.luminosity_box.TabIndex = 55;
+            this.luminosity_box.Text = "0";
+            this.luminosity_box.TextChanged += new System.EventHandler(this.ChangeViewVector);
+            // 
+            // luminosity_label
+            // 
+            this.luminosity_label.AutoSize = true;
+            this.luminosity_label.Location = new System.Drawing.Point(342, 803);
+            this.luminosity_label.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.luminosity_label.Name = "luminosity_label";
+            this.luminosity_label.Size = new System.Drawing.Size(18, 17);
+            this.luminosity_label.TabIndex = 56;
+            this.luminosity_label.Text = "H";
+            // 
+            // light_create_button
+            // 
+            this.light_create_button.Location = new System.Drawing.Point(103, 797);
+            this.light_create_button.Name = "light_create_button";
+            this.light_create_button.Size = new System.Drawing.Size(112, 23);
+            this.light_create_button.TabIndex = 62;
+            this.light_create_button.Text = "Создать свет";
+            this.light_create_button.UseVisualStyleBackColor = true;
+            this.light_create_button.Click += new System.EventHandler(this.light_create_button_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1924, 1007);
+            this.Controls.Add(this.light_create_button);
             this.Controls.Add(this.button7);
+            this.Controls.Add(this.label12);
             this.Controls.Add(this.label8);
+            this.Controls.Add(this.z_light_box);
             this.Controls.Add(this.view_z);
+            this.Controls.Add(this.label11);
             this.Controls.Add(this.label7);
+            this.Controls.Add(this.y_light_box);
             this.Controls.Add(this.view_y);
+            this.Controls.Add(this.luminosity_label);
+            this.Controls.Add(this.x_light_label);
             this.Controls.Add(this.label6);
+            this.Controls.Add(this.luminosity_box);
+            this.Controls.Add(this.x_light_box);
+            this.Controls.Add(this.light_label);
             this.Controls.Add(this.view_x);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.button6);
@@ -955,7 +1075,16 @@
         private System.Windows.Forms.TextBox view_z;
         private System.Windows.Forms.Button button7;
         private System.Windows.Forms.Button camera_button;
-
+        private System.Windows.Forms.Label light_label;
+        private System.Windows.Forms.TextBox x_light_box;
+        private System.Windows.Forms.Label x_light_label;
+        private System.Windows.Forms.TextBox y_light_box;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.TextBox z_light_box;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.TextBox luminosity_box;
+        private System.Windows.Forms.Label luminosity_label;
+        private System.Windows.Forms.Button light_create_button;
     }
 }
 

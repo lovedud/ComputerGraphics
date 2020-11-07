@@ -20,7 +20,8 @@ namespace Affin3D
         public Point3D camera = null;
         Point3D camera_view_pos = null;
         Point3D center;
-        
+        Light light;
+
         public Projector(Point3D coord_center)
         {
             center = coord_center;
@@ -44,12 +45,13 @@ namespace Affin3D
             }
             
         }
-        public IEnumerable<Rastr> Project(Mode m, Polyhedron p, Point3D viewVector)
+        public IEnumerable<Rastr> Project(Mode m, Polyhedron p, Point3D viewVector, Light l)
         {
             List<Rastr> res = new List<Rastr>();
             var copy_p = new Polyhedron(p);
             ToCenterCoord(ref copy_p);
-            IEnumerable<IEnumerable<Point>> points_2D;
+            IEnumerable<List<Rastr>> points_2D;
+            light = l;
             switch (m)
             {
                 case Mode.Orthographic:
@@ -71,12 +73,13 @@ namespace Affin3D
             foreach (var poly in points_2D)
             {
                 if (poly.Count() != 0)
-                    res.AddRange(BilinearPolygonInterpolation(poly.ToList()));
-
+                {
+                    res.AddRange(BilinearPolygonInterpolation(poly));
+                }
             }
             return res;
         }
-        public IEnumerable<IEnumerable<Point>> ProjectFromCamera(Polyhedron p)
+        public IEnumerable<List<Rastr>> ProjectFromCamera(Polyhedron p)
         {
             AffinTransformator affin_transformer = new AffinTransformator(p.Center());
 
@@ -91,8 +94,8 @@ namespace Affin3D
             affin_transformer.Rotate(ref copy_p, view_vector, sin_angle_z, Math.Sqrt(1 - sin_angle_z * sin_angle_z));
             affin_transformer.Scale(ref copy_p, 1, 1, camera.Z);
             //affin_transformer.Perspective(ref copy_p, camera.Z);
-            return copy_p.PreparePrint(copy_p.PolyClipping(view_vector))
-                .Select((x) => x.Select((pf) => new Point((int)pf.X, (int)pf.Y)));
+            return copy_p.PreparePrint(copy_p.PolyClipping(view_vector), light)
+                .Select((x) => x.Select((pf) => new Rastr(pf.Item1, pf.Item2)).ToList());
         }
         private void ToCenterCoord(ref Polyhedron poly)
         {
@@ -183,24 +186,22 @@ namespace Affin3D
             return VectorToPoint(new_vector_p);
         }
 
-        private IEnumerable<IEnumerable<Point>> ToIsometric(Polyhedron ph, Point3D viewVector)
+        private IEnumerable<List<Rastr>> ToIsometric(Polyhedron ph, Point3D viewVector)
         {
             List<List<Point>> res = new List<List<Point>>();
-            return ph.PreparePrint(ph.PolyClipping(viewVector))
-                .Select((x) => x.Select((y) => ToIsometric(y)).Select((pf) => new Point((int)pf.X, (int)pf.Y)));
+            return ph.PreparePrint(ph.PolyClipping(viewVector), light)
+                .Select((x) => x.Select((y) => new Rastr(ToIsometric(y.Item1),y.Item2)).ToList());
         }
-        private IEnumerable<IEnumerable<Point>> ToPerspective(Polyhedron ph, Point3D viewVector)
+        private IEnumerable<List<Rastr>> ToPerspective(Polyhedron ph, Point3D viewVector)
         {
             List<Edge> res = new List<Edge>();
-            return ph.PreparePrint(ph.PolyClipping(viewVector))
-                .Select((x) => x.Select((y) => ToPerspective(y)).Select((pf) => new Point((int)pf.X, (int)pf.Y)));
+            return ph.PreparePrint(ph.PolyClipping(viewVector), light)
+                .Select((x) => x.Select((y) => new Rastr(ToPerspective(y.Item1), y.Item2)).ToList());
         }
-        private IEnumerable<IEnumerable<Point>> ToOrtographics(Polyhedron ph, Point3D viewVector)
+        private IEnumerable<List<Rastr>> ToOrtographics(Polyhedron ph, Point3D viewVector)
         {
-            List<Edge> edges = new List<Edge>();
-            var edges_3d = ph.PreparePrint(ph.PolyClipping(viewVector));
-            return ph.PreparePrint(ph.PolyClipping(viewVector))
-                .Select((x) => x.Select((y) => ToOrtographics(y, ort_mode)).Select((pf) => new Point((int)pf.X, (int)pf.Y)));
+            return ph.PreparePrint(ph.PolyClipping(viewVector), light)
+                .Select((x) => x.Select((y) => new Rastr(ToOrtographics(y.Item1, ort_mode), y.Item2)).ToList());
         }
 
         public void Update(OrtMode om)

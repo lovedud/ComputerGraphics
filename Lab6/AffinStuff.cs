@@ -26,12 +26,34 @@ namespace Affin3D
             Perspective,
             Camera
         }
+        public class Light
+        {
+            public Point3D Pos { get; set; }
+            public double H { get; set; }
+
+            public Light()
+            {
+                Pos = new Point3D();
+                H = -1;
+            }
+            public Light(Light p)
+            {
+                Pos = p.Pos;
+                H = p.H;
+            }
+            public Light(float x, float y, float z, double h = 1)
+            {
+                Pos = new Point3D(x, y, z);
+                H = h;
+            }
+        }
+
 
         public class Rastr
         {
             public int X { get; set; }
             public int Y { get; set; }
-            public int H { get; set; }
+            public double H { get; set; }
 
             public Rastr()
             {
@@ -45,11 +67,30 @@ namespace Affin3D
                 Y = p.Y;
                 H = p.H;
             }
-            public Rastr(int x, int y)
+            public Rastr(Point p, double h = -1)
+            {
+                X = p.X;
+                Y = p.Y;
+                H = h;
+            }
+            public Rastr(PointF p, double h = -1)
+            {
+                X = (int)p.X;
+                Y = (int)p.Y;
+                H = h;
+            }
+            public Rastr(int x, int y, double h = -1)
             {
                 X = x;
                 Y = y;
-                H = -1;
+                H = h;
+            }
+
+            public Rastr(Point3D p, double h)
+            {
+                X = (int)p.X;
+                Y = (int)p.Y;
+                H = h;
             }
         }
 
@@ -184,6 +225,7 @@ namespace Affin3D
                 List<int> visible_poly = new List<int>();
                 for(var i = 0; i < polygons.Count(); i++)
                 {
+                    
                     if ((viewVector.X != 0 || viewVector.Y != 0 || viewVector.Z != 0) && normals[i].ObtuseAngle(viewVector))
                     {
                         visible_poly.Add(i);
@@ -191,17 +233,24 @@ namespace Affin3D
                 }
                 return visible_poly;
             }
-            public List<List<Point3D>> PreparePrint(List<int> visible_polys)
+            private double Luminosity(int point_ind, Light light )
             {
-                List<List<Point3D>> res = new List<List<Point3D>>();
+                return light.H * 0.6 * CosVectors(light.Pos, normals[point_ind]);
+            }
+
+            public List<List<Tuple<Point3D, double>>> PreparePrint(List<int> visible_polys, Light light)
+            {
+                List<List<Tuple<Point3D, double>>> res = new List<List<Tuple<Point3D, double>>>();
                 for(var poly = 0; poly < polygons.Count(); poly++)
                 {
-                    res.Add(new List<Point3D>()); // think aobut it
+                    res.Add(new List<Tuple<Point3D, double>>()); 
                     if (polygons[poly].Count < 3 || !visible_polys.Contains(poly))
                         continue;
                     for (var i = 0; i < polygons[poly].Count; i++)
                     {
-                        res[poly].Add(points[polygons[poly][i]]);
+                        var cur_point_ind = polygons[poly][i];
+                        res[poly].Add(new Tuple<Point3D, double>(
+                            points[cur_point_ind], Luminosity(cur_point_ind, light)));
                     }
                 }
                 return res;
@@ -258,7 +307,23 @@ namespace Affin3D
                 zs /= counter;
                 return new Point3D((float)xs, (float)ys, (float)zs);
             }
+
             
+            
+        }
+        static public int RastrComparison(Rastr p1, Rastr p2)
+        {
+            var y_comp = p1.Y.CompareTo(p2.Y);
+            if (y_comp > 1)
+            {
+                return 1;
+            }
+            else
+            {
+                if (y_comp == 0)
+                    return p1.X.CompareTo(p2.X);
+            }
+            return -1;
         }
         static public int PointComparison(Point p1, Point p2)
         {
@@ -310,25 +375,75 @@ namespace Affin3D
             }
             return res;
         }
-        static public IEnumerable<int> InterpolationBetweenPoints(Point p1, Point p2)
+        static public IEnumerable<Rastr> BilinearPolygonInterpolation(List<Rastr> polygon)
         {
-            if ( Math.Abs(p1.X - p2.X) > Math.Abs(p1.Y - p2.Y)) //more horizontal
+            var copy_polygon = polygon.OrderBy((x) => x.Y).ToList();
+            copy_polygon.Sort(RastrComparison);
+
+            var long_edge = Interpolation(copy_polygon[0].Y, copy_polygon[0].X,
+                copy_polygon[2].Y, copy_polygon[2].X).ToList();
+            var h_long_edge = Interpolation(copy_polygon[0].Y, copy_polygon[0].H,
+                copy_polygon[2].Y, copy_polygon[2].H).ToList();
+
+            var short_edge1 = Interpolation(copy_polygon[0].Y, copy_polygon[0].X,
+                copy_polygon[1].Y, copy_polygon[1].X).ToList();
+            var h_short_edge1 = Interpolation(copy_polygon[0].Y, copy_polygon[0].H,
+                copy_polygon[1].Y, copy_polygon[1].H).ToList();
+
+            var short_edge2 = Interpolation(copy_polygon[1].Y, copy_polygon[1].X,
+                copy_polygon[2].Y, copy_polygon[2].X).ToList();
+            var h_short_edge2 = Interpolation(copy_polygon[1].Y, copy_polygon[1].H,
+                copy_polygon[2].Y, copy_polygon[2].H).ToList();
+
+            var short_edges = short_edge1.Concat(short_edge2).ToList();
+            var h_short_edges = h_short_edge1.Concat(h_short_edge2).ToList();
+
+            var middle = short_edges.Count() / 2;
+            var x_left = long_edge;
+            var h_left = h_long_edge;
+            var x_right = short_edges;
+            var h_right = h_short_edges;
+            if (long_edge[middle] > short_edges[middle])
             {
-                if(p1.X - p2.X < 0)//choose left and right points
-                {
-                    return Interpolation(p1.X, p1.Y, p2.X, p2.Y);
-                }
-                else return Interpolation(p2.X, p2.Y, p1.X, p1.Y);
+                x_right = long_edge;
+                h_right = h_long_edge;
+                x_left = short_edges;
+                h_left = h_short_edges;
             }
-            else //more vertical
+            var y0 = copy_polygon[0].Y;
+            var yn = copy_polygon[2].Y;
+            List<Rastr> res = new List<Rastr>();
+            for (int y = y0; y < yn; y++)
             {
-                if (p1.Y - p2.Y < 0) //choose left and right points
+                int x_l = x_left[y - y0];
+                int x_r = x_right[y - y0];
+                var h_values = Interpolation(x_l, h_right[y - y0], x_r, h_left[y - y0]).ToList();
+                for (int x = x_l; x < x_r; x++)
                 {
-                    return Interpolation(p1.Y, p1.X, p2.Y, p2.X);
+                    res.Add(new Rastr(x, y, h_values[x - x_l]));
                 }
-                else return Interpolation(p2.Y, p2.X, p1.Y, p1.X);
             }
+            return res;
         }
+        //static public IEnumerable<int> InterpolationBetweenPoints(Point p1, Point p2)
+        //{
+        //    if ( Math.Abs(p1.X - p2.X) > Math.Abs(p1.Y - p2.Y)) //more horizontal
+        //    {
+        //        if(p1.X - p2.X < 0)//choose left and right points
+        //        {
+        //            return Interpolation(p1.X, p1.Y, p2.X, p2.Y);
+        //        }
+        //        else return Interpolation(p2.X, p2.Y, p1.X, p1.Y);
+        //    }
+        //    else //more vertical
+        //    {
+        //        if (p1.Y - p2.Y < 0) //choose left and right points
+        //        {
+        //            return Interpolation(p1.Y, p1.X, p2.Y, p2.X);
+        //        }
+        //        else return Interpolation(p2.Y, p2.X, p1.Y, p1.X);
+        //    }
+        //}
         static private IEnumerable<int> Interpolation(int i1, int d1, int i2, int d2)
         {
             List<int> res = new List<int>();
@@ -337,6 +452,18 @@ namespace Affin3D
             for(var t = i1; t < i2; t++)
             {
                 res.Add((int)d);
+                d += k;
+            }
+            return res;
+        }
+        static private IEnumerable<double> Interpolation(int i1, double d1, int i2, double d2)
+        {
+            List<double> res = new List<double>();
+            double k = ((d2 - d1) * 1.0 / (i2 - i1));
+            double d = d1;
+            for (var t = i1; t < i2; t++)
+            {
+                res.Add(d);
                 d += k;
             }
             return res;
@@ -728,7 +855,14 @@ namespace Affin3D
 
             return matrixC;
         }
-        static public double SinBetweenVectorPlain(Point3D plain, Point3D vector)
+        static public double CosVectors(Point3D vec1, Point3D vec2)
+        {
+            double kek = Math.Abs(vec1.X * vec2.X + vec1.Y * vec2.Y + vec1.Z * vec2.Z);
+            double lol = Math.Sqrt(vec1.X * vec1.X + vec1.Y * vec1.Y + vec1.Z * vec1.Z);
+            double cheburek = Math.Sqrt(vec2.X * vec2.X + vec2.Y * vec2.Y + vec2.Z * vec2.Z);
+            return kek / (lol * cheburek);
+        }
+        static public double SinBetweenVectorPlain(Point3D plain, Point3D vector)//TODO: think about it
         {
             double kek = Math.Abs(plain.X * vector.X + plain.Y * vector.Y + plain.Z * vector.Z);
             double lol = Math.Sqrt(plain.X * plain.X + plain.Y * plain.Y + plain.Z * plain.Z);
