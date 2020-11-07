@@ -72,6 +72,11 @@ namespace Affin3D
             }
         }
 
+        public List<Edge> ProjectFHA(Polyhedron p)
+        {
+            return ToOrtographicsFHA(p);
+        }
+
         private Edge ToOrtographics(Edge3D e)
         {
             var new_start = VectorToPoint(MatrixMultiplication(PointToVector(e.start), ortographics_matr));
@@ -174,6 +179,17 @@ namespace Affin3D
         {
             List<Edge> edges = new List<Edge>();
             var edges_3d = ph.PreparePrint();
+            foreach (var edge in edges_3d)
+            {
+                edges.Add(Project(Mode.Orthographic, edge));
+            }
+            return edges;
+        }
+
+        private List<Edge> ToOrtographicsFHA(Polyhedron ph)
+        {
+            List<Edge> edges = new List<Edge>();
+            var edges_3d = ph.PreparePrintFHA();
             foreach (var edge in edges_3d)
             {
                 edges.Add(Project(Mode.Orthographic, edge));

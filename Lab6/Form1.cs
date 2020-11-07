@@ -40,6 +40,9 @@ namespace Affin3D
         Point3D start_point;
         int c = 1600;
         Projector projector;
+        Polyhedron view_vector;
+        Point3D begview;
+        bool FHAflag = false;
 
         public void Draw(bool drawpoint = true, bool update = true)
         {
@@ -56,6 +59,468 @@ namespace Affin3D
             pictureBox1.Image = bm;
             if (update)
                 pictureBox1.Update();
+        }
+        private Tuple<int, int> Direction(Point a, Point b)
+        {
+            int x = 0;
+            int y = 0;
+
+            if (a.X > b.X)
+                x = -1;
+            else if (a.X < b.X)
+                x = 1;
+
+            if (a.Y > b.Y)
+                y = -1;
+            else if (a.Y < b.Y)
+                y = 1;
+
+            return new Tuple<int, int>(x, y);
+        }
+        private List<int> cur_points(Point a, Point b)
+        {
+
+            double dx = Math.Abs(b.X - a.X);
+            double dy = Math.Abs(b.Y - a.Y);
+            double grad = dy / dx;
+            var txy = Direction(a, b);
+            int dirx = txy.Item1;
+            int diry = txy.Item2;
+            int x = a.X;
+            int y = a.Y;
+            List<int> coords = new List<int>(bm.Width);
+            for (int i = 0; i < bm.Width; i++)
+            {
+                coords.Add(-1);
+            }
+            coords[x] = y;
+            if (grad <= 1)
+            {
+                double d = 2 * dy - dx;
+                while (x != b.X || y != b.Y)
+                {
+
+                    if (d < 0)
+                    {
+                        d = d + 2 * dy;
+                    }
+                    else
+                    {
+                        y += diry;
+                        d = d + 2 * (dy - dx);
+                    }
+                    x += dirx;
+                    coords[x] = y;
+                }
+            }
+            else
+            {
+                double d = 2 * dx - dy;
+                while (x != b.X || y != b.Y)
+                {
+
+                    if (d < 0)
+                    {
+                        d = d + 2 * dx;
+                    }
+                    else
+                    {
+                        x += dirx;
+                        d = d + 2 * (dx - dy);
+                    }
+                    y += diry;
+                    coords[x] = y;
+                }
+            }
+            return coords;
+        }
+
+        private double PointDistance(Point3D p1, Point3D p2)
+        {
+            double x = p1.X - p2.X;
+            double y = p1.Y - p2.Y;
+            double z = p1.Z - p2.Z;
+            return Math.Sqrt(x * x + y * y + z * z);
+        }
+
+        public void DrawFHA(int amountx, int amounty)
+        {
+            g.Clear(Color.White);
+            if (cur_polyhedron is null)
+                return;
+            List<Edge> edges = projector.ProjectFHA(cur_polyhedron);
+            List<int> upperbound = new List<int>(bm.Width);
+            List<int> lowerbound = new List<int>(bm.Width);
+            for (int i = 0; i < bm.Width; i++)
+            {
+                upperbound.Add(-1);
+                lowerbound.Add(bm.Height + 5);
+            }
+            List<int> cur;
+            int x = Math.Abs(anglex) % 360;
+            int y = Math.Abs(angley) % 360;
+            int z = Math.Abs(anglez) % 360;
+            if (x <= 180) //x < 180
+            {
+                if (z <= 45 || z >= 315)///////////xxxxxxxxxxxxxxxxxx
+                {
+                    for (int i = 0; i < amountx; i++)
+                    {
+                        cur = cur_points(new Point((int)Math.Round(edges[i].start.X), (int)Math.Round(edges[i].start.Y)), new Point((int)Math.Round(edges[i].end.X), (int)Math.Round(edges[i].end.Y)));
+                        for (int k = 0; k < cur.Count; ++k)
+                        {
+                            if (cur[k] > 0 && cur[k] < bm.Height)
+                            {
+                                if (upperbound[k] < cur[k])
+                                {
+                                    upperbound[k] = cur[k];
+                                    bm.SetPixel(k, cur[k], Color.Blue);
+                                }
+                                if (lowerbound[k] > cur[k])
+                                {
+                                    lowerbound[k] = cur[k];
+                                    bm.SetPixel(k, cur[k], Color.Black);
+                                }
+                            }
+
+                        }
+                    }
+                    for (int i = amountx; i < amountx * (amounty + 1); i++)
+                    {
+                        cur = cur_points(new Point((int)Math.Round(edges[i].start.X), (int)Math.Round(edges[i].start.Y)), new Point((int)Math.Round(edges[i].end.X), (int)Math.Round(edges[i].end.Y)));
+                        for (int k = 0; k < cur.Count; ++k)
+                        {
+                            if (cur[k] > 0 && cur[k] < bm.Height)
+                            {
+                                if (upperbound[k] < cur[k])
+                                {
+                                    upperbound[k] = cur[k];
+                                    bm.SetPixel(k, cur[k], Color.Blue);
+                                }
+                                if (lowerbound[k] > cur[k])
+                                {
+                                    lowerbound[k] = cur[k];
+                                    bm.SetPixel(k, cur[k], Color.Black);
+                                }
+                            }
+                        }
+                    }
+                }
+                else if (z >= 135 && z <= 225)    ///////////////////xxxxxxxxxxxxxxx
+                {
+                    for (int i = amountx * (amounty + 1) - 1; i > amountx * (amounty + 1) - amountx; i--)
+                    {
+                        cur = cur_points(new Point((int)Math.Round(edges[i].end.X), (int)Math.Round(edges[i].end.Y)), new Point((int)Math.Round(edges[i].start.X), (int)Math.Round(edges[i].start.Y)));
+                        for (int k = 0; k < cur.Count; ++k)
+                        {
+                            if (cur[k] > 0 && cur[k] < bm.Height)
+                            {
+                                if (upperbound[k] < cur[k])
+                                {
+                                    upperbound[k] = cur[k];
+                                    bm.SetPixel(k, cur[k], Color.Blue);
+                                }
+                                if (lowerbound[k] > cur[k])
+                                {
+                                    lowerbound[k] = cur[k];
+                                    bm.SetPixel(k, cur[k], Color.Black);
+                                }
+                            }
+
+                        }
+                    }
+                    for (int i = amountx * (amounty + 1) - amountx; i > -1; i--)
+                    {
+                        cur = cur_points(new Point((int)Math.Round(edges[i].end.X), (int)Math.Round(edges[i].end.Y)), new Point((int)Math.Round(edges[i].start.X), (int)Math.Round(edges[i].start.Y)));
+                        for (int k = 0; k < cur.Count; ++k)
+                        {
+                            if (cur[k] > 0 && cur[k] < bm.Height)
+                            {
+                                if (upperbound[k] < cur[k])
+                                {
+                                    upperbound[k] = cur[k];
+                                    bm.SetPixel(k, cur[k], Color.Blue);
+                                }
+                                if (lowerbound[k] > cur[k])
+                                {
+                                    lowerbound[k] = cur[k];
+                                    bm.SetPixel(k, cur[k], Color.Black);
+                                }
+                            }
+                        }
+                    }
+                }
+                else if (z > 45 && z < 135)///////////////yyyyyyyyyyy
+                {
+                    for (int i = amountx * (amounty + 1); i < amountx * (amounty + 1) + amounty; i++)
+                    {
+                        cur = cur_points(new Point((int)Math.Round(edges[i].start.X), (int)Math.Round(edges[i].start.Y)), new Point((int)Math.Round(edges[i].end.X), (int)Math.Round(edges[i].end.Y)));
+                        for (int k = 0; k < cur.Count; ++k)
+                        {
+                            if (cur[k] > 0 && cur[k] < bm.Height)
+                            {
+                                if (upperbound[k] < cur[k])
+                                {
+                                    upperbound[k] = cur[k];
+                                    bm.SetPixel(k, cur[k], Color.Blue);
+                                }
+                                if (lowerbound[k] > cur[k])
+                                {
+                                    lowerbound[k] = cur[k];
+                                    bm.SetPixel(k, cur[k], Color.Black);
+                                }
+                            }
+
+                        }
+                    }
+                    for (int i = amountx * (amounty + 1) + amounty; i < edges.Count; i++)
+                    {
+                        cur = cur_points(new Point((int)Math.Round(edges[i].start.X), (int)Math.Round(edges[i].start.Y)), new Point((int)Math.Round(edges[i].end.X), (int)Math.Round(edges[i].end.Y)));
+                        for (int k = 0; k < cur.Count; ++k)
+                        {
+                            if (cur[k] > 0 && cur[k] < bm.Height)
+                            {
+                                if (upperbound[k] < cur[k])
+                                {
+                                    upperbound[k] = cur[k];
+                                    bm.SetPixel(k, cur[k], Color.Blue);
+                                }
+                                if (lowerbound[k] > cur[k])
+                                {
+                                    lowerbound[k] = cur[k];
+                                    bm.SetPixel(k, cur[k], Color.Black);
+                                }
+                            }
+                        }
+                    }
+                }
+                else if (z > 225 && z < 315)//////////yyyyyyyyyyyyyyyyy
+                {
+                    for (int i = edges.Count - 1; i > edges.Count - 1 - amounty; i--)
+                    {
+                        cur = cur_points(new Point((int)Math.Round(edges[i].end.X), (int)Math.Round(edges[i].end.Y)), new Point((int)Math.Round(edges[i].start.X), (int)Math.Round(edges[i].start.Y)));
+                        for (int k = 0; k < cur.Count; ++k)
+                        {
+                            if (cur[k] > 0 && cur[k] < bm.Height)
+                            {
+                                if (upperbound[k] < cur[k])
+                                {
+                                    upperbound[k] = cur[k];
+                                    bm.SetPixel(k, cur[k], Color.Blue);
+                                }
+                                if (lowerbound[k] > cur[k])
+                                {
+                                    lowerbound[k] = cur[k];
+                                    bm.SetPixel(k, cur[k], Color.Black);
+                                }
+                            }
+
+                        }
+                    }
+                    for (int i = edges.Count - 1 - amounty; i >= amountx * (amounty + 1); i--)
+                    {
+                        cur = cur_points(new Point((int)Math.Round(edges[i].end.X), (int)Math.Round(edges[i].end.Y)), new Point((int)Math.Round(edges[i].start.X), (int)Math.Round(edges[i].start.Y)));
+                        for (int k = 0; k < cur.Count; ++k)
+                        {
+                            if (cur[k] > 0 && cur[k] < bm.Height)
+                            {
+                                if (upperbound[k] < cur[k])
+                                {
+                                    upperbound[k] = cur[k];
+                                    bm.SetPixel(k, cur[k], Color.Blue);
+                                }
+                                if (lowerbound[k] > cur[k])
+                                {
+                                    lowerbound[k] = cur[k];
+                                    bm.SetPixel(k, cur[k], Color.Black);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else //x > 180
+            {
+                if (z <= 45 || z >= 315)///////////xxxxxxxxxxxxxxxxxx
+                {
+                    for (int i = amountx * (amounty + 1) - 1; i > amountx * (amounty + 1) - amountx; i--)
+                    {
+                        cur = cur_points(new Point((int)Math.Round(edges[i].end.X), (int)Math.Round(edges[i].end.Y)), new Point((int)Math.Round(edges[i].start.X), (int)Math.Round(edges[i].start.Y)));
+                        for (int k = 0; k < cur.Count; ++k)
+                        {
+                            if (cur[k] > 0 && cur[k] < bm.Height)
+                            {
+                                if (upperbound[k] < cur[k])
+                                {
+                                    upperbound[k] = cur[k];
+                                    bm.SetPixel(k, cur[k], Color.Black);
+                                }
+                                if (lowerbound[k] > cur[k])
+                                {
+                                    lowerbound[k] = cur[k];
+                                    bm.SetPixel(k, cur[k], Color.Blue);
+                                }
+                            }
+
+                        }
+                    }
+                    for (int i = amountx * (amounty + 1) - amountx; i > -1; i--)
+                    {
+                        cur = cur_points(new Point((int)Math.Round(edges[i].end.X), (int)Math.Round(edges[i].end.Y)), new Point((int)Math.Round(edges[i].start.X), (int)Math.Round(edges[i].start.Y)));
+                        for (int k = 0; k < cur.Count; ++k)
+                        {
+                            if (cur[k] > 0 && cur[k] < bm.Height)
+                            {
+                                if (upperbound[k] < cur[k])
+                                {
+                                    upperbound[k] = cur[k];
+                                    bm.SetPixel(k, cur[k], Color.Black);
+                                }
+                                if (lowerbound[k] > cur[k])
+                                {
+                                    lowerbound[k] = cur[k];
+                                    bm.SetPixel(k, cur[k], Color.Blue);
+                                }
+                            }
+                        }
+                    }
+                }
+                else if (z >= 135 && z <= 225)    ///////////////////xxxxxxxxxxxxxxx
+                {
+                    for (int i = 0; i < amountx; i++)
+                    {
+                        cur = cur_points(new Point((int)Math.Round(edges[i].start.X), (int)Math.Round(edges[i].start.Y)), new Point((int)Math.Round(edges[i].end.X), (int)Math.Round(edges[i].end.Y)));
+                        for (int k = 0; k < cur.Count; ++k)
+                        {
+                            if (cur[k] > 0 && cur[k] < bm.Height)
+                            {
+                                if (upperbound[k] < cur[k])
+                                {
+                                    upperbound[k] = cur[k];
+                                    bm.SetPixel(k, cur[k], Color.Black);
+                                }
+                                if (lowerbound[k] > cur[k])
+                                {
+                                    lowerbound[k] = cur[k];
+                                    bm.SetPixel(k, cur[k], Color.Blue);
+                                }
+                            }
+
+                        }
+                    }
+                    for (int i = amountx; i < amountx * (amounty + 1); i++)
+                    {
+                        cur = cur_points(new Point((int)Math.Round(edges[i].start.X), (int)Math.Round(edges[i].start.Y)), new Point((int)Math.Round(edges[i].end.X), (int)Math.Round(edges[i].end.Y)));
+                        for (int k = 0; k < cur.Count; ++k)
+                        {
+                            if (cur[k] > 0 && cur[k] < bm.Height)
+                            {
+                                if (upperbound[k] < cur[k])
+                                {
+                                    upperbound[k] = cur[k];
+                                    bm.SetPixel(k, cur[k], Color.Black);
+                                }
+                                if (lowerbound[k] > cur[k])
+                                {
+                                    lowerbound[k] = cur[k];
+                                    bm.SetPixel(k, cur[k], Color.Blue);
+                                }
+                            }
+                        }
+                    }
+                }
+                else if (z > 45 && z < 135)///////////////yyyyyyyyyyy
+                {
+                    for (int i = edges.Count - 1; i > edges.Count - 1 - amounty; i--)
+                    {
+                        cur = cur_points(new Point((int)Math.Round(edges[i].end.X), (int)Math.Round(edges[i].end.Y)), new Point((int)Math.Round(edges[i].start.X), (int)Math.Round(edges[i].start.Y)));
+                        for (int k = 0; k < cur.Count; ++k)
+                        {
+                            if (cur[k] > 0 && cur[k] < bm.Height)
+                            {
+                                if (upperbound[k] < cur[k])
+                                {
+                                    upperbound[k] = cur[k];
+                                    bm.SetPixel(k, cur[k], Color.Black);
+                                }
+                                if (lowerbound[k] > cur[k])
+                                {
+                                    lowerbound[k] = cur[k];
+                                    bm.SetPixel(k, cur[k], Color.Blue);
+                                }
+                            }
+
+                        }
+                    }
+                    for (int i = edges.Count - 1 - amounty; i >= amountx * (amounty + 1); i--)
+                    {
+                        cur = cur_points(new Point((int)Math.Round(edges[i].end.X), (int)Math.Round(edges[i].end.Y)), new Point((int)Math.Round(edges[i].start.X), (int)Math.Round(edges[i].start.Y)));
+                        for (int k = 0; k < cur.Count; ++k)
+                        {
+                            if (cur[k] > 0 && cur[k] < bm.Height)
+                            {
+                                if (upperbound[k] < cur[k])
+                                {
+                                    upperbound[k] = cur[k];
+                                    bm.SetPixel(k, cur[k], Color.Black);
+                                }
+                                if (lowerbound[k] > cur[k])
+                                {
+                                    lowerbound[k] = cur[k];
+                                    bm.SetPixel(k, cur[k], Color.Blue);
+                                }
+                            }
+                        }
+                    }
+                }
+                else if (z > 225 && z < 315)//////////yyyyyyyyyyyyyyyyy
+                {
+                    for (int i = amountx * (amounty + 1); i < amountx * (amounty + 1) + amounty; i++)
+                    {
+                        cur = cur_points(new Point((int)Math.Round(edges[i].start.X), (int)Math.Round(edges[i].start.Y)), new Point((int)Math.Round(edges[i].end.X), (int)Math.Round(edges[i].end.Y)));
+                        for (int k = 0; k < cur.Count; ++k)
+                        {
+                            if (cur[k] > 0 && cur[k] < bm.Height)
+                            {
+                                if (upperbound[k] < cur[k])
+                                {
+                                    upperbound[k] = cur[k];
+                                    bm.SetPixel(k, cur[k], Color.Black);
+                                }
+                                if (lowerbound[k] > cur[k])
+                                {
+                                    lowerbound[k] = cur[k];
+                                    bm.SetPixel(k, cur[k], Color.Blue);
+                                }
+                            }
+
+                        }
+                    }
+                    for (int i = amountx * (amounty + 1) + amounty; i < edges.Count; i++)
+                    {
+                        cur = cur_points(new Point((int)Math.Round(edges[i].start.X), (int)Math.Round(edges[i].start.Y)), new Point((int)Math.Round(edges[i].end.X), (int)Math.Round(edges[i].end.Y)));
+                        for (int k = 0; k < cur.Count; ++k)
+                        {
+                            if (cur[k] > 0 && cur[k] < bm.Height)
+                            {
+                                if (upperbound[k] < cur[k])
+                                {
+                                    upperbound[k] = cur[k];
+                                    bm.SetPixel(k, cur[k], Color.Black);
+                                }
+                                if (lowerbound[k] > cur[k])
+                                {
+                                    lowerbound[k] = cur[k];
+                                    bm.SetPixel(k, cur[k], Color.Blue);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            pictureBox1.Image = bm;
+            pictureBox1.Update();
+
         }
         private void DrawAxis(Point3D center)
         {
@@ -82,6 +547,30 @@ namespace Affin3D
             double d = Math.Acos(c)*180/Math.PI;
             if (p2.Y > p1.Y)
                 d = 360-d;
+            return (int)d;
+        }
+
+        private int AngleBetweenVectorsXY(Point3D v1, Point3D n2)
+        {
+            //Point3D n1 = NormalizedVector(new Edge3D(new Point3D(0, 0, 0), new Point3D(v1.X, v1.Y, 0)));
+            Point3D v2 = NormalizedVector(new Edge3D(new Point3D(0, 0, 0), new Point3D(n2.X, n2.Y, 0)));
+            double a = Math.Sqrt(v1.X * v1.X + v1.Y * v1.Y) * Math.Sqrt(v2.X * v2.X + v2.Y * v2.Y);
+            double b = v1.X * v2.X + v1.Y * v2.Y;
+            double c = b / a;
+            double d = Math.Acos(c) * 180 / Math.PI;
+            //if (v2.Y > v1.Y)
+            //    d = 360 - d;
+            return (int)d;
+        }
+
+        private int AngleBetweenVectors3D(Point3D v1, Point3D v2)
+        {
+            double a = Math.Sqrt(v1.X * v1.X + v1.Y * v1.Y + v1.Z * v1.Z) * Math.Sqrt(v2.X * v2.X + v2.Y * v2.Y + v2.Z * v2.Z);
+            double b = v1.X * v2.X + v1.Y * v2.Y + v1.Z * v2.Z;
+            double c = b / a;
+            double d = Math.Acos(c) * 180 / Math.PI;
+            //if (v2.Y > v1.Y)
+            //    d = 360 - d;
             return (int)d;
         }
 
@@ -170,6 +659,9 @@ namespace Affin3D
             projector = new Projector(c);
             comboBox1.SelectedIndex = 0;
             comboBox2.SelectedIndex = 0;
+            view_vector = new Polyhedron();
+            begview = new Point3D(1, 0, 0);
+            view_vector.AddPoints(new List<Point3D> { new Point3D(begview.X, begview.Y, begview.Z) });
             Draw();
         }
 
@@ -231,7 +723,7 @@ namespace Affin3D
         Edge3D RAL_toDraw;
 
         int prev_angle = 0;
-
+        
         Point3D prevMouseMove;
         private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
         {
@@ -249,14 +741,28 @@ namespace Affin3D
             prevMouseMove = new Point3D(e.X, e.Y, 0);
         }
 
+        int anglex = 0;
+        int angley = 0;
+        int anglez = 0;
         private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
         {
             if (m_down && cur_state == State.RotateAroundLine && !(cur_polyhedron is null))
             {
                 int angle = AngleBetweenPoints(point_angle, new Point(e.X, e.Y));
                 cur_polyhedron.RotateAroundLine(RAL.start, RAL.end, prev_angle - angle);
+                view_vector.RotateAroundLine(new Point3D(0,0,0), RAL.end, prev_angle - angle);
+                if ((int)RAL.end.X == 1)
+                    anglex += prev_angle - angle;
+                else if ((int)RAL.end.Y == 1)
+                    angley += prev_angle - angle;
+                else
+                    anglez += prev_angle - angle;
+
                 prev_angle = angle;
-                Draw(false,false);
+                if (FHAflag)
+                    DrawFHA(int.Parse(X_step.Text), int.Parse(Y_step.Text));
+                else
+                    Draw(false,false);
                 DrawPoint(ref bm, new PointF(point_angle.X, point_angle.Y), Color.Orange);
 
                 //var edge = projector.Project(cur_mode, RAL_toDraw);
@@ -274,7 +780,10 @@ namespace Affin3D
                     Point3D mouseMove = new Point3D(e.X - prevMouseMove.X, e.Y - prevMouseMove.Y, 0);
 
                     cur_polyhedron.getMoved(mouseMove);
-                    Draw(false);
+                    if (FHAflag)
+                        DrawFHA(int.Parse(X_step.Text), int.Parse(Y_step.Text));
+                    else
+                        Draw(false);
                 }
                 else if (Ortxz.Checked)
                 {
@@ -282,7 +791,10 @@ namespace Affin3D
                     Point3D mouseMove = new Point3D(e.X - prevMouseMove.X, 0, e.Y - prevMouseMove.Y);
 
                     cur_polyhedron.getMoved(mouseMove);
-                    Draw(false);
+                    if (FHAflag)
+                        DrawFHA(int.Parse(X_step.Text), int.Parse(Y_step.Text));
+                    else
+                        Draw(false);
                 }
                 else if (Ortyz.Checked)
                 {
@@ -290,7 +802,10 @@ namespace Affin3D
                     Point3D mouseMove = new Point3D(0, e.X - prevMouseMove.X, e.Y - prevMouseMove.Y);
 
                     cur_polyhedron.getMoved(mouseMove);
-                    Draw(false);
+                    if (FHAflag)
+                        DrawFHA(int.Parse(X_step.Text), int.Parse(Y_step.Text));
+                    else
+                        Draw(false);
                     
                 }
 
@@ -329,8 +844,10 @@ namespace Affin3D
 
                 prevMouseMove.X = e.X;
                 prevMouseMove.Y = e.Y;
-
-                Draw(false);
+                if (FHAflag)
+                    DrawFHA(int.Parse(X_step.Text), int.Parse(Y_step.Text));
+                else
+                    Draw(false);
                 
             }
         }
@@ -338,7 +855,10 @@ namespace Affin3D
         private void pictureBox1_MouseUp(object sender, MouseEventArgs e)
         {
             m_down = false;
-            Draw(false);
+            if (FHAflag)
+                DrawFHA(int.Parse(X_step.Text), int.Parse(Y_step.Text));
+            else
+                Draw(false);
         }
         private void iso_button_Click(object sender, EventArgs e)
         {
@@ -361,6 +881,7 @@ namespace Affin3D
         }
         private void Cub_Button_Click(object sender, EventArgs e)
         {
+            FHAflag = false;
             cur_polyhedron = CreateCube(new Point3D(0, 0, 0), 100);
             Draw();
         }
@@ -427,12 +948,19 @@ namespace Affin3D
             if (comboBox1.SelectedIndex == 0)
                 return Math.Sin(x) * Math.Cos(y);
             else if (comboBox1.SelectedIndex == 1)
-                return Math.Sin(x) + Math.Sin(y);
+                //return Math.Sin(x) + Math.Sin(y);
+                return Math.Sin(x) + Math.Cos(y);
+            else if (comboBox1.SelectedIndex == 2)
+            {
+                double r = x * x + y * y + 1;
+                return 5 * (Math.Cos(r) / r + 0.1);
+            }
             else return 0;
         }
 
         private void Graph_Click(object sender, EventArgs e)
         {
+            FHAflag = false;
             double x1 = 0;
             double x2 = 0;
             double y1 = 0;
@@ -449,14 +977,14 @@ namespace Affin3D
                 double stepx = (x2 - x1) / amountx;
                 double stepy = (y2 - y1) / amounty;
                 List<Point3D> buf = new List<Point3D>();
-                Point3D p = new Point3D((float)x1, (float)y1, (float)Func(x1, y1));
+                Point3D p = new Point3D((float)x1, (float)Func(x1, y1), (float)y1);
                 Point3D p_prev = new Point3D(0, 0, 0);
                 cur_polyhedron = new Polyhedron();
                 buf.Add(p);
                 int k;
                 for (double j = y1 + stepy; j < y2 || Math.Abs(j - y2) < 0.001; j += stepy)
                 {
-                    p = new Point3D((float)x1, (float)j, (float)Func(x1, j));
+                    p = new Point3D((float)x1, (float)Func(x1, j),(float)j);
                     buf.Add(p);
                 }
 
@@ -465,7 +993,7 @@ namespace Affin3D
                     k = 0;
                     for (double j = y1; j < y2 || Math.Abs(j - y2) < 0.001; j += stepy)
                     {
-                        p = new Point3D((float)i, (float)j, (float)Func(i, j));
+                        p = new Point3D((float)i, (float)Func(i, j), (float)j );
                         if (k != 0)
                         {
                             cur_polyhedron.AddPoints(new List<Point3D> { new Point3D(buf[k - 1].X, buf[k - 1].Y, buf[k - 1].Z),
@@ -539,6 +1067,7 @@ namespace Affin3D
 
         private void button4_Click(object sender, EventArgs e)
         {
+            FHAflag = false;
             List<Point3D> buf = new List<Point3D>();
 
             var lines = textBox1.Text.Split('\n');
@@ -619,6 +1148,126 @@ namespace Affin3D
                 Parcer p = new Parcer();
                 p.SaveToFile(cur_polyhedron, sfd.OpenFile());
             }
+        }
+
+        private void FHA_Click(object sender, EventArgs e)
+        {
+            anglex = 0;
+            angley = 0;
+            anglez = 0;
+            view_vector.points[0] = new Point3D(begview.X, begview.Y, begview.Z);
+            FHAflag = true;
+            double x1 = 0;
+            double x2 = 0;
+            double y1 = 0;
+            double y2 = 0;
+            int amountx = 0;
+            int amounty = 0;
+            if (double.TryParse(grx1.Text, out x1) &&
+                double.TryParse(grx2.Text, out x2) &&
+                double.TryParse(gry1.Text, out y1) &&
+                double.TryParse(gry2.Text, out y2) &&
+                int.TryParse(X_step.Text, out amountx) &&
+                int.TryParse(Y_step.Text, out amounty))
+            {
+                double stepx = (x2 - x1) / amountx;
+                double stepy = (y2 - y1) / amounty;
+                Point3D p;
+                cur_polyhedron = new Polyhedron();
+                List<Point3D> pointsList = new List<Point3D>();
+                double angle = AngleBetweenVectorsXY(begview, view_vector.points[0]);
+                for (double j = y1; j < y2 || Math.Abs(j - y2) < 0.001; j += stepy)
+                {
+                    pointsList.Clear();
+                    for (double i = x1; i < x2 || Math.Abs(i - x2) < 0.001; i += stepx)
+                    {
+                        p = new Point3D((float)i, (float)Func(i, j), (float)j);
+                        pointsList.Add(p);
+                    }
+                    cur_polyhedron.AddPoints(pointsList);
+                }
+                for (double i = x1; i < x2 || Math.Abs(i - x2) < 0.001; i += stepx)
+                {
+                    pointsList.Clear();
+                    for (double j = y1; j < y2 || Math.Abs(j - y2) < 0.001; j += stepy)
+                    {
+                        p = new Point3D((float)i, (float)Func(i, j), (float)j);
+                        pointsList.Add(p);
+                    }
+                    cur_polyhedron.AddPoints(pointsList);
+                }
+                Point3D cent = cur_polyhedron.Center();
+                double scale = (x2 - x1) < (y2 - y1) ? (x2 - x1) / pictureBox1.Width * 1.5 : (y2 - y1) / pictureBox1.Height * 1.25;
+                cur_polyhedron.scale(cent, scale, scale, scale);
+                cur_polyhedron.RotateAroundLine(cent, new Point3D(1, 0, 0), 90);
+                cur_polyhedron.getMoved(new Point3D(pictureBox1.Width / 8, pictureBox1.Height / 4, 0));
+                DrawFHA(amountx, amounty);
+            }
+        }
+
+        private void RebuildFHA()
+        {
+            
+            view_vector.points[0] = new Point3D(begview.X, begview.Y, begview.Z);
+            FHAflag = true;
+            double x1 = 0;
+            double x2 = 0;
+            double y1 = 0;
+            double y2 = 0;
+            int amountx = 0;
+            int amounty = 0;
+            if (double.TryParse(grx1.Text, out x1) &&
+                double.TryParse(grx2.Text, out x2) &&
+                double.TryParse(gry1.Text, out y1) &&
+                double.TryParse(gry2.Text, out y2) &&
+                int.TryParse(X_step.Text, out amountx) &&
+                int.TryParse(Y_step.Text, out amounty))
+            {
+                double stepx = (x2 - x1) / amountx;
+                double stepy = (y2 - y1) / amounty;
+                Point3D p;
+                cur_polyhedron = new Polyhedron();
+                List<Point3D> pointsList = new List<Point3D>();
+                double angle = AngleBetweenVectorsXY(begview, view_vector.points[0]);
+                if (Math.Abs(angle) <= 45 || Math.Abs(angle) > 135)
+                {
+                    for (double j = y1; j < y2 || Math.Abs(j - y2) < 0.001; j += stepy)
+                    {
+                        pointsList.Clear();
+                        for (double i = x1; i < x2 || Math.Abs(i - x2) < 0.001; i += stepx)
+                        {
+                            p = new Point3D((float)i, (float)Func(i, j), (float)j);
+                            pointsList.Add(p);
+                        }
+                        cur_polyhedron.AddPoints(pointsList);
+                    }
+                }
+                else
+                {
+                    for (double i = x1; i < x2 || Math.Abs(i - x2) < 0.001; i += stepx)
+                    {
+                        pointsList.Clear();
+                        for (double j = y1; j < y2 || Math.Abs(j - y2) < 0.001; j += stepy)
+                        {
+                            p = new Point3D((float)i, (float)Func(i, j), (float)j);
+                            pointsList.Add(p);
+                        }
+                        cur_polyhedron.AddPoints(pointsList);
+                    }
+                }
+                //повороты к позиции
+                Point3D cent = cur_polyhedron.Center();
+                double scale = (x2 - x1) < (y2 - y1) ? (x2 - x1) / pictureBox1.Width * 1.5 : (y2 - y1) / pictureBox1.Height * 1.25;
+                cur_polyhedron.scale(cent, scale, scale, scale);
+                cur_polyhedron.RotateAroundLine(cent, new Point3D(1, 0, 0), 90);
+                cur_polyhedron.getMoved(new Point3D(pictureBox1.Width / 8, pictureBox1.Height / 4, 0));
+                DrawFHA(amountx, amounty);
+            }
+        }
+
+        private void X_step_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

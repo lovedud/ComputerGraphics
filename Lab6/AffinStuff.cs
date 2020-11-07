@@ -127,7 +127,25 @@ namespace Affin3D
                 return res;
             }
 
-            
+            public HashSet<Edge3D> PreparePrintFHA()
+            {
+                HashSet<Edge3D> res = new HashSet<Edge3D>();
+                foreach (var c in polygons)
+                {
+                    if (c.Count < 3)
+                        continue;
+                    Point3D prev = ToCenterCoord(points[c[0]]);
+                    for (var i = 1; i < c.Count; i++)
+                    {
+                        Point3D cur = ToCenterCoord(points[c[i]]);
+                        res.Add(new Edge3D(prev, cur));
+                        prev = cur;
+                    }
+                }
+                return res;
+            }
+
+
             public void RotateAroundLine(Point3D start, Point3D vector, double angle)
             {
                 angle = angle * (Math.PI / 180.0);
@@ -518,7 +536,6 @@ namespace Affin3D
         {
             return v1.X * v2.Y - v1.Y * v2.X;
         }
-
         static public bool CheckEdgesForIntersection(Edge e1, Edge e2, ref PointF res)
         {
             float x1 = e1.start.X;
