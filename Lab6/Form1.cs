@@ -52,12 +52,13 @@ namespace Affin3D
                 return;
             projector.UpdatePointOfView(cur_polyhedron.Center());
             cur_polyhedron.Triangulate();
-            var edges = projector.Project(cur_mode, cur_polyhedron, viewVector);
+            var rastrs = projector.Project(cur_mode, cur_polyhedron, viewVector);
 
-            
             //DrawAxis(start_point); убрал, так как сломались ( становятся не по центру объекта)
-            foreach (var rast in edges)
+            foreach (var rast in rastrs)
             {
+                if (rast.X < 0 || rast.Y < 0 || rast.X >= pictureBox1.Width || rast.Y >= pictureBox1.Height )
+                    continue;
                 bm.SetPixel(rast.X, rast.Y, Color.Aqua);
                 //DrawEdge(ref g, ref bm, edge, drawpoint);
             }

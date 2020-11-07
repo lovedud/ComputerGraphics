@@ -196,12 +196,11 @@ namespace Affin3D
                 List<List<Point3D>> res = new List<List<Point3D>>();
                 for(var poly = 0; poly < polygons.Count(); poly++)
                 {
-                    if (polygons[poly].Count < 3)// || !visible_polys.Contains(poly))
+                    res.Add(new List<Point3D>()); // think aobut it
+                    if (polygons[poly].Count < 3 || !visible_polys.Contains(poly))
                         continue;
-                    res.Add(new List<Point3D>());
                     for (var i = 0; i < polygons[poly].Count; i++)
                     {
-                        //var cur_3d = points[polygons[poly][i]];
                         res[poly].Add(points[polygons[poly][i]]);
                     }
                 }
@@ -289,7 +288,6 @@ namespace Affin3D
                 copy_polygon[1].Y, copy_polygon[1].X).ToList();
             var short_edge2 = Interpolation(copy_polygon[1].Y, copy_polygon[1].X,
                 copy_polygon[2].Y, copy_polygon[2].X).ToList();
-            //short_edge2.Remove(short_edge2[short_edge2.Count - 1]); //remove repeated element(repeated in short_edge2)
             var short_edges = short_edge1.Concat(short_edge2).ToList();
 
             var middle = short_edges.Count() / 2;
@@ -318,24 +316,22 @@ namespace Affin3D
             {
                 if(p1.X - p2.X < 0)//choose left and right points
                 {
-                    return Interpolation((int)p1.X, (int)p1.Y, (int)p2.X, (int)p2.Y);
+                    return Interpolation(p1.X, p1.Y, p2.X, p2.Y);
                 }
-                else return Interpolation((int)p2.X, (int)p2.Y, (int)p1.X, (int)p1.Y);
+                else return Interpolation(p2.X, p2.Y, p1.X, p1.Y);
             }
             else //more vertical
             {
                 if (p1.Y - p2.Y < 0) //choose left and right points
                 {
-                    return Interpolation((int)p1.Y, (int)p1.X, (int)p2.Y, (int)p2.X);
+                    return Interpolation(p1.Y, p1.X, p2.Y, p2.X);
                 }
-                else return Interpolation((int)p2.Y, (int)p2.X, (int)p1.Y, (int)p1.X);
+                else return Interpolation(p2.Y, p2.X, p1.Y, p1.X);
             }
         }
         static private IEnumerable<int> Interpolation(int i1, int d1, int i2, int d2)
         {
             List<int> res = new List<int>();
-            //if (i1 == i2)
-            //    return res;
             double k =((d2 - d1) * 1.0 / (i2 - i1));
             double d = d1;
             for(var t = i1; t < i2; t++)
