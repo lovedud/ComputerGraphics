@@ -92,7 +92,7 @@ namespace Affin3D
             affin_transformer.Rotate(ref copy_p, view_vector, sin_angle_x, Math.Sqrt(1 - sin_angle_x * sin_angle_x));
             affin_transformer.Rotate(ref copy_p, view_vector, sin_angle_y, Math.Sqrt(1 - sin_angle_y * sin_angle_y));
             affin_transformer.Rotate(ref copy_p, view_vector, sin_angle_z, Math.Sqrt(1 - sin_angle_z * sin_angle_z));
-            affin_transformer.Scale(ref copy_p, 1, 1, camera.Z);
+            affin_transformer.Scale(ref copy_p, center.Z / camera.Z, center.Z / camera.Z, center.Z / camera.Z);
             return copy_p.PreparePrint(copy_p.PolyClipping(view_vector), light)
                 .Select((x) => x.Select((pf) => new Rastr(pf.Item1, pf.Item2)).ToList());
         }
