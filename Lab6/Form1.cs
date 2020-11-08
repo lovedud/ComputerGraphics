@@ -41,6 +41,7 @@ namespace Affin3D
         int c = 1600;
         Projector projector;
         Point3D viewVector = new Point3D(0,0,1);
+        Polyhedron vvector = new Polyhedron(new List<Point3D> { new Point3D(0,0,1) }, new List<List<int>>());
 
         public void Draw(bool drawpoint = true, bool update = true)
         {
@@ -165,7 +166,9 @@ namespace Affin3D
             s_x.Text = (pictureBox1.Width / 2).ToString();
             s_y.Text = (pictureBox1.Height / 2).ToString();
             s_z.Text = (pictureBox1.Width / 2).ToString();
-
+            cur_polyhedron.RotateAroundLine(cur_polyhedron.Center(), new Point3D(0, 0, 1), 25);
+            cur_polyhedron.RotateAroundLine(cur_polyhedron.Center(), new Point3D(1, 0, 0), 100);
+            cur_polyhedron.getMoved(new Point3D(Width / 4, Height / 4, 0));
             e_x.Text = (1).ToString();
             e_y.Text = (0).ToString();
             e_z.Text = (0).ToString();
@@ -258,6 +261,10 @@ namespace Affin3D
             {
                 int angle = AngleBetweenPoints(point_angle, new Point(e.X, e.Y));
                 cur_polyhedron.RotateAroundLine(RAL.start, RAL.end, prev_angle - angle);
+                //vvector.RotateAroundLine(new Point3D(0, 0, 0), RAL.end, prev_angle - angle);
+                //viewVector.X = vvector.points[0].X;
+                //viewVector.Y = vvector.points[0].Y;
+                //viewVector.Z = vvector.points[0].Z;
                 prev_angle = angle;
                 Draw(false,false);
                 DrawPoint(ref bm, new PointF(point_angle.X, point_angle.Y), Color.Orange);

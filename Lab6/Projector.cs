@@ -140,8 +140,11 @@ namespace Affin3D
         private PointF ToPerspective(Point3D p, int c)
         {
             var vector_p = PointToVector(p);
-            var new_vector_p = MatrixMultiplication(vector_p, perspective_matr);
-            return VectorToPoint(new_vector_p);
+            //var new_vector_p = MatrixMultiplication(vector_p, perspective_matr);
+            //return VectorToPoint(new_vector_p);
+            vector_p[0, 0] = vector_p[0, 0] / vector_p[0, 2];
+            vector_p[0, 1] = vector_p[0, 1] / vector_p[0, 2];
+            return VectorToPoint(vector_p);
         }
         private PointF ToOrtographics(Point3D p, OrtMode om)
         {
@@ -167,7 +170,7 @@ namespace Affin3D
             //viewVector.X = (float)viewVector_4[0, 0];
             //viewVector.Y = (float)viewVector_4[0, 1];
             //viewVector.Z = (float)viewVector_4[0, 3];
-            var edges_3d = ph.PreparePrint(viewVector);
+            var edges_3d = ph.PreparePrint(viewVector, true);
             foreach (var edge in edges_3d)
             {
                 res.Add(Project(Mode.Perspective, edge));

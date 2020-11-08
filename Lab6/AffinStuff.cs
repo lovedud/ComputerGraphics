@@ -84,6 +84,7 @@ namespace Affin3D
             public List<Point3D> points;
             public List<List<int>> polygons;
             public List<Point3D> normals;
+            public List<Point3D> points_normals;
 
             
             public Polyhedron()
@@ -91,14 +92,57 @@ namespace Affin3D
                 points = new List<Point3D>();
                 polygons = new List<List<int>>();
                 normals = new List<Point3D>();
+                points_normals = new List<Point3D>();
             }
-            public Polyhedron(List<Point3D> p, List<List<int>> conn, List<Point3D> norm)
+            public Polyhedron(List<Point3D> p, List<List<int>> conn)
             {
                 points = p;
                 polygons = conn;
-                normals = norm;
+                normals = new List<Point3D>();
+                MakeNormalsForPolys();
+                CreateNormalsForPoints();
             }
-            
+
+            private void MakeNormalsForPolys()
+            {
+                foreach (var x in polygons)
+                {
+                    List<Point3D> ps = new List<Point3D>();
+                    foreach (var y in x)
+                    {
+                        ps.Add(points[y]);
+                    }
+                    normals.Add(CreateNormal(ps));
+                }
+            }
+
+            public void CreateNormalsForPoints()
+            {
+                points_normals = new List<Point3D>();
+                for (int i = 0; i < points.Count; i++)
+                {
+                    int polycount = 0;
+                    var cur_normal = new Point3D(0, 0, 0);
+                    for (int j = 0; j < polygons.Count; j++)
+                    {
+                        if (polygons[j].Contains(i))
+                        {
+                            ++polycount;
+                            cur_normal.X += normals[j].X;
+                            cur_normal.Y += normals[j].Y;
+                            cur_normal.Z += normals[j].Z;
+                        }
+                    }
+                    if (polycount != 0)
+                    {
+                        cur_normal.X /= polycount;
+                        cur_normal.Y /= polycount;
+                        cur_normal.Z /= polycount;
+                    }
+                    points_normals.Add(cur_normal);
+                }
+            }
+
             private int PointInd(Point3D p)
             {
                 int point_ind = points.IndexOf(p);
@@ -121,15 +165,27 @@ namespace Affin3D
                 }
                 AddNormal(polygon);
             }
-            public HashSet<Edge3D> PreparePrint(Point3D viewVector)
+            public HashSet<Edge3D> PreparePrint(Point3D viewVector, bool perp = false)
             {
                 int polycount = -1;
                 HashSet<Edge3D> res = new HashSet<Edge3D>();
                 foreach (var c in polygons)
                 {
                     ++polycount;
-                    if (c.Count < 3 || ((viewVector.X != 0 || viewVector.Y != 0 || viewVector.Z != 0) && !(normals[polycount].ObtuseAngle(viewVector))))//////////////////////////////////////////
-                        continue;
+                    if (perp)
+                    {
+                        List<Point3D> ps = new List<Point3D>();
+                        foreach(var p in c)
+                            ps.Add(new Point3D(points[p].X, points[p].Y, points[p].Z));
+                        Point3D cur_norm = CreateNormal(ps);
+                        if (c.Count < 3 || ((viewVector.X != 0 || viewVector.Y != 0 || viewVector.Z != 0) && !(cur_norm.ObtuseAngle(viewVector))))//////////////////////////////////////////
+                            continue;
+                    }
+                    else
+                    {
+                        if (c.Count < 3 || ((viewVector.X != 0 || viewVector.Y != 0 || viewVector.Z != 0) && !(normals[polycount].ObtuseAngle(viewVector))))//////////////////////////////////////////
+                            continue;
+                    }
                     Point3D prev = ToCenterCoord(points[c[0]]);
                     for (var i = 1; i < c.Count; i++)
                     {
