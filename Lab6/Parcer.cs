@@ -16,7 +16,6 @@ namespace Affin3D
             bool constructing_polyhedr = false;
             List<Point3D> cur_points = new List<Point3D>();
             List<List<int>> cur_polygons = new List<List<int>>();
-            List<Point3D> cur_normals = new List<Point3D>();
             using (StreamReader sr = new StreamReader(fname))
             {
                 string line = sr.ReadLine();
@@ -33,15 +32,11 @@ namespace Affin3D
                             if (constructing_polyhedr)
                             {
                                 constructing_polyhedr = false;
-                                res.Add(new Polyhedron(cur_points, cur_polygons, cur_normals));
+                                res.Add(new Polyhedron(cur_points, cur_polygons));
                                 cur_points = new List<Point3D>();
                                 cur_polygons = new List<List<int>>();
-                                cur_normals = new List<Point3D>();
                             }
-                            if (NextChar == 'n')
-                                cur_normals.Add(ParcePoint(line.Replace('n',' ')));
-                            else
-                                cur_points.Add(ParcePoint(line));
+                            cur_points.Add(ParcePoint(line));
                         }
                         
                     }
@@ -54,7 +49,7 @@ namespace Affin3D
                 }
             }
             constructing_polyhedr = false;
-            res.Add(new Polyhedron(cur_points, cur_polygons, cur_normals));
+            res.Add(new Polyhedron(cur_points, cur_polygons));
             return res;
         }
         public void SaveToFile(Polyhedron poly, Stream s)
