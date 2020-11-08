@@ -415,6 +415,9 @@ namespace Affin3D
             var short_edges = short_edge1.Concat(short_edge2).ToList();
             var h_short_edges = h_short_edge1.Concat(h_short_edge2).ToList();
 
+            List<Rastr> res = new List<Rastr>();
+            if (short_edges.Count == 0 && long_edge.Count == 0)
+                return res;
             var middle = short_edges.Count() / 2;
             var x_left = long_edge;
             var h_left = h_long_edge;
@@ -429,7 +432,7 @@ namespace Affin3D
             }
             var y0 = copy_polygon[0].Y;
             var yn = copy_polygon[2].Y;
-            List<Rastr> res = new List<Rastr>();
+            
             for (int y = y0; y < yn; y++)
             {
                 int x_l = x_left[y - y0];
