@@ -186,38 +186,12 @@ namespace Affin3D
                 }
             }
 
-            public void CreateNormalsForPoints()
-            {
-                points_normals = new List<Point3D>();
-                for (int i = 0; i < points.Count; i++)
-                {
-                    int polycount = 0;
-                    var cur_normal = new Point3D(0, 0, 0);
-                    for (int j = 0; j < polygons.Count; j++)
-                    {
-                        if (polygons[j].Contains(i))
-                        {
-                            ++polycount;
-                            cur_normal.X += normals[j].X;
-                            cur_normal.Y += normals[j].Y;
-                            cur_normal.Z += normals[j].Z;
-                        }
-                    }
-                    if (polycount != 0)
-                    {
-                        cur_normal.X /= polycount;
-                        cur_normal.Y /= polycount;
-                        cur_normal.Z /= polycount;
-                    }
-                    points_normals.Add(cur_normal);
-                }
-            }
-
             public Polyhedron(Polyhedron p)
             {
                 points = new List<Point3D>(p.points);
                 polygons = new List<List<int>>(p.polygons);
                 normals = new List<Point3D>(p.normals);
+                points_normals = new List<Point3D>(p.points_normals);
             }
             public void Triangulate()
             {
@@ -227,23 +201,11 @@ namespace Affin3D
                     {
                         AddPoints(polygons[poly].Take(3).Select((x) => points[x]).ToList());
                         polygons[poly].RemoveAt(1);
-                        //normals[poly] = CreateNormal(polygons[poly].Select();
+                        normals.Add(normals[poly]);
                     }
                 }
             }
             
-            public IEnumerable<Rastr> RastrPolyhedron()
-            {
-                List<Rastr> res = new List<Rastr>();
-                var polygons_2d = PrepareToRastr(new List<int>());
-                for (int poly = 0; poly < polygons_2d.Count; poly++)
-                {
-                    res.Concat(BilinearPolygonInterpolation(polygons_2d[poly]));
-                }
-                return res;
-            }
-
-
             private int PointInd(Point3D p)
             {
                 int point_ind = points.IndexOf(p);
@@ -281,7 +243,7 @@ namespace Affin3D
             }
             private double Luminosity(int point_ind, Light light )
             {
-                return light.H * 0.6 * CosVectors(light.Pos, normals[point_ind]);
+                return light.H * 0.6 * CosVectors(light.Pos, points_normals[point_ind]);
             }
 
             public List<List<Tuple<Point3D, double>>> PreparePrint(List<int> visible_polys, Light light)
@@ -301,23 +263,6 @@ namespace Affin3D
                 }
                 return res;
             }
-            public List<List<Point>> PrepareToRastr(List<int> visible_polys)
-            {
-                List<List<Point>> res = new List<List<Point>>();
-                for (var poly = 0; poly < polygons.Count(); poly++)
-                {
-                    //if (polygons[poly].Count < 3)// || !visible_polys.Contains(poly))
-                    //    continue;
-                    res.Add(new List<Point>());
-                    for (var i = 0; i < polygons[poly].Count; i++)
-                    {
-                        var cur_3d = points[polygons[poly][i]];
-                        res[poly].Add(new Point((int)cur_3d.X, (int)cur_3d.Y));
-                    }
-                   
-                }
-                return res;
-            }
 
 
             public void AddNormal(List<Point3D> polygon)
@@ -334,6 +279,32 @@ namespace Affin3D
                 return NormalizedVector(new Edge3D(new Point3D(0, 0, 0), normalv));
             }
 
+            public void CreateNormalsForPoints()
+            {
+                points_normals = new List<Point3D>();
+                for (int i = 0; i < points.Count; i++)
+                {
+                    int polycount = 0;
+                    var cur_normal = new Point3D(0, 0, 0);
+                    for (int j = 0; j < polygons.Count; j++)
+                    {
+                        if (polygons[j].Contains(i))
+                        {
+                            ++polycount;
+                            cur_normal.X += normals[j].X;
+                            cur_normal.Y += normals[j].Y;
+                            cur_normal.Z += normals[j].Z;
+                        }
+                    }
+                    if (polycount != 0)
+                    {
+                        cur_normal.X /= polycount;
+                        cur_normal.Y /= polycount;
+                        cur_normal.Z /= polycount;
+                    }
+                    points_normals.Add(cur_normal);
+                }
+            }
 
             public Point3D Center()
             {
@@ -551,6 +522,7 @@ namespace Affin3D
             res.AddPoints(face4);
             res.AddPoints(face5);
             res.AddPoints(face6);
+            res.CreateNormalsForPoints();
             return res;
         }
 
@@ -570,7 +542,7 @@ namespace Affin3D
             res.AddPoints(face2);
             res.AddPoints(face3);
             res.AddPoints(face4);
-
+            res.CreateNormalsForPoints();
             return res;
         }
 
@@ -598,6 +570,7 @@ namespace Affin3D
             res.AddPoints(face4);
             res.AddPoints(face5);
             res.AddPoints(face6);
+            res.CreateNormalsForPoints();
             return res;
         }
 
