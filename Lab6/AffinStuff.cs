@@ -328,7 +328,7 @@ namespace Affin3D
         static public int RastrComparison(Rastr p1, Rastr p2)
         {
             var y_comp = p1.Y.CompareTo(p2.Y);
-            if (y_comp > 1)
+            if (y_comp == 1)
             {
                 return 1;
             }
@@ -392,9 +392,9 @@ namespace Affin3D
         static public IEnumerable<Rastr> BilinearPolygonInterpolation(List<Rastr> polygon)
         {
             //var copy_polygon = polygon.OrderBy((x) => x.Y).ToList();
-            //var copy_polygon = new List<Rastr>(polygon);
-            var copy_polygon = polygon.OrderBy((x) => x.Y).ThenBy((x) => x.X).ToList();
-            //copy_polygon.Sort(RastrComparison);
+            var copy_polygon = new List<Rastr>(polygon);
+            //var copy_polygon = polygon.OrderBy((x) => x.Y).ThenBy((x) => x.X).ToList();
+            copy_polygon.Sort(RastrComparison);
 
             var long_edge = Interpolation(copy_polygon[0].Y, copy_polygon[0].X,
                 copy_polygon[2].Y, copy_polygon[2].X).ToList();

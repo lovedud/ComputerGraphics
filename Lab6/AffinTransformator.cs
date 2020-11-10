@@ -35,9 +35,10 @@ namespace Affin3D
                 {
                     { 1 ,0, 0, 0 },
                     { 0, 1 ,0, 0 },
-                    { 0, 0, 1, 0 },
+                    { 0, 0, 0, 0 },
                     { 0, 0, 0, 1 }
                 };
+
         public Point3D center;
         public AffinTransformator(Point3D c)
         {
@@ -175,6 +176,17 @@ namespace Affin3D
             UpdatePerspectiveMatr(c);
             poly.points = poly.points.Select((x) => Perspect(x)).ToList();
         }
+        public void Isometric(ref Polyhedron poly, double c)
+        {
+            UpdateIsometricMatr(c);
+            poly.points = poly.points.Select((x) => Perspect(x)).ToList();
+        }
+
+        private void UpdateIsometricMatr(double c)
+        {
+            
+        }
+
         public void UpdateMoveMatr(float x, float y, float z)
         {
             move_matr[3, 0] = x;
@@ -212,7 +224,7 @@ namespace Affin3D
         }
         private void UpdatePerspectiveMatr(double c)
         {
-            perspective_matr[3, 2] = 1 / c;
+            perspective_matr[2, 3] = - 1 / c;
         }
 
     }

@@ -64,7 +64,7 @@ namespace Affin3D
                     points_2D = ToPerspective(copy_p, viewVector);
                     break;
                 case Mode.Camera:
-                    points_2D = ProjectFromCamera(copy_p);
+                    points_2D = ProjectFromCamera(p);
                     break;
                 default:
                     return new List<Rastr>();
@@ -83,17 +83,17 @@ namespace Affin3D
         {
             AffinTransformator affin_transformer = new AffinTransformator(p.Center());
 
-            //var view_vector = NormalizedVector(new Edge3D(ToCenterCoord(camera), ToCenterCoord(camera_view_pos)));
-            var view_vector = NormalizedVector(new Edge3D(camera, camera_view_pos));
+            var view_vector = NormalizedVector(new Edge3D(ToCenterCoord(camera), ToCenterCoord(camera_view_pos)));
             var sin_angle_x = SinBetweenVectorPlain(new Point3D(1, 0, 0), view_vector);
             var sin_angle_y = SinBetweenVectorPlain(new Point3D(0, 1, 0), view_vector);
             var sin_angle_z = SinBetweenVectorPlain(new Point3D(0, 0, 1), view_vector);
             var copy_p = new Polyhedron(p);
-            var visible_polys = copy_p.PolyClipping(view_vector);
+            //var visible_polys = copy_p.PolyClipping(view_vector);
             affin_transformer.Rotate(ref copy_p, view_vector, sin_angle_x, Math.Sqrt(1 - sin_angle_x * sin_angle_x));
             affin_transformer.Rotate(ref copy_p, view_vector, sin_angle_y, Math.Sqrt(1 - sin_angle_y * sin_angle_y));
             affin_transformer.Rotate(ref copy_p, view_vector, sin_angle_z, Math.Sqrt(1 - sin_angle_z * sin_angle_z));
-            affin_transformer.Scale(ref copy_p, center.Z / camera.Z, center.Z / camera.Z, center.Z / camera.Z);
+            affin_transformer.Perspective(ref copy_p, camera.Z);
+            ToCenterCoord(ref copy_p);
             return copy_p.PreparePrint(copy_p.PolyClipping(view_vector), light)
                 .Select((x) => x.Select((pf) => new Rastr(pf.Item1, pf.Item2)).ToList());
         }
@@ -163,7 +163,7 @@ namespace Affin3D
             perspective_matr = new double[4, 4]
             {{ 1, 0, 0, 0      },
              { 0, 1, 0, 0       },
-             { 0, 0, 0, 1.0 / c },
+             { 0, 0, 0, -1.0 / c },
              { 0, 0, 0, 1       } };
         }
 
