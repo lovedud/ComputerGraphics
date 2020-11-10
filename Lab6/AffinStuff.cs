@@ -154,9 +154,7 @@ namespace Affin3D
             public List<List<int>> polygons;
             public List<Point3D> normals;
             public List<Point3D> points_normals;
-
-
-
+            
             public Polyhedron()
             {
                 points = new List<Point3D>();
@@ -325,8 +323,6 @@ namespace Affin3D
                 zs /= counter;
                 return new Point3D((float)xs, (float)ys, (float)zs);
             }
-
-            
             
         }
         static public int RastrComparison(Rastr p1, Rastr p2)
