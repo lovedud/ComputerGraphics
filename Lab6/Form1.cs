@@ -93,8 +93,8 @@ namespace Affin3D
         {
             Point p1v = new Point(200, 0);
             Point p2v = new Point(p2.X - p1.X, p1.Y - p2.Y);
-            double a = Math.Sqrt(p1v.X * p1v.X + p1v.Y * p1v.Y) * Math.Sqrt(p2v.X * p2v.X + p2v.Y * p2v.Y);
-            double b = p1v.X * p2v.X + p1v.Y * p2v.Y;
+            double a = Math.Sqrt(p1v.X * p1v.X + p1v.Y * p1v.Y) * Math.Sqrt(p2v.X * p2v.X + p2v.Y * p2v.Y); // lol*cheb
+            double b = p1v.X * p2v.X + p1v.Y * p2v.Y; //kek
             double c = b / a;
             double d = Math.Acos(c) * 180 / Math.PI;
             if (p2.Y > p1.Y)
@@ -647,15 +647,15 @@ namespace Affin3D
 
             private void ChangeViewVector(object sender, EventArgs e)
             {
-                float x, y, z;
-                if (float.TryParse(view_x.Text, out x) && float.TryParse(view_y.Text, out y) && float.TryParse(view_z.Text, out z)
-                    && (x != 0 || y != 0 || z != 0))
-                {
-                    viewVector.X = x;
-                    viewVector.Y = y;
-                    viewVector.Z = z;
-                    Draw(false);
-                }
+                //float x, y, z;
+                //if (float.TryParse(view_x.Text, out x) && float.TryParse(view_y.Text, out y) && float.TryParse(view_z.Text, out z)
+                //    && (x != 0 || y != 0 || z != 0))
+                //{
+                //    viewVector.X = x;
+                //    viewVector.Y = y;
+                //    viewVector.Z = z;
+                //    Draw(false);
+                //}
             }
             public void SwitchStateButtons(bool on)
             {

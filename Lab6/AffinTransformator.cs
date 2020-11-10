@@ -168,6 +168,7 @@ namespace Affin3D
             UpdateRotateMatr(vector, sin, cos);
             poly.points = poly.points.Select((x) => Rotate(x)).ToList();
             poly.normals = poly.normals.Select((x) => RotateNormal(x)).ToList();
+            poly.points_normals = poly.points_normals.Select((x) => RotateNormal(x)).ToList();
         }
         public void Perspective(ref Polyhedron poly, double c)
         {

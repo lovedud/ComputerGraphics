@@ -140,7 +140,7 @@ namespace Affin3D
                 double a = Math.Sqrt(X * X + Y * Y + Z * Z) * Math.Sqrt(v.X * v.X + v.Y * v.Y + v.Z * v.Z);
                 double b = X * v.X + Y * v.Y + Z * v.Z;
                 double c = b / a;
-                return c < 0 ? true : false;
+                return c < 0;
                 // d = Math.Acos(c) * 180 / Math.PI;
                 //return ((int)Math.Abs(d)) >= 90;
             }
@@ -201,7 +201,7 @@ namespace Affin3D
                     {
                         AddPoints(polygons[poly].Take(3).Select((x) => points[x]).ToList());
                         polygons[poly].RemoveAt(1);
-                        normals.Add(normals[poly]);
+                        //normals.Add(normals[poly]);
                     }
                 }
             }
@@ -234,7 +234,7 @@ namespace Affin3D
                 for(var i = 0; i < polygons.Count(); i++)
                 {
                     
-                    if ((viewVector.X != 0 || viewVector.Y != 0 || viewVector.Z != 0) && normals[i].ObtuseAngle(viewVector))
+                    if ((viewVector.X != 0 || viewVector.Y != 0 || viewVector.Z != 0) && !normals[i].ObtuseAngle(viewVector))
                     {
                         visible_poly.Add(i);
                     }
@@ -243,7 +243,8 @@ namespace Affin3D
             }
             private double Luminosity(int point_ind, Light light )
             {
-                return light.H * 0.6 * CosVectors(light.Pos, points_normals[point_ind]);
+                //return light.H * 0.6 * CosVectors(light.Pos, points_normals[point_ind]);
+                return light.H * 0.6 * CosVectors(NormalizedVector(new Edge3D(light.Pos, points[point_ind])), points_normals[point_ind]);
             }
 
             public List<List<Tuple<Point3D, double>>> PreparePrint(List<int> visible_polys, Light light)
@@ -394,8 +395,10 @@ namespace Affin3D
         }
         static public IEnumerable<Rastr> BilinearPolygonInterpolation(List<Rastr> polygon)
         {
-            var copy_polygon = polygon.OrderBy((x) => x.Y).ToList();
-            copy_polygon.Sort(RastrComparison);
+            //var copy_polygon = polygon.OrderBy((x) => x.Y).ToList();
+            //var copy_polygon = new List<Rastr>(polygon);
+            var copy_polygon = polygon.OrderBy((x) => x.Y).ThenBy((x) => x.X).ToList();
+            //copy_polygon.Sort(RastrComparison);
 
             var long_edge = Interpolation(copy_polygon[0].Y, copy_polygon[0].X,
                 copy_polygon[2].Y, copy_polygon[2].X).ToList();
@@ -889,7 +892,7 @@ namespace Affin3D
             double kek = Math.Abs(plain.X * vector.X + plain.Y * vector.Y + plain.Z * vector.Z);
             double lol = Math.Sqrt(plain.X * plain.X + plain.Y * plain.Y + plain.Z * plain.Z);
             double cheburek = Math.Sqrt(vector.X * vector.X + vector.Y * vector.Y + vector.Z * vector.Z);
-            return kek / (lol * cheburek);
+            return Math.Sqrt(1- (kek / (lol * cheburek))*(kek / (lol * cheburek)));
         }
         static public bool SamePointF(PointF p1, PointF p2)
         {

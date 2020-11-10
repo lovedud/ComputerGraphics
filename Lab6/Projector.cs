@@ -83,7 +83,8 @@ namespace Affin3D
         {
             AffinTransformator affin_transformer = new AffinTransformator(p.Center());
 
-            var view_vector = NormalizedVector(new Edge3D(ToCenterCoord(camera), ToCenterCoord(camera_view_pos)));
+            //var view_vector = NormalizedVector(new Edge3D(ToCenterCoord(camera), ToCenterCoord(camera_view_pos)));
+            var view_vector = NormalizedVector(new Edge3D(camera, camera_view_pos));
             var sin_angle_x = SinBetweenVectorPlain(new Point3D(1, 0, 0), view_vector);
             var sin_angle_y = SinBetweenVectorPlain(new Point3D(0, 1, 0), view_vector);
             var sin_angle_z = SinBetweenVectorPlain(new Point3D(0, 0, 1), view_vector);
