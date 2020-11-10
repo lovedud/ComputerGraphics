@@ -66,8 +66,8 @@ namespace Affin3D
         public List<Edge> ProjectFromCamera(Polyhedron p)
         {
             AffinTransformator affin_transformer = new AffinTransformator(p.Center());
-            
-            var view_vector = NormalizedVector(new Edge3D(ToCenterCoord(camera), ToCenterCoord(camera_view_pos)));
+
+            var view_vector = new Point3D(0, 0, 1);
             var sin_angle_x = SinBetweenVectorPlain(new Point3D(1, 0, 0), view_vector);
             var sin_angle_y = SinBetweenVectorPlain(new Point3D(0, 1, 0), view_vector);
             var sin_angle_z = SinBetweenVectorPlain(new Point3D(0, 0, 1), view_vector);
@@ -76,8 +76,8 @@ namespace Affin3D
             affin_transformer.Rotate(ref copy_p, view_vector, sin_angle_x, Math.Sqrt(1 - sin_angle_x * sin_angle_x));
             affin_transformer.Rotate(ref copy_p, view_vector, sin_angle_y, Math.Sqrt(1 - sin_angle_y * sin_angle_y));
             affin_transformer.Rotate(ref copy_p, view_vector, sin_angle_z, Math.Sqrt(1 - sin_angle_z * sin_angle_z));
-            affin_transformer.Scale(ref copy_p, 1, 1, camera.Z);
-            //affin_transformer.Perspective(ref copy_p, camera.Z);
+            affin_transformer.Move(ref copy_p, new Point3D(-camera.X, -camera.Y, -camera.Z));
+            affin_transformer.Perspective(ref copy_p,  camera.Z);
             return 
                 copy_p
                 .PreparePrint(visible_polys)

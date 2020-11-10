@@ -211,7 +211,7 @@ namespace Affin3D
         }
         private void UpdatePerspectiveMatr(double c)
         {
-            perspective_matr[3, 2] = 1 / c;
+            perspective_matr[2, 3] = 1 / c;
         }
 
     }

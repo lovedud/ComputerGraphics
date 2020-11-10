@@ -192,6 +192,7 @@ namespace Affin3D
 
             projector = new Projector(start_point);
             projector.UpdateCamera(default_camera);
+            projector.UpdatePointOfView(new Point3D(0, 0, 0));
 
             aff_trans = new AffinTransformator(start_point);
 
@@ -357,7 +358,7 @@ namespace Affin3D
                 view_x.Text = projector.camera.X.ToString();
                 view_y.Text = projector.camera.Y.ToString();
                 view_z.Text = projector.camera.Z.ToString();
-                projector.UpdatePointOfView(cur_polyhedron.Center());
+                //projector.UpdatePointOfView(cur_polyhedron.Center());
                 prevMouseMove.X = e.X;
                 prevMouseMove.Y = e.Y;
                 Draw(false);

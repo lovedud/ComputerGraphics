@@ -133,7 +133,7 @@ namespace Affin3D
                 List<int> visible_poly = new List<int>();
                 for(var i = 0; i < polygons.Count(); i++)
                 {
-                    if ((viewVector.X != 0 || viewVector.Y != 0 || viewVector.Z != 0) && normals[i].ObtuseAngle(viewVector))
+                    if ((viewVector.X != 0 || viewVector.Y != 0 || viewVector.Z != 0) && !normals[i].ObtuseAngle(viewVector))
                     {
                         visible_poly.Add(i);
                     }
@@ -708,7 +708,7 @@ namespace Affin3D
             double kek = Math.Abs(plain.X * vector.X + plain.Y * vector.Y + plain.Z * vector.Z);
             double lol = Math.Sqrt(plain.X * plain.X + plain.Y * plain.Y + plain.Z * plain.Z);
             double cheburek = Math.Sqrt(vector.X * vector.X + vector.Y * vector.Y + vector.Z * vector.Z);
-            return kek / (lol * cheburek);
+            return Math.Sqrt(1 - kek / (lol * cheburek) * kek / (lol * cheburek));
         }
         static public bool SamePointF(PointF p1, PointF p2)
         {
