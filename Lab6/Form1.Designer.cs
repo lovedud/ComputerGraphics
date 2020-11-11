@@ -93,6 +93,7 @@
             this.view_z = new System.Windows.Forms.TextBox();
             this.button7 = new System.Windows.Forms.Button();
             this.camera_button = new System.Windows.Forms.Button();
+            this.CameraRotation = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.SuspendLayout();
@@ -807,6 +808,18 @@
             this.camera_button.UseVisualStyleBackColor = true;
             this.camera_button.Click += new System.EventHandler(this.Camera_Click);
             // 
+            // CameraRotation
+            // 
+            this.CameraRotation.Enabled = false;
+            this.CameraRotation.Location = new System.Drawing.Point(1307, 580);
+            this.CameraRotation.Margin = new System.Windows.Forms.Padding(5);
+            this.CameraRotation.Name = "CameraRotation";
+            this.CameraRotation.Size = new System.Drawing.Size(71, 28);
+            this.CameraRotation.TabIndex = 4;
+            this.CameraRotation.Text = "CamRot";
+            this.CameraRotation.UseVisualStyleBackColor = true;
+            this.CameraRotation.Click += new System.EventHandler(this.CameraRotation_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -863,6 +876,7 @@
             this.Controls.Add(this.Custom);
             this.Controls.Add(this.OZ);
             this.Controls.Add(this.OY);
+            this.Controls.Add(this.CameraRotation);
             this.Controls.Add(this.OX);
             this.Controls.Add(this.rotateAroundLine);
             this.Controls.Add(this.move_button);
@@ -955,7 +969,7 @@
         private System.Windows.Forms.TextBox view_z;
         private System.Windows.Forms.Button button7;
         private System.Windows.Forms.Button camera_button;
-
+        private System.Windows.Forms.Button CameraRotation;
     }
 }
 

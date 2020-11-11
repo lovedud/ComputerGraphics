@@ -18,7 +18,7 @@ namespace Affin3D
         int z_length = 1600;
 
         public Point3D camera = null;
-        Point3D camera_view_pos = null;
+        public Point3D camera_view_pos = null;
         Point3D center;
         
         public Projector(Point3D coord_center)
@@ -67,17 +67,18 @@ namespace Affin3D
         {
             AffinTransformator affin_transformer = new AffinTransformator(p.Center());
 
-            var view_vector = new Point3D(0, 0, 1);
+            var view_vector = camera_view_pos;
             var sin_angle_x = SinBetweenVectorPlain(new Point3D(1, 0, 0), view_vector);
             var sin_angle_y = SinBetweenVectorPlain(new Point3D(0, 1, 0), view_vector);
             var sin_angle_z = SinBetweenVectorPlain(new Point3D(0, 0, 1), view_vector);
             var copy_p = new Polyhedron(p);
             var visible_polys = copy_p.PolyClipping(view_vector);
-            affin_transformer.Rotate(ref copy_p, view_vector, sin_angle_x, Math.Sqrt(1 - sin_angle_x * sin_angle_x));
-            affin_transformer.Rotate(ref copy_p, view_vector, sin_angle_y, Math.Sqrt(1 - sin_angle_y * sin_angle_y));
-            affin_transformer.Rotate(ref copy_p, view_vector, sin_angle_z, Math.Sqrt(1 - sin_angle_z * sin_angle_z));
+            affin_transformer.Rotate(ref copy_p, new Point3D(1, 0, 0), sin_angle_x, Math.Sqrt(1 - sin_angle_x * sin_angle_x));
+            affin_transformer.Rotate(ref copy_p, new Point3D(0, 1, 0), sin_angle_y, Math.Sqrt(1 - sin_angle_y * sin_angle_y));
+            affin_transformer.Rotate(ref copy_p, new Point3D(0, 0, 1), sin_angle_z, Math.Sqrt(1 - sin_angle_z * sin_angle_z));
             affin_transformer.Move(ref copy_p, new Point3D(-camera.X, -camera.Y, -camera.Z));
-            affin_transformer.Perspective(ref copy_p,  camera.Z);
+            affin_transformer.Perspective(ref copy_p, camera.Z);
+            ToCenterCoord(ref copy_p);
             return 
                 copy_p
                 .PreparePrint(visible_polys)

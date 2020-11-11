@@ -74,8 +74,6 @@ namespace Affin3D
                 double b = X * v.X + Y * v.Y + Z * v.Z;
                 double c = b / a;
                 return c < 0 ? true : false;
-                // d = Math.Acos(c) * 180 / Math.PI;
-                //return ((int)Math.Abs(d)) >= 90;
             }
 
         }
@@ -145,7 +143,7 @@ namespace Affin3D
                 HashSet<Edge3D> res = new HashSet<Edge3D>();
                 for(var poly = 0; poly < polygons.Count(); poly++)
                 {
-                    if (polygons[poly].Count < 3 || !visible_polys.Contains(poly))
+                    if (polygons[poly].Count < 3) //|| !visible_polys.Contains(poly))
                         continue;
                     Point3D prev = points[polygons[poly][0]];
                     for (var i = 1; i < polygons[poly].Count; i++)

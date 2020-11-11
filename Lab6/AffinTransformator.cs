@@ -79,13 +79,30 @@ namespace Affin3D
             Move(ref p);
             return p;
         }
+        public void Rotate(ref Point3D p, Point3D vector, double angle)
+        {
+            angle = angle * (Math.PI / 180.0);
+            UpdateMoveMatr(center.X, center.Y, center.Z);
+            UpdateBackMoveMatr();
+            UpdateRotateMatr(vector, Math.Sin(angle), Math.Cos(angle));
+            Rotate(ref p);
+        }
+        public void Rotate(ref Point3D p, Point3D around, Point3D vector, double angle)
+        {
+            angle = angle * (Math.PI / 180.0);
+            UpdateMoveMatr(around.X, around.Y, around.Z);
+            UpdateBackMoveMatr();
+            UpdateRotateMatr(vector, Math.Sin(angle), Math.Cos(angle));
+            Rotate(ref p);
+        }
         private void Rotate(ref Point3D p)
         {
-            BackMove(ref p);
+            Point3D p_copy = new Point3D(p);
+            BackMove(ref p_copy);
             var vector_p = PointToVector(p);
             var new_vector_p = MatrixMultiplication(vector_p, rotate_matr);
             p = VectorToPoint3D(new_vector_p);
-            Move(ref p);
+            Move(ref p_copy);
 
         }
         private Point3D RotateNormal(Point3D p)
@@ -96,8 +113,9 @@ namespace Affin3D
         }
         private Point3D Rotate(Point3D p)
         {
-            Rotate(ref p);
-            return p;
+            Point3D p_copy = new Point3D(p);
+            Rotate(ref p_copy);
+            return p_copy;
         }
         private Point3D Perspect(Point3D p)
         {
@@ -166,6 +184,23 @@ namespace Affin3D
             UpdateMoveMatr(center.X, center.Y, center.Z);
             UpdateBackMoveMatr();
             UpdateRotateMatr(vector, sin, cos);
+            poly.points = poly.points.Select((x) => Rotate(x)).ToList();
+            poly.normals = poly.normals.Select((x) => RotateNormal(x)).ToList();
+        }
+        public void Rotate(ref Polyhedron poly, Point3D vector, Point3D p, double sin, double cos)
+        {
+            UpdateMoveMatr(p.X, p.Y, p.Z);
+            UpdateBackMoveMatr();
+            UpdateRotateMatr(vector, sin, cos);
+            poly.points = poly.points.Select((x) => Rotate(x)).ToList();
+            poly.normals = poly.normals.Select((x) => RotateNormal(x)).ToList();
+        }
+        public void Rotate(ref Polyhedron poly, Point3D p, Point3D vector, double angle)
+        {
+            angle = angle * (Math.PI / 180.0);
+            UpdateMoveMatr(p.X, p.Y, p.Z);
+            UpdateBackMoveMatr();
+            UpdateRotateMatr(vector, Math.Sin(angle), Math.Cos(angle));
             poly.points = poly.points.Select((x) => Rotate(x)).ToList();
             poly.normals = poly.normals.Select((x) => RotateNormal(x)).ToList();
         }

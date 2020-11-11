@@ -27,7 +27,8 @@ namespace Affin3D
             RotateAroundLine,
             MoveP,
             Scale,
-            Camera
+            Camera,
+            RotateCamera
         }
 
 
@@ -50,7 +51,7 @@ namespace Affin3D
             g.Clear(Color.White);
             if (cur_polyhedron is null)
                 return;
-            projector.UpdatePointOfView(cur_polyhedron.Center());
+            //projector.UpdatePointOfView(cur_polyhedron.Center());
             List<Edge> edges = projector.Project(cur_mode, cur_polyhedron, viewVector);
 
             //DrawAxis(start_point); убрал, так как сломались ( становятся не по центру объекта)
@@ -188,11 +189,11 @@ namespace Affin3D
             e_x.Text = (1).ToString();
             e_y.Text = (0).ToString();
             e_z.Text = (0).ToString();
-            default_camera = new Point3D(pictureBox1.Width / 2 - 250, pictureBox1.Height / 2 - 250, 300);
+            default_camera = new Point3D(330, 330, 300);
 
             projector = new Projector(start_point);
             projector.UpdateCamera(default_camera);
-            projector.UpdatePointOfView(new Point3D(0, 0, 0));
+            projector.UpdatePointOfView(new Point3D(0, 1, 0));
 
             aff_trans = new AffinTransformator(start_point);
 
@@ -339,31 +340,47 @@ namespace Affin3D
 
             Draw(false);
         }
-            private void CameraMoving(Point e)
+        private void CameraMoving(Point e)
+        {
+            Point3D mouseMove = prevMouseMove;
+            if (Ortxy.Checked)
             {
-                Point3D mouseMove = prevMouseMove;
-                if (Ortxy.Checked)
-                {
-                    mouseMove = new Point3D(e.X - prevMouseMove.X, e.Y - prevMouseMove.Y, 0);
-                }
-                else if (Ortxz.Checked)
-                {
-                    mouseMove = new Point3D(e.X - prevMouseMove.X, 0, e.Y - prevMouseMove.Y);
-                }
-                else if (Ortyz.Checked)
-                {
-                    mouseMove = new Point3D(0, e.X - prevMouseMove.X, e.Y - prevMouseMove.Y);
-                }
-                projector.MoveCamera(mouseMove);
-                view_x.Text = projector.camera.X.ToString();
-                view_y.Text = projector.camera.Y.ToString();
-                view_z.Text = projector.camera.Z.ToString();
-                //projector.UpdatePointOfView(cur_polyhedron.Center());
-                prevMouseMove.X = e.X;
-                prevMouseMove.Y = e.Y;
-                Draw(false);
+                mouseMove = new Point3D(e.X - prevMouseMove.X, e.Y - prevMouseMove.Y, 0);
             }
-            private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
+            else if (Ortxz.Checked)
+            {
+                mouseMove = new Point3D(e.X - prevMouseMove.X, 0, e.Y - prevMouseMove.Y);
+            }
+            else if (Ortyz.Checked)
+            {
+                mouseMove = new Point3D(0, e.X - prevMouseMove.X, e.Y - prevMouseMove.Y);
+            }
+            projector.MoveCamera(mouseMove);
+            view_x.Text = projector.camera.X.ToString();
+            view_y.Text = projector.camera.Y.ToString();
+            view_z.Text = projector.camera.Z.ToString();
+            //projector.UpdatePointOfView(cur_polyhedron.Center());
+            prevMouseMove.X = e.X;
+            prevMouseMove.Y = e.Y;
+            Draw(false);
+        }
+        private void RotatingCamera(Point e)
+        {
+            int angle = AngleBetweenPoints(point_angle, new Point(e.X, e.Y));
+            aff_trans.Rotate(ref projector.camera, cur_polyhedron.Center(), RAL.end, prev_angle - angle);
+            aff_trans.Rotate(ref projector.camera_view_pos,new Point3D(0, 0, 0), RAL.end, prev_angle - angle);
+            //projector.UpdatePointOfView(NormalizedVector(new Edge3D(projector.camera, cur_polyhedron.Center())));
+            prev_angle = angle;
+            Draw(false, false);
+            DrawPoint(ref bm, new PointF(point_angle.X, point_angle.Y), Color.Orange);
+
+            view_x.Text = projector.camera.X.ToString();
+            view_y.Text = projector.camera.Y.ToString();
+            view_z.Text = projector.camera.Z.ToString();
+
+            pictureBox1.Image = bm;
+        }
+        private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
             {
                 if (cur_polyhedron is null || !m_down)
                     return;
@@ -376,6 +393,9 @@ namespace Affin3D
                         break;
                     case State.RotateAroundLine:
                         RotatingLine(e.Location);
+                        break;
+                    case State.RotateCamera:
+                        RotatingCamera(e.Location);
                         break;
                     case State.Scale:
                         ScalingPoly(e.Location);
@@ -653,6 +673,7 @@ namespace Affin3D
                 move_button.Enabled = on;
                 scaleButton.Enabled = on;
                 camera_button.Enabled = on;
+                CameraRotation.Enabled = on;
 
             }
             public void SwitchModeButtons(bool on)
@@ -666,6 +687,7 @@ namespace Affin3D
             private void Camera_Click(object sender, EventArgs e)
             {
                 cur_mode = Mode.Camera;
+                //projector.UpdatePointOfView(cur_polyhedron.Center());
                 cur_state = State.Camera;
                 SwitchModeButtons(true);
                 SwitchStateButtons(true);
@@ -685,6 +707,11 @@ namespace Affin3D
                 }
             }
 
-        
+        private void CameraRotation_Click(object sender, EventArgs e)
+        {
+            SwitchStateButtons(true);
+            CameraRotation.Enabled = false;
+            cur_state = State.RotateCamera;
+        }
     }
 }
