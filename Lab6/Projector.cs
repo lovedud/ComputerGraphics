@@ -69,12 +69,12 @@ namespace Affin3D
             AffinTransformator affin_transformer = new AffinTransformator(p.Center());
 
             var view_vector = camera_view_pos;
-            var sin_angle_x = SinBetweenVectorPlain(ral, view_vector);
+            //var sin_angle_x = SinBetweenVectorPlain(ral, view_vector);
             //var sin_angle_y = SinBetweenVectorPlain(new Point3D(0, 1, 0), view_vector);
             //var sin_angle_z = SinBetweenVectorPlain(new Point3D(0, 0, 1), view_vector);
             var copy_p = new Polyhedron(p);
             var visible_polys = copy_p.PolyClipping(view_vector);
-            affin_transformer.Rotate(ref copy_p, ral, ang);
+            affin_transformer.Rotate(ref copy_p, ral, -ang);
             //affin_transformer.Rotate(ref copy_p, ral, -sin_angle_x, Math.Sqrt(1 - sin_angle_x * sin_angle_x));
             //affin_transformer.Rotate(ref copy_p, new Point3D(0, 1, 0), -sin_angle_y, Math.Sqrt(1 - sin_angle_y * sin_angle_y));
             //affin_transformer.Rotate(ref copy_p, new Point3D(0, 0, 1), -sin_angle_z, Math.Sqrt(1 - sin_angle_z * sin_angle_z));
