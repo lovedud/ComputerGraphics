@@ -368,7 +368,9 @@ namespace Affin3D
         {
             int angle = AngleBetweenPoints(point_angle, new Point(e.X, e.Y));
             aff_trans.Rotate(ref projector.camera, cur_polyhedron.Center(), RAL.end, prev_angle - angle);
-            aff_trans.Rotate(ref projector.camera_view_pos,new Point3D(0, 0, 0), RAL.end, prev_angle - angle);
+            aff_trans.Rotate(ref projector.camera_view_pos, cur_polyhedron.Center(), RAL.end, prev_angle - angle);
+            projector.ral = RAL.end;
+            projector.ang = angle;
             //projector.UpdatePointOfView(NormalizedVector(new Edge3D(projector.camera, cur_polyhedron.Center())));
             prev_angle = angle;
             Draw(false, false);

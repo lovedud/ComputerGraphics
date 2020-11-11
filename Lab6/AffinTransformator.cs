@@ -97,12 +97,11 @@ namespace Affin3D
         }
         private void Rotate(ref Point3D p)
         {
-            Point3D p_copy = new Point3D(p);
-            BackMove(ref p_copy);
+            BackMove(ref p);
             var vector_p = PointToVector(p);
             var new_vector_p = MatrixMultiplication(vector_p, rotate_matr);
             p = VectorToPoint3D(new_vector_p);
-            Move(ref p_copy);
+            Move(ref p);
 
         }
         private Point3D RotateNormal(Point3D p)

@@ -708,6 +708,13 @@ namespace Affin3D
             double cheburek = Math.Sqrt(vector.X * vector.X + vector.Y * vector.Y + vector.Z * vector.Z);
             return Math.Sqrt(1 - kek / (lol * cheburek) * kek / (lol * cheburek));
         }
+        static public double CosBetweenVectorPlain(Point3D plain, Point3D vector)
+        {
+            double kek = Math.Abs(plain.X * vector.X + plain.Y * vector.Y + plain.Z * vector.Z);
+            double lol = Math.Sqrt(plain.X * plain.X + plain.Y * plain.Y + plain.Z * plain.Z);
+            double cheburek = Math.Sqrt(vector.X * vector.X + vector.Y * vector.Y + vector.Z * vector.Z);
+            return kek / (lol * cheburek);
+        }
         static public bool SamePointF(PointF p1, PointF p2)
         {
             if (Math.Abs(p1.X - p2.X) <= 3 && Math.Abs(p1.Y - p2.Y) <= 3)
