@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 
 namespace Affin3D
 {
@@ -41,13 +43,26 @@ namespace Affin3D
                 Pos = p.Pos;
                 H = p.H;
             }
+            public Light(Point3D pos, double h = 1)
+            {
+                Pos = new Point3D(pos);
+                H = h;
+            }
             public Light(float x, float y, float z, double h = 1)
             {
                 Pos = new Point3D(x, y, z);
                 H = h;
             }
         }
-
+        public class AffinMatr
+        {
+            public double[,] _matr;
+            public double[,] M;
+            public AffinMatr(double[,] matr)
+            {
+                M = matr;
+            }
+        }
 
         public class Rastr
         {
@@ -137,12 +152,15 @@ namespace Affin3D
 
             public bool ObtuseAngle(Point3D v)
             {
-                double a = Math.Sqrt(X * X + Y * Y + Z * Z) * Math.Sqrt(v.X * v.X + v.Y * v.Y + v.Z * v.Z);
-                double b = X * v.X + Y * v.Y + Z * v.Z;
-                double c = b / a;
-                return c < 0;
-                // d = Math.Acos(c) * 180 / Math.PI;
-                //return ((int)Math.Abs(d)) >= 90;
+                return (X * v.X + Y * v.Y + Z * v.Z) > 0;
+            }
+            public PointF To2D()
+            {
+                return new PointF(X, Y);
+            }
+            public Point3D Neg()
+            {
+                return new Point3D(-X, -Y, -Z);
             }
 
         }
@@ -239,12 +257,34 @@ namespace Affin3D
                 }
                 return visible_poly;
             }
+            private double InterpretateCos(double cos)
+            {
+                return 1 - Math.Abs(cos);
+            }
             private double Luminosity(int point_ind, Light light )
             {
-                //return light.H * 0.6 * CosVectors(light.Pos, points_normals[point_ind]);
-                return light.H * 0.6 * CosVectors(NormalizedVector(new Edge3D(light.Pos, points[point_ind])), points_normals[point_ind]);
+                return light.H * 0.9 * InterpretateCos(CosBetween(NormalizedVector(new Edge3D(light.Pos, points[point_ind])), points_normals[point_ind]));
             }
-
+            public HashSet<Edge3D> PreparePrint(Point3D view_vector)
+            {
+                //var visible_polys = PolyClipping(view_vector);
+                HashSet<Edge3D> res = new HashSet<Edge3D>();
+                for (int poly = 0; poly < polygons.Count; poly++)
+                {
+                    if (polygons[poly].Count < 3 || !normals[poly].ObtuseAngle(view_vector))
+                        continue;
+                    Point3D prev = points[polygons[poly][0]];
+                    for (var i = 1; i < polygons[poly].Count; i++)
+                    {
+                        Point3D cur = points[polygons[poly][i]];
+                        res.Add(new Edge3D(prev, cur));
+                        prev = cur;
+                    }
+                    Edge3D last = new Edge3D(prev, points[polygons[poly][0]]);
+                    res.Add(last);
+                }
+                return res;
+            }
             public List<List<Tuple<Point3D, double>>> PreparePrint(List<int> visible_polys, Light light)
             {
                 List<List<Tuple<Point3D, double>>> res = new List<List<Tuple<Point3D, double>>>();
@@ -389,13 +429,10 @@ namespace Affin3D
             }
             return res;
         }
-        static public IEnumerable<Rastr> BilinearPolygonInterpolation(List<Rastr> polygon)
+        static public IEnumerable<Rastr> BilinearPolygonInterpolation(List<Rastr> copy_polygon)
         {
-            //var copy_polygon = polygon.OrderBy((x) => x.Y).ToList();
-            var copy_polygon = new List<Rastr>(polygon);
-            //var copy_polygon = polygon.OrderBy((x) => x.Y).ThenBy((x) => x.X).ToList();
             copy_polygon.Sort(RastrComparison);
-
+            Debug.WriteLine(copy_polygon[0].Y + "|" + copy_polygon[1].Y + "|" + copy_polygon[2].Y);
             var long_edge = Interpolation(copy_polygon[0].Y, copy_polygon[0].X,
                 copy_polygon[2].Y, copy_polygon[2].X).ToList();
             var h_long_edge = Interpolation(copy_polygon[0].Y, copy_polygon[0].H,
@@ -410,7 +447,7 @@ namespace Affin3D
                 copy_polygon[2].Y, copy_polygon[2].X).ToList();
             var h_short_edge2 = Interpolation(copy_polygon[1].Y, copy_polygon[1].H,
                 copy_polygon[2].Y, copy_polygon[2].H).ToList();
-
+            
             var short_edges = short_edge1.Concat(short_edge2).ToList();
             var h_short_edges = h_short_edge1.Concat(h_short_edge2).ToList();
 
@@ -436,7 +473,7 @@ namespace Affin3D
             {
                 int x_l = x_left[y - y0];
                 int x_r = x_right[y - y0];
-                var h_values = Interpolation(x_l, h_right[y - y0], x_r, h_left[y - y0]).ToList();
+                var h_values = Interpolation(x_l, h_left[y - y0], x_r, h_right[y - y0]).ToList();
                 for (int x = x_l; x < x_r; x++)
                 {
                     res.Add(new Rastr(x, y, h_values[x - x_l]));
@@ -466,7 +503,11 @@ namespace Affin3D
         static private IEnumerable<int> Interpolation(int i1, int d1, int i2, int d2)
         {
             List<int> res = new List<int>();
-            double k =((d2 - d1) * 1.0 / (i2 - i1));
+            if (i1 == i2)
+            {
+                return res;
+            }
+            double k =(d2 - d1) / (i2 - i1);
             double d = d1;
             for(var t = i1; t < i2; t++)
             {
@@ -478,7 +519,11 @@ namespace Affin3D
         static private IEnumerable<double> Interpolation(int i1, double d1, int i2, double d2)
         {
             List<double> res = new List<double>();
-            double k = ((d2 - d1) * 1.0 / (i2 - i1));
+            if (i1 == i2)
+            {
+                return res;
+            }
+            double k = ((d2 - d1) / (i2 - i1));
             double d = d1;
             for (var t = i1; t < i2; t++)
             {
@@ -584,23 +629,23 @@ namespace Affin3D
             return new Point3D(xs, ys, zs);
         }
 
-        public static List<Edge> GetAxis(Point3D center, Mode projection, Projector pr)
+        //static public double[,] PointToVector(Point3D p)
+        //{
+        //    return new double[1, 4] { { p.X, p.Y, p.Z, 1 } };
+        //}
+        static public AffinMatr PointToVector(Point3D p)
         {
-            List<Edge> res = new List<Edge>();
-            res.Add(pr.Project(projection, new Edge3D(center, new Point3D(center.X + 200, center.Y, center.Z))));
-            res.Add(pr.Project(projection, new Edge3D(center, new Point3D(center.X, center.Y - 200, center.Z))));
-            res.Add(pr.Project(projection, new Edge3D(center, new Point3D(center.X, center.Y, center.Z + 200))));
-            return res;
-        }
-
-        static public double[,] PointToVector(Point3D p)
-        {
-            return new double[1, 4] { { p.X, p.Y, p.Z, 1 } };
+            return new AffinMatr(new double[1, 4] { { p.X, p.Y, p.Z, 1 } });
         }
         static public Point3D VectorToPoint3D(double[,] vec)
         {
             var w = vec[0, 3] == 0 ? 1 : vec[0, 3];
             return new Point3D((float)(vec[0, 0] / w), (float)(vec[0, 1] / w), (float)(vec[0, 2] / w));
+        }
+        static public Point3D VectorToPoint3D(AffinMatr vec)
+        {
+            var w = vec.M[0, 3] == 0 ? 1 : vec.M[0, 3];
+            return new Point3D((float)(vec.M[0, 0] / w), (float)(vec.M[0, 1] / w), (float)(vec.M[0, 2] / w));
         }
         static public PointF VectorToPoint(double[,] vec)
         {
@@ -830,7 +875,16 @@ namespace Affin3D
             return false;
 
         }
-
+        
+        static public AffinMatr MatrixMultiplication(AffinMatr matrix, params AffinMatr[] matrices)
+        {
+            var left_matr = matrix;
+            foreach(var matr in matrices)
+            {
+                left_matr.M = MatrixMultiplication(left_matr.M, matr.M);
+            }
+            return left_matr;
+        }
         //Перемножение матриц
         static public double[,] MatrixMultiplication(double[,] matrixA, double[,] matrixB)
         {
@@ -876,19 +930,12 @@ namespace Affin3D
 
             return matrixC;
         }
-        static public double CosVectors(Point3D vec1, Point3D vec2)
+        static public double CosBetween(Point3D vec1, Point3D vec2)
         {
-            double kek = Math.Abs(vec1.X * vec2.X + vec1.Y * vec2.Y + vec1.Z * vec2.Z);
+            double kek = vec1.X * vec2.X + vec1.Y * vec2.Y + vec1.Z * vec2.Z;
             double lol = Math.Sqrt(vec1.X * vec1.X + vec1.Y * vec1.Y + vec1.Z * vec1.Z);
             double cheburek = Math.Sqrt(vec2.X * vec2.X + vec2.Y * vec2.Y + vec2.Z * vec2.Z);
             return kek / (lol * cheburek);
-        }
-        static public double SinBetweenVectorPlain(Point3D plain, Point3D vector)//TODO: think about it
-        {
-            double kek = Math.Abs(plain.X * vector.X + plain.Y * vector.Y + plain.Z * vector.Z);
-            double lol = Math.Sqrt(plain.X * plain.X + plain.Y * plain.Y + plain.Z * plain.Z);
-            double cheburek = Math.Sqrt(vector.X * vector.X + vector.Y * vector.Y + vector.Z * vector.Z);
-            return Math.Sqrt(1- (kek / (lol * cheburek))*(kek / (lol * cheburek)));
         }
         static public bool SamePointF(PointF p1, PointF p2)
         {

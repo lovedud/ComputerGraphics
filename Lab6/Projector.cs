@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static Affin3D.AffinStuff;
+using static Affin3D.AffinTransformator;
 
 namespace Affin3D
 {
@@ -17,9 +18,7 @@ namespace Affin3D
         private double[,] perspective_matr;
         int z_length = 1600;
 
-        public Point3D camera = null;
-        Point3D camera_view_pos = null;
-        Point3D center;
+        public Point3D center;
         Light light;
 
         public Projector(Point3D coord_center)
@@ -28,24 +27,37 @@ namespace Affin3D
             ort_mode = OrtMode.XY;
             FormOrtoghraphicsMatr(ort_mode);
             FormIsometricMatr();
-            FormPerspectiveMatr(z_length);
+            FillPerspectiveMatr(z_length);
         }
-        public Edge Project(Mode m, Edge3D e)
+
+        public IEnumerable<Edge> Project(Mode m, Polyhedron p, Camera cam)
         {
+            AffinMatr view_matrix;
+            var copy_p = new Polyhedron(p);
+            ToCenterCoord(ref copy_p);
             switch (m)
             {
                 case Mode.Orthographic:
-                    return ToOrtographics(e);
+                    view_matrix = new AffinMatr(ortographics_matr);
+                    break;
                 case Mode.Isometric:
-                    return ToIsometric(e);
+                    view_matrix = new AffinMatr(isometric_matr);
+                    break;
                 case Mode.Perspective:
-                    return ToPerspective(e);
+                    view_matrix = new AffinMatr(perspective_matr);
+                    break;
+                case Mode.Camera:
+                    view_matrix = cam.CameraProjection(copy_p.Center());
+                    break;
                 default:
-                    return new Edge(new PointF(-1, -1), new PointF(-1, -1));
+                    return new HashSet<Edge>();
+
             }
             
+            return copy_p.PreparePrint(new Point3D(0, 0, 1)).Select((edge) => new Edge(ApplyTo(edge.start, view_matrix).To2D(),
+                ApplyTo(edge.end, view_matrix).To2D()));
         }
-        public IEnumerable<Rastr> Project(Mode m, Polyhedron p, Point3D viewVector, Light l)
+        public IEnumerable<Rastr> Project(Mode m, Polyhedron p, Camera cam, Light l)
         {
             List<Rastr> res = new List<Rastr>();
             var copy_p = new Polyhedron(p);
@@ -55,16 +67,16 @@ namespace Affin3D
             switch (m)
             {
                 case Mode.Orthographic:
-                    points_2D = ToOrtographics(copy_p, viewVector);
+                    points_2D = PrepareToRastr(ToOrtographics, copy_p, new Point3D(0, 0, 1));
                     break;
                 case Mode.Isometric:
-                    points_2D = ToIsometric(copy_p, viewVector);
+                    points_2D = PrepareToRastr(ToIsometric, copy_p, cam.view_vector);
                     break;
                 case Mode.Perspective:
-                    points_2D = ToPerspective(copy_p, viewVector);
+                    points_2D = PrepareToRastr(ToPerspective, copy_p, cam.view_vector);
                     break;
                 case Mode.Camera:
-                    points_2D = ProjectFromCamera(p);
+                    points_2D = ProjectFromCamera(copy_p, cam);
                     break;
                 default:
                     return new List<Rastr>();
@@ -77,54 +89,25 @@ namespace Affin3D
                     res.AddRange(BilinearPolygonInterpolation(poly));
                 }
             }
+           
             return res;
         }
-        public IEnumerable<List<Rastr>> ProjectFromCamera(Polyhedron p)
+        public IEnumerable<List<Rastr>> ProjectFromCamera(Polyhedron p, Camera c)
         {
-            AffinTransformator affin_transformer = new AffinTransformator(p.Center());
-
-            var view_vector = NormalizedVector(new Edge3D(ToCenterCoord(camera), ToCenterCoord(camera_view_pos)));
-            var sin_angle_x = SinBetweenVectorPlain(new Point3D(1, 0, 0), view_vector);
-            var sin_angle_y = SinBetweenVectorPlain(new Point3D(0, 1, 0), view_vector);
-            var sin_angle_z = SinBetweenVectorPlain(new Point3D(0, 0, 1), view_vector);
             var copy_p = new Polyhedron(p);
-            //var visible_polys = copy_p.PolyClipping(view_vector);
-            affin_transformer.Rotate(ref copy_p, view_vector, sin_angle_x, Math.Sqrt(1 - sin_angle_x * sin_angle_x));
-            affin_transformer.Rotate(ref copy_p, view_vector, sin_angle_y, Math.Sqrt(1 - sin_angle_y * sin_angle_y));
-            affin_transformer.Rotate(ref copy_p, view_vector, sin_angle_z, Math.Sqrt(1 - sin_angle_z * sin_angle_z));
-            affin_transformer.Perspective(ref copy_p, camera.Z);
-            ToCenterCoord(ref copy_p);
-            return copy_p.PreparePrint(copy_p.PolyClipping(view_vector), light)
+            ApplyTo(ref copy_p, c.CameraProjection(copy_p.Center()));
+            return copy_p.PreparePrint(copy_p.PolyClipping(c.view_vector), light)
                 .Select((x) => x.Select((pf) => new Rastr(pf.Item1, pf.Item2)).ToList());
         }
         private void ToCenterCoord(ref Polyhedron poly)
         {
-            AffinTransformator affin_transformer = new AffinTransformator(center);
-            affin_transformer.Move(ref poly, center);
+            ApplyTo(ref poly, MoveMatr(center));
         }
         private Point3D ToCenterCoord(Point3D p)
         {
-            AffinTransformator affin_transformer = new AffinTransformator(center);
-            affin_transformer.UpdateMoveMatr(center.X, center.Y, center.Z);
-            return affin_transformer.Move(p);
-        }
-        private Edge ToOrtographics(Edge3D e)
-        {
-            var new_start = VectorToPoint(MatrixMultiplication(PointToVector(e.start), ortographics_matr));
-            var new_end = VectorToPoint(MatrixMultiplication(PointToVector(e.end), ortographics_matr));
-            return new Edge(new_start, new_end);
-        }
-        private Edge ToIsometric(Edge3D e)
-        {
-            var new_start = VectorToPoint(MatrixMultiplication(PointToVector(e.start), isometric_matr));
-            var new_end = VectorToPoint(MatrixMultiplication(PointToVector(e.end), isometric_matr));
-            return new Edge(new_start, new_end);
-        }
-        private Edge ToPerspective(Edge3D e)
-        {
-            var new_start = VectorToPoint(MatrixMultiplication(PointToVector(e.start), perspective_matr));
-            var new_end = VectorToPoint(MatrixMultiplication(PointToVector(e.end), perspective_matr));
-            return new Edge(new_start, new_end);
+            Point3D copy_p = new Point3D(p);
+            ApplyTo(ref copy_p, MoveMatr(center));
+            return copy_p;
         }
 
         private void FormOrtoghraphicsMatr(OrtMode m)
@@ -158,7 +141,7 @@ namespace Affin3D
              { sin, -sin * cos, 0, 0 },
              { 0,   0,          0, 1 } };
         }
-        private void FormPerspectiveMatr(int c)
+        private void FillPerspectiveMatr(int c)
         {
             perspective_matr = new double[4, 4]
             {{ 1, 0, 0, 0      },
@@ -169,63 +152,35 @@ namespace Affin3D
 
         private PointF ToIsometric(Point3D p)
         {
-            var vector_p = PointToVector(p);
-            var new_vector_p = MatrixMultiplication(vector_p, isometric_matr);
-            return VectorToPoint(new_vector_p);
+            Point3D copy_p = new Point3D(p);
+            ApplyTo(ref copy_p, new AffinMatr(isometric_matr));
+            return copy_p.To2D();
         }
         private PointF ToPerspective(Point3D p)
         {
-            var vector_p = PointToVector(p);
-            var new_vector_p = MatrixMultiplication(vector_p, perspective_matr);
-            return VectorToPoint(new_vector_p);
+            Point3D copy_p = new Point3D(p);
+            ApplyTo(ref copy_p, new AffinMatr(perspective_matr));
+            return copy_p.To2D();
         }
-        private PointF ToOrtographics(Point3D p, OrtMode om)
+        private PointF ToOrtographics(Point3D p)
         {
-            var vector_p = PointToVector(p);
-            var new_vector_p = MatrixMultiplication(vector_p, ortographics_matr);
-            return VectorToPoint(new_vector_p);
+            Point3D copy_p = new Point3D(p);
+            ApplyTo(ref copy_p, new AffinMatr(ortographics_matr));
+            return copy_p.To2D();
         }
 
-        private IEnumerable<List<Rastr>> ToIsometric(Polyhedron ph, Point3D viewVector)
-        {
-            List<List<Point>> res = new List<List<Point>>();
-            return ph.PreparePrint(ph.PolyClipping(viewVector), light)
-                .Select((x) => x.Select((y) => new Rastr(ToIsometric(y.Item1),y.Item2)).ToList());
-        }
-        private IEnumerable<List<Rastr>> ToPerspective(Polyhedron ph, Point3D viewVector)
-        {
-            List<Edge> res = new List<Edge>();
-            return ph.PreparePrint(ph.PolyClipping(viewVector), light)
-                .Select((x) => x.Select((y) => new Rastr(ToPerspective(y.Item1), y.Item2)).ToList());
-        }
-        private IEnumerable<List<Rastr>> ToOrtographics(Polyhedron ph, Point3D viewVector)
-        {
-            return ph.PreparePrint(ph.PolyClipping(viewVector), light)
-                .Select((x) => x.Select((y) => new Rastr(ToOrtographics(y.Item1, ort_mode), y.Item2)).ToList());
-        }
 
         public void Update(OrtMode om)
         {
             ort_mode = om;
+            FormOrtoghraphicsMatr(om);
         }
-        public void UpdateCamera(Point3D cam_pos, Point3D view_pos)
+        
+        private IEnumerable<List<Rastr>> PrepareToRastr(Func<Point3D, PointF> projection, Polyhedron poly, Point3D view_vector)
         {
-            camera = cam_pos;
-            camera_view_pos = view_pos;
+            return poly.PreparePrint(poly.PolyClipping(view_vector), light)
+                .Select((x) => x.Select((y) => new Rastr(projection(y.Item1), y.Item2)).ToList());
         }
-        public void UpdateCamera(Point3D cam_pos)
-        {
-            camera = cam_pos;
-        }
-        public void UpdatePointOfView(Point3D view_pos)
-        {
-            camera_view_pos = view_pos;
-        }
-        public void MoveCamera(Point3D d)
-        {
-            camera.X += d.X;
-            camera.Y += d.Y;
-            camera.Z += d.Z;
-        }
+        
     }
 }

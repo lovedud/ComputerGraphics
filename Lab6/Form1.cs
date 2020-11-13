@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static Affin3D.AffinStuff;
+using static Affin3D.AffinTransformator;
 
 namespace Affin3D
 {
@@ -27,7 +28,8 @@ namespace Affin3D
             RotateAroundLine,
             MoveP,
             Scale,
-            Camera
+            Camera,
+            CameraRotating
         }
 
 
@@ -40,11 +42,11 @@ namespace Affin3D
         Graphics g;
         Point3D start_point;
         Projector projector;
-        AffinTransformator aff_trans;
 
         Point3D viewVector = new Point3D(0, 0, 1);
-        Point3D default_camera;
+        Camera camera;
         Light light;
+        bool IsRastrOn;
 
         private Color DimeColor(Color c, double sat)
         {
@@ -56,36 +58,40 @@ namespace Affin3D
             g.Clear(Color.White);
             if (cur_polyhedron is null)
                 return;
-            projector.UpdatePointOfView(cur_polyhedron.Center());
             cur_polyhedron.Triangulate();
-            var rastrs = projector.Project(cur_mode, cur_polyhedron, viewVector, light);
-
-            //DrawAxis(start_point); убрал, так как сломались ( становятся не по центру объекта)
-            foreach (var rastr in rastrs)
+            if (IsRastrOn)
             {
-                if (rastr.X < 0 || rastr.Y < 0 || rastr.X >= pictureBox1.Width || rastr.Y >= pictureBox1.Height )
-                    continue;
-                var rastr_color = DimeColor(Color.Aqua, rastr.H);
-                bm.SetPixel(rastr.X, rastr.Y, rastr_color);
+                var rastrs = projector.Project(cur_mode, cur_polyhedron, camera, light);
+
+                foreach (var rastr in rastrs)
+                {
+                    if (rastr.X < 0 || rastr.Y < 0 || rastr.X >= pictureBox1.Width || rastr.Y >= pictureBox1.Height)
+                        continue;
+                    var rastr_color = DimeColor(Color.Aqua, rastr.H);
+                    bm.SetPixel(rastr.X, rastr.Y, rastr_color);
+                }
             }
+            else
+            {
+                var edges = projector.Project(cur_mode, cur_polyhedron, camera);
+                foreach(var edge in edges)
+                {
+                    DrawEdge(ref g, ref bm, edge, false);
+                }
+            }
+            
             
             pictureBox1.Image = bm;
             if (update)
                 pictureBox1.Update();
         }
-        private void DrawAxis(Point3D center)
-        {
-            var new_axis = GetAxis(center, cur_mode, projector);
-            g.DrawLine(new Pen(Color.Red), new_axis[0].start, new_axis[0].end);
-            g.DrawLine(new Pen(Color.Blue), new_axis[1].start, new_axis[1].end);
-            g.DrawLine(new Pen(Color.Green), new_axis[2].start, new_axis[2].end);
-        }
+        
 
         public void Clear()
         {
             g.Clear(Color.White);
             cur_polyhedron = CreateCube(start_point, 100);
-            projector.UpdateCamera(default_camera);
+            camera.Reset();
             pictureBox1.Image = bm;
         }
 
@@ -199,13 +205,11 @@ namespace Affin3D
             e_x.Text = (1).ToString();
             e_y.Text = (0).ToString();
             e_z.Text = (0).ToString();
-            default_camera = new Point3D(pictureBox1.Width / 2 - 250, pictureBox1.Height / 2 - 250, 300);
+            //default_camera = new Point3D(pictureBox1.Width / 2 - 250, pictureBox1.Height / 2 - 250, 300);
 
             projector = new Projector(start_point);
-            projector.UpdateCamera(default_camera);
-            light = new Light(default_camera.X, default_camera.Y, default_camera.Z);
-
-            aff_trans = new AffinTransformator(start_point);
+            camera = new Camera(new Point3D(pictureBox1.Width / 2 - 250, pictureBox1.Height / 2 - 250, 500), new Point3D(0, 0, 1));
+            light = new Light(camera.camera);
 
             comboBox1.SelectedIndex = 0;
             comboBox2.SelectedIndex = 0;
@@ -290,7 +294,7 @@ namespace Affin3D
         private void RotatingLine(Point e)
         {
             int angle = AngleBetweenPoints(point_angle, new Point(e.X, e.Y));
-            aff_trans.Rotate(ref cur_polyhedron, RAL.end, prev_angle - angle);
+            Rotate(ref cur_polyhedron, cur_polyhedron.Center(), RAL.end, prev_angle - angle);
             prev_angle = angle;
             Draw(false, false);
             DrawPoint(ref bm, new PointF(point_angle.X, point_angle.Y), Color.Orange);
@@ -316,7 +320,7 @@ namespace Affin3D
             {
                 mouseMove = new Point3D(0, e.X - prevMouseMove.X, e.Y - prevMouseMove.Y);
             }
-            aff_trans.Move(ref cur_polyhedron, mouseMove);
+            AffinTransformator.Move(ref cur_polyhedron, mouseMove);
             prevMouseMove.X = e.X;
             prevMouseMove.Y = e.Y;
             Draw(false);
@@ -344,13 +348,28 @@ namespace Affin3D
                 mouseMove = new Point3D(0, e.X - prevMouseMove.X, e.Y - prevMouseMove.Y);
             }
             ky = ky == 0 ? 1 + mouseMove.Y * 0.01 : ky;
-            aff_trans.Scale(ref cur_polyhedron, 1 - mouseMove.X * 0.01, ky, 1 - mouseMove.Z * 0.01);
+            
+            AffinTransformator.Scale(ref cur_polyhedron, start_point, 1 - mouseMove.X * 0.01, ky, 1 - mouseMove.Z * 0.01);
             prevMouseMove.X = e.X;
             prevMouseMove.Y = e.Y;
 
             Draw(false);
         }
-            private void CameraMoving(Point e)
+        private void RotatingCamera(Point e)
+        {
+            int angle = AngleBetweenPoints(point_angle, new Point(e.X, e.Y));
+            camera.Rotate(cur_polyhedron.Center(), RAL.end, prev_angle - angle);
+            prev_angle = angle;
+            Draw(false, false);
+            DrawPoint(ref bm, new PointF(point_angle.X, point_angle.Y), Color.Orange);
+
+            view_x.Text = camera.camera.X.ToString();
+            view_y.Text = camera.camera.Y.ToString();
+            view_z.Text = camera.camera.Z.ToString();
+
+            pictureBox1.Image = bm;
+        }
+        private void CameraMoving(Point e)
             {
                 Point3D mouseMove = prevMouseMove;
                 if (Ortxy.Checked)
@@ -365,11 +384,10 @@ namespace Affin3D
                 {
                     mouseMove = new Point3D(0, e.X - prevMouseMove.X, e.Y - prevMouseMove.Y);
                 }
-                projector.MoveCamera(mouseMove);
-                view_x.Text = projector.camera.X.ToString();
-                view_y.Text = projector.camera.Y.ToString();
-                view_z.Text = projector.camera.Z.ToString();
-                projector.UpdatePointOfView(cur_polyhedron.Center());
+                camera.Move(mouseMove);
+                view_x.Text = camera.camera.X.ToString();
+                view_y.Text = camera.camera.Y.ToString();
+                view_z.Text = camera.camera.Z.ToString();
                 prevMouseMove.X = e.X;
                 prevMouseMove.Y = e.Y;
                 Draw(false);
@@ -379,7 +397,6 @@ namespace Affin3D
                 if (cur_polyhedron is null || !m_down)
                     return;
 
-                aff_trans.center = cur_polyhedron.Center();
                 switch (cur_state)
                 {
                     case State.MoveP:
@@ -390,6 +407,9 @@ namespace Affin3D
                         break;
                     case State.Scale:
                         ScalingPoly(e.Location);
+                        break;
+                    case State.CameraRotating:
+                        RotatingCamera(e.Location);
                         break;
                     case State.Camera:
                         CameraMoving(e.Location);
@@ -478,7 +498,7 @@ namespace Affin3D
                     foreach (var o in objects)
                     {
                         cur_polyhedron = o;
-                        aff_trans.Scale(ref cur_polyhedron, 1 / 50.0, 1 / 50.0, 1 / 50.0);
+                        AffinTransformator.Scale(ref cur_polyhedron, start_point, 1 / 50.0, 1 / 50.0, 1 / 50.0);
                         Draw();
                     }
                 }
@@ -584,7 +604,7 @@ namespace Affin3D
                 rotated_pol.AddPoints(buf);
                 for (int i = 0; i <= count; ++i)
                 {
-                    aff_trans.Rotate(ref rotated_pol, axis, angle);
+                    Rotate(ref rotated_pol,start_point, axis, angle);
                     
                     for (int j = 0; j < buf.Count; ++j)
                     {
@@ -617,8 +637,8 @@ namespace Affin3D
                     }
 
                 }
-                aff_trans.Move(ref cur_polyhedron, new Point3D(pictureBox1.Width / 2, pictureBox1.Height / 2, 0));
-                aff_trans.Rotate(ref cur_polyhedron, new Point3D(0, 1, 0), 90);
+                AffinTransformator.Move(ref cur_polyhedron, new Point3D(pictureBox1.Width / 2, pictureBox1.Height / 2, 0));
+                Rotate(ref cur_polyhedron,start_point, new Point3D(0, 1, 0), 90);
                 Draw();
             }
 
@@ -663,7 +683,7 @@ namespace Affin3D
                 move_button.Enabled = on;
                 scaleButton.Enabled = on;
                 camera_button.Enabled = on;
-
+                CameraRota.Enabled = on;
             }
             public void SwitchModeButtons(bool on)
             {
@@ -680,6 +700,7 @@ namespace Affin3D
                 SwitchModeButtons(true);
                 SwitchStateButtons(true);
                 camera_button.Enabled = false;
+                
                 Draw(false);
             }
 
@@ -703,6 +724,21 @@ namespace Affin3D
             float.TryParse(z_light_box.Text, out float z);
             float.TryParse(luminosity_box.Text, out float h);
             light = new Light(x, y, z, h);
+        }
+
+        private void RastrOn_CheckedChanged(object sender, EventArgs e)
+        {
+            IsRastrOn = RastrOn.Checked;
+        }
+
+        private void CameraRota_Click(object sender, EventArgs e)
+        {
+            if (cur_mode == Mode.Camera)
+            {
+                SwitchStateButtons(true);
+                CameraRota.Enabled = false;
+                cur_state = State.CameraRotating;
+            }
         }
     }
 }

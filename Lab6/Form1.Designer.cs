@@ -103,6 +103,8 @@
             this.luminosity_box = new System.Windows.Forms.TextBox();
             this.luminosity_label = new System.Windows.Forms.Label();
             this.light_create_button = new System.Windows.Forms.Button();
+            this.CameraRota = new System.Windows.Forms.Button();
+            this.RastrOn = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.SuspendLayout();
@@ -238,7 +240,7 @@
             // OX
             // 
             this.OX.Enabled = false;
-            this.OX.Location = new System.Drawing.Point(1248, 580);
+            this.OX.Location = new System.Drawing.Point(1218, 580);
             this.OX.Margin = new System.Windows.Forms.Padding(5);
             this.OX.Name = "OX";
             this.OX.Size = new System.Drawing.Size(41, 28);
@@ -250,7 +252,7 @@
             // OY
             // 
             this.OY.Enabled = false;
-            this.OY.Location = new System.Drawing.Point(1185, 580);
+            this.OY.Location = new System.Drawing.Point(1169, 580);
             this.OY.Margin = new System.Windows.Forms.Padding(5);
             this.OY.Name = "OY";
             this.OY.Size = new System.Drawing.Size(41, 28);
@@ -262,7 +264,7 @@
             // OZ
             // 
             this.OZ.Enabled = false;
-            this.OZ.Location = new System.Drawing.Point(1122, 580);
+            this.OZ.Location = new System.Drawing.Point(1118, 580);
             this.OZ.Margin = new System.Windows.Forms.Padding(5);
             this.OZ.Name = "OZ";
             this.OZ.Size = new System.Drawing.Size(41, 28);
@@ -435,7 +437,7 @@
             // perspective_button
             // 
             this.perspective_button.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            this.perspective_button.Location = new System.Drawing.Point(1119, 421);
+            this.perspective_button.Location = new System.Drawing.Point(1119, 411);
             this.perspective_button.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.perspective_button.Name = "perspective_button";
             this.perspective_button.Size = new System.Drawing.Size(183, 31);
@@ -917,6 +919,32 @@
             this.light_create_button.UseVisualStyleBackColor = true;
             this.light_create_button.Click += new System.EventHandler(this.light_create_button_Click);
             // 
+            // CameraRota
+            // 
+            this.CameraRota.Enabled = false;
+            this.CameraRota.Location = new System.Drawing.Point(1265, 580);
+            this.CameraRota.Margin = new System.Windows.Forms.Padding(5);
+            this.CameraRota.Name = "CameraRota";
+            this.CameraRota.Size = new System.Drawing.Size(101, 28);
+            this.CameraRota.TabIndex = 4;
+            this.CameraRota.Text = "Cam Rotation";
+            this.CameraRota.UseVisualStyleBackColor = true;
+            this.CameraRota.Click += new System.EventHandler(this.CameraRota_Click);
+            // 
+            // RastrOn
+            // 
+            this.RastrOn.AutoSize = true;
+            this.RastrOn.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            this.RastrOn.Location = new System.Drawing.Point(1291, 436);
+            this.RastrOn.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
+            this.RastrOn.Name = "RastrOn";
+            this.RastrOn.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.RastrOn.Size = new System.Drawing.Size(72, 24);
+            this.RastrOn.TabIndex = 52;
+            this.RastrOn.Text = "Rastr";
+            this.RastrOn.UseVisualStyleBackColor = true;
+            this.RastrOn.CheckedChanged += new System.EventHandler(this.RastrOn_CheckedChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -941,6 +969,7 @@
             this.Controls.Add(this.view_x);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.button6);
+            this.Controls.Add(this.RastrOn);
             this.Controls.Add(this.Ortxyz);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.comboBox2);
@@ -983,6 +1012,7 @@
             this.Controls.Add(this.Custom);
             this.Controls.Add(this.OZ);
             this.Controls.Add(this.OY);
+            this.Controls.Add(this.CameraRota);
             this.Controls.Add(this.OX);
             this.Controls.Add(this.rotateAroundLine);
             this.Controls.Add(this.move_button);
@@ -1085,6 +1115,8 @@
         private System.Windows.Forms.TextBox luminosity_box;
         private System.Windows.Forms.Label luminosity_label;
         private System.Windows.Forms.Button light_create_button;
+        private System.Windows.Forms.Button CameraRota;
+        private System.Windows.Forms.CheckBox RastrOn;
     }
 }
 
