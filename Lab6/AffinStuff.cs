@@ -152,7 +152,7 @@ namespace Affin3D
 
             public bool ObtuseAngle(Point3D v)
             {
-                return (X * v.X + Y * v.Y + Z * v.Z) > 0;
+                return (X * v.X + Y * v.Y + Z * v.Z) < 0;
             }
             public PointF To2D()
             {
@@ -244,13 +244,40 @@ namespace Affin3D
                 }
                 AddNormal(polygon);
             }
+            private Point3D AveragePoint(List<Point3D> points)
+            {
+                var res = new Point3D(0,0,0);
+                foreach(var p in points)
+                {
+                    res.X += p.X;
+                    res.Y += p.Y;
+                    res.Z += p.Z;
+                }
+                res.X /= points.Count;
+                res.Y /= points.Count;
+                res.Z /= points.Count;
+                return res;
+            }
             public List<int> PolyClipping(Point3D viewVector)
             {
                 List<int> visible_poly = new List<int>();
                 for(var i = 0; i < polygons.Count(); i++)
                 {
-                    
                     if ((viewVector.X != 0 || viewVector.Y != 0 || viewVector.Z != 0) && !normals[i].ObtuseAngle(viewVector))
+                    {
+                        visible_poly.Add(i);
+                    }
+                }
+                return visible_poly;
+            }
+
+            public List<int> PolyClipping(Camera camera)
+            {
+                List<int> visible_poly = new List<int>();
+                for (var i = 0; i < polygons.Count(); i++)
+                {
+                    var viewVector = NormalizedVector(camera.camera, AveragePoint(polygons[i].Select((x) => points[x]).ToList()));
+                    if ((viewVector.X != 0 || viewVector.Y != 0 || viewVector.Z != 0) || !normals[i].ObtuseAngle(viewVector))
                     {
                         visible_poly.Add(i);
                     }
@@ -271,6 +298,28 @@ namespace Affin3D
                 HashSet<Edge3D> res = new HashSet<Edge3D>();
                 for (int poly = 0; poly < polygons.Count; poly++)
                 {
+                    if (polygons[poly].Count < 3 || !normals[poly].ObtuseAngle(view_vector))
+                        continue;
+                    Point3D prev = points[polygons[poly][0]];
+                    for (var i = 1; i < polygons[poly].Count; i++)
+                    {
+                        Point3D cur = points[polygons[poly][i]];
+                        res.Add(new Edge3D(prev, cur));
+                        prev = cur;
+                    }
+                    Edge3D last = new Edge3D(prev, points[polygons[poly][0]]);
+                    res.Add(last);
+                }
+                return res;
+            }
+
+            public HashSet<Edge3D> PreparePrint(Camera camera)
+            {
+                //var visible_polys = PolyClipping(view_vector);
+                HashSet<Edge3D> res = new HashSet<Edge3D>();
+                for (int poly = 0; poly < polygons.Count; poly++)
+                {
+                    var view_vector = NormalizedVector(camera.camera, AveragePoint(polygons[poly].Select((x) => points[x]).ToList()));
                     if (polygons[poly].Count < 3 || !normals[poly].ObtuseAngle(view_vector))
                         continue;
                     Point3D prev = points[polygons[poly][0]];
@@ -542,6 +591,18 @@ namespace Affin3D
             double l = (lvector.X / len);
             double m = (lvector.Y / len); 
             double n = (lvector.Z / len); 
+            return new Point3D((float)l, (float)m, (float)n);
+        }
+
+        public static Point3D NormalizedVector(Point3D start, Point3D end)
+        {
+            Point3D lvector = new Point3D(end.X - start.X, end.Y - start.Y, end.Z - start.Z);
+
+            //нормализуем вектор, заданный линией
+            double len = Math.Sqrt(lvector.X * lvector.X + lvector.Y * lvector.Y + lvector.Z * lvector.Z);
+            double l = (lvector.X / len);
+            double m = (lvector.Y / len);
+            double n = (lvector.Z / len);
             return new Point3D((float)l, (float)m, (float)n);
         }
 

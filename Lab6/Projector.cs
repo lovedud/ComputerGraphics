@@ -30,6 +30,34 @@ namespace Affin3D
             FillPerspectiveMatr(z_length);
         }
 
+        //public IEnumerable<Edge> Project(Mode m, Polyhedron p, Camera cam)
+        //{
+        //    AffinMatr view_matrix;
+        //    var copy_p = new Polyhedron(p);
+        //    ToCenterCoord(ref copy_p);
+        //    switch (m)
+        //    {
+        //        case Mode.Orthographic:
+        //            view_matrix = new AffinMatr(ortographics_matr);
+        //            break;
+        //        case Mode.Isometric:
+        //            view_matrix = new AffinMatr(isometric_matr);
+        //            break;
+        //        case Mode.Perspective:
+        //            view_matrix = new AffinMatr(perspective_matr);
+        //            break;
+        //        case Mode.Camera:
+        //            view_matrix = cam.CameraProjection(copy_p.Center());
+        //            break;
+        //        default:
+        //            return new HashSet<Edge>();
+
+        //    }
+
+        //    return copy_p.PreparePrint(new Point3D(0, 0, 1)).Select((edge) => new Edge(ApplyTo(edge.start, view_matrix).To2D(),
+        //        ApplyTo(edge.end, view_matrix).To2D()));
+        //}
+
         public IEnumerable<Edge> Project(Mode m, Polyhedron p, Camera cam)
         {
             AffinMatr view_matrix;
@@ -39,23 +67,30 @@ namespace Affin3D
             {
                 case Mode.Orthographic:
                     view_matrix = new AffinMatr(ortographics_matr);
+                    return copy_p.PreparePrint(new Point3D(0, 0, 1)).Select((edge) => new Edge(ApplyTo(edge.start, view_matrix).To2D(),
+                ApplyTo(edge.end, view_matrix).To2D()));
                     break;
                 case Mode.Isometric:
                     view_matrix = new AffinMatr(isometric_matr);
+                    return copy_p.PreparePrint(new Point3D(-1, 1, 1)).Select((edge) => new Edge(ApplyTo(edge.start, view_matrix).To2D(),
+                ApplyTo(edge.end, view_matrix).To2D()));
                     break;
                 case Mode.Perspective:
                     view_matrix = new AffinMatr(perspective_matr);
+                    return copy_p.PreparePrint(new Camera(new Point3D(0,0,1600), new Point3D(0,0,1))).Select((edge) => new Edge(ApplyTo(edge.start, view_matrix).To2D(),
+                ApplyTo(edge.end, view_matrix).To2D()));
                     break;
                 case Mode.Camera:
                     view_matrix = cam.CameraProjection(copy_p.Center());
+                    return copy_p.PreparePrint(cam).Select((edge) => new Edge(ApplyTo(edge.start, view_matrix).To2D(),
+                ApplyTo(edge.end, view_matrix).To2D()));
                     break;
                 default:
                     return new HashSet<Edge>();
 
             }
+
             
-            return copy_p.PreparePrint(new Point3D(0, 0, 1)).Select((edge) => new Edge(ApplyTo(edge.start, view_matrix).To2D(),
-                ApplyTo(edge.end, view_matrix).To2D()));
         }
         public IEnumerable<Rastr> Project(Mode m, Polyhedron p, Camera cam, Light l)
         {
