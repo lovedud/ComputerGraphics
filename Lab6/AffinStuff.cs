@@ -48,6 +48,13 @@ namespace Affin3D
                 Z = z;
                 eps = 0.01F;
             }
+            public Point3D(Point3D p)
+            {
+                X = p.X;
+                Y = p.Y;
+                Z = p.Z;
+            }
+
 
             public static bool operator !=(Point3D e1, Point3D e2)
             {
@@ -62,8 +69,6 @@ namespace Affin3D
             {
                 return other == this;
             }
-
-            
         }
 
         public class PointD
@@ -160,7 +165,8 @@ namespace Affin3D
                 return res;
             }
 
-            
+           
+
             public void RotateAroundLine(Point3D start, Point3D vector, double angle)
             {
                 angle = angle * (Math.PI / 180.0);

@@ -14,6 +14,7 @@ namespace Affin3D
 {
     public partial class Form1 : Form
     {
+        Bitmap texture;
         public Form1()
         {
             InitializeComponent();
@@ -28,7 +29,7 @@ namespace Affin3D
             MoveP,
             Scale
         }
-        
+
 
         Mode cur_mode;
         OrtMode cur_ort_mode;
@@ -47,7 +48,7 @@ namespace Affin3D
             if (cur_polyhedron is null)
                 return;
             List<Edge> edges = projector.Project(cur_mode, cur_polyhedron);
-            
+
             //DrawAxis(start_point); убрал, так как сломались ( становятся не по центру объекта)
             foreach (var edge in edges)
             {
@@ -75,13 +76,13 @@ namespace Affin3D
         public int AngleBetweenPoints(Point p1, Point p2)
         {
             Point p1v = new Point(200, 0);
-            Point p2v = new Point(p2.X-p1.X, p1.Y - p2.Y);
+            Point p2v = new Point(p2.X - p1.X, p1.Y - p2.Y);
             double a = Math.Sqrt(p1v.X * p1v.X + p1v.Y * p1v.Y) * Math.Sqrt(p2v.X * p2v.X + p2v.Y * p2v.Y);
             double b = p1v.X * p2v.X + p1v.Y * p2v.Y;
             double c = b / a;
-            double d = Math.Acos(c)*180/Math.PI;
+            double d = Math.Acos(c) * 180 / Math.PI;
             if (p2.Y > p1.Y)
-                d = 360-d;
+                d = 360 - d;
             return (int)d;
         }
 
@@ -118,7 +119,8 @@ namespace Affin3D
                 projector.Update(cur_ort_mode);
                 //ort_button.Enabled = true;
                 Draw();
-            } else OrtButtonAvailability();
+            }
+            else OrtButtonAvailability();
         }
 
         private void Ortyz_CheckedChanged(object sender, EventArgs e)
@@ -131,7 +133,8 @@ namespace Affin3D
                 projector.Update(cur_ort_mode);
                 //ort_button.Enabled = true;
                 Draw();
-            } else OrtButtonAvailability();
+            }
+            else OrtButtonAvailability();
         }
 
         private void Ort_Button_Click(object sender, EventArgs e)
@@ -153,13 +156,13 @@ namespace Affin3D
         {
             cur_mode = Mode.Orthographic;
             ort_button.Enabled = false;
-            
+
             start_point = new Point3D(pictureBox1.Width / 2 - 50, pictureBox1.Height / 2 - 50, 300);
 
             cur_state = State.MoveP;
             button3.Enabled = false;
 
-            cur_polyhedron = CreateCube(new Point3D(0 , 0, 0), 100);
+            cur_polyhedron = CreateCube(new Point3D(0, 0, 0), 100);
             s_x.Text = (pictureBox1.Width / 2).ToString();
             s_y.Text = (pictureBox1.Height / 2).ToString();
             s_z.Text = (pictureBox1.Width / 2).ToString();
@@ -226,7 +229,7 @@ namespace Affin3D
             CheckForCustomLine(sender, e);
         }
 
-        Point point_angle = new Point(0,0);
+        Point point_angle = new Point(0, 0);
         bool m_down = false;
         Edge3D RAL_toDraw;
 
@@ -235,7 +238,7 @@ namespace Affin3D
         Point3D prevMouseMove;
         private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
         {
-            point_angle.X = e.X-50;
+            point_angle.X = e.X - 50;
             point_angle.Y = e.Y;
             m_down = true;
             if (cur_state == State.RotateAroundLine)
@@ -256,12 +259,12 @@ namespace Affin3D
                 int angle = AngleBetweenPoints(point_angle, new Point(e.X, e.Y));
                 cur_polyhedron.RotateAroundLine(RAL.start, RAL.end, prev_angle - angle);
                 prev_angle = angle;
-                Draw(false,false);
+                Draw(false, false);
                 DrawPoint(ref bm, new PointF(point_angle.X, point_angle.Y), Color.Orange);
 
                 //var edge = projector.Project(cur_mode, RAL_toDraw);
                 //g.DrawLine(new Pen(Color.Orange, 1), edge.start, edge.end); //Не работает из-за нового центрирования
-                
+
                 pictureBox1.Image = bm;
 
                 pictureBox1.Update();
@@ -291,7 +294,7 @@ namespace Affin3D
 
                     cur_polyhedron.getMoved(mouseMove);
                     Draw(false);
-                    
+
                 }
 
                 prevMouseMove.X = e.X;
@@ -325,13 +328,13 @@ namespace Affin3D
                     Point3D mouseMove = new Point3D(0, e.X - prevMouseMove.X, e.Y - prevMouseMove.Y);
                     cur_polyhedron.scale(center, 1 - mouseMove.X * 0.01, 1 + mouseMove.Y * 0.01, 1 - mouseMove.Z * 0.01);
                 }
-                
+
 
                 prevMouseMove.X = e.X;
                 prevMouseMove.Y = e.Y;
 
                 Draw(false);
-                
+
             }
         }
 
@@ -364,7 +367,7 @@ namespace Affin3D
             cur_polyhedron = CreateCube(new Point3D(0, 0, 0), 100);
             Draw();
         }
-       
+
 
         private void perspective_button_Click(object sender, EventArgs e)
         {
@@ -395,8 +398,8 @@ namespace Affin3D
                 && float.TryParse(s_z.Text, out z1) && float.TryParse(e_x.Text, out x2)
                 && float.TryParse(e_y.Text, out y2) && float.TryParse(e_z.Text, out z2)
                 && (x2 != 0 || y2 != 0 || z2 != 0))
-            { 
-                RAL = new Edge3D(new Point3D(x1, y1, z1), NormalizedVector(new Edge3D(new Point3D(0,0,0), new Point3D(x2, y2, z2))));
+            {
+                RAL = new Edge3D(new Point3D(x1, y1, z1), NormalizedVector(new Edge3D(new Point3D(0, 0, 0), new Point3D(x2, y2, z2))));
                 RAL_toDraw = new Edge3D(new Point3D(RAL.start.X - RAL.end.X * 500, RAL.start.Y - RAL.end.Y * 500, RAL.start.Z - RAL.end.Z * 500),
                                         new Point3D(RAL.start.X + RAL.end.X * 500, RAL.start.Y + RAL.end.Y * 500, RAL.start.Z + RAL.end.Z * 500));
             }
@@ -478,7 +481,7 @@ namespace Affin3D
                         }
                         ++k;
                         p_prev = new Point3D(p.X, p.Y, p.Z);
-                        if (Math.Abs(j - y2)<0.001 && Math.Abs(i - x2) > 0.001)
+                        if (Math.Abs(j - y2) < 0.001 && Math.Abs(i - x2) > 0.001)
                         {
                             buf[--k] = new Point3D(p_prev.X, p_prev.Y, p_prev.Z);
                         }
@@ -546,8 +549,8 @@ namespace Affin3D
             double angle = 360.0 / count;
             Point3D axis = new Point3D(1, 0, 0);
             Polyhedron rotated_pol = new Polyhedron();
-            
-            
+
+
             cur_polyhedron = new Polyhedron();
 
             switch (comboBox2.SelectedItem.ToString())
@@ -579,10 +582,10 @@ namespace Affin3D
                 for (int j = 0; j < buf.Count; ++j)
                 {
                     if (rotated_pol.points[j] != buf[j])
-                        cur_polyhedron.AddPoints(new List<Point3D> { 
-                                                                    new Point3D(buf[j].X, buf[j].Y, buf[j].Z), 
-                                                                    new Point3D(buf[(j + 1) % buf.Count].X, buf[(j + 1) % buf.Count].Y, buf[(j + 1) % buf.Count].Z), 
-                                                                    new Point3D(rotated_pol.points[j].X, rotated_pol.points[j].Y, rotated_pol.points[j].Z) 
+                        cur_polyhedron.AddPoints(new List<Point3D> {
+                                                                    new Point3D(buf[j].X, buf[j].Y, buf[j].Z),
+                                                                    new Point3D(buf[(j + 1) % buf.Count].X, buf[(j + 1) % buf.Count].Y, buf[(j + 1) % buf.Count].Z),
+                                                                    new Point3D(rotated_pol.points[j].X, rotated_pol.points[j].Y, rotated_pol.points[j].Z)
                     });
                     if (rotated_pol.points[(j + 1) % buf.Count] != buf[(j + 1) % buf.Count])
                         cur_polyhedron.AddPoints(new List<Point3D> {
@@ -688,7 +691,7 @@ namespace Affin3D
                 k++;
             res.Add(temp[k]);
             if (points.Count == 20)
-                res.Add(points[6]); //??????????????????????????????
+                res.Add(points[6]);
 
             int i = 0;
             while (i < points.Count)
@@ -742,65 +745,89 @@ namespace Affin3D
             return res;
         }
 
+        private List<Color> setArrayColor(List<Color> colors)
+        {
+            var rand = new Random();
+            for (int i = 0; i < 300; i++)
+                colors.Add(Color.FromArgb(rand.Next(0, 55), rand.Next(1, 55), rand.Next(0, 55)));
+            return colors;
+        }
 
         private void z_index_Click(object sender, EventArgs e)
         {
-            List<List<double>> facets = new List<List<double>>(); // уравнения плоскостей
-            var myPoints = cur_polyhedron.points;
-
-            foreach (var f in cur_polyhedron.polygons)
-            {
-                double a = (myPoints[f[1]].Y - myPoints[f[0]].Y) * (myPoints[f[2]].Z - myPoints[f[0]].Z) - (myPoints[f[1]].Z - myPoints[f[0]].Z) * (myPoints[f[2]].Y - myPoints[f[0]].Y),
-                       b = (myPoints[f[1]].Z - myPoints[f[0]].Z) * (myPoints[f[2]].X - myPoints[f[0]].X) - (myPoints[f[1]].X - myPoints[f[0]].X) * (myPoints[f[2]].Z - myPoints[f[0]].Z),
-                       c = (myPoints[f[1]].X - myPoints[f[0]].X) * (myPoints[f[2]].Y - myPoints[f[0]].Y) - (myPoints[f[1]].Y - myPoints[f[0]].Y) * (myPoints[f[2]].X - myPoints[f[0]].X),
-                       d = (-1) * (a * myPoints[f[0]].X + b * myPoints[f[0]].Y + c * myPoints[f[0]].Z);
-                facets.Add(new List<double> { a, b, c, d });
-            }
-
-            var points = MakeShell();
-
-            int left = (int)(points.Min(p => p.X)), right = (int)(points.Max(p => p.X));
-            int min = (int)(points.Min(p => p.Y)), max = (int)(points.Max(p => p.Y));
-
             int width = pictureBox1.Width, height = pictureBox1.Height;
-            int[] buf = new int[width * height];
-            for (int i = 0; i < width; i++)
-                for (int j = 0; j < height; j++)
-                    if (left <= i && i <= right && min <= j && j <= max)
-                    {
-                        buf[i + j * width] = -1;
-                        for (int k = 0; k < cur_polyhedron.polygons.Count; k++)
-                        {
-                            List<PointD> f = new List<PointD>();
-                            //foreach (var point in cur_polyhedron.points)
-                            //    f.Add(new PointD(point.X, point.Y));
-                            foreach (var t in cur_polyhedron.polygons[k])
-                                f.Add((new PointD(myPoints[t].X, myPoints[t].Y)));
-                            if (pointInRightPolygon(ref f, new PointD(i, j)))
-                            {
-                                int z = (int)Math.Abs((facets[k][0] * i + facets[k][1] * j + facets[k][3]) / (facets[k][2] * (-1))) % 255;
-                                if (buf[i + j * width] == -1 || buf[i + j * width] > z)
-                                    buf[i + j * width] = z;
-                            }
-                        }
-                        if (buf[i + j * width] == -1)
-                            buf[i + j * width] = 120;
-                    }
 
-                    else
-                        buf[i + j * width] = 120;
-
-
-
-            Bitmap picture = new Bitmap(width, height);
-
-            for (int i = 0; i < width; i++)
-                for (int j = 0; j < height; j++)
-                        picture.SetPixel(i, j, Color.FromArgb(Math.Abs(buf[i + j * width]), 0, 0, 0));
+            Bitmap picture = Z_buffer.z_buffer(width, height, cur_polyhedron);
 
             pictureBox1.Image = picture;
             pictureBox1.Refresh();
+        }
 
+
+
+
+        private void textureButton_Click(object sender, EventArgs e)
+        {
+            
         }
     }
-}
+    }
+
+    
+
+        
+
+        
+
+        
+
+
+
+    //    //произведение векторов
+    //    Point3D Mult(Point3D a, Point3D b)
+    //    {
+    //        return new Point3D(a.Y * b.Z - a.Z * b.Y,
+    //                           a.Z * b.X - a.X * b.Z,
+    //                           a.X * b.Y - a.Y * b.Z);
+    //    }
+
+    //    private void textureButton_Click(object sender, EventArgs e)
+    //    {
+    //        /*Bitmap withTexture = new Bitmap(pictureBox1.Width, pictureBox1.Height);
+
+    //        //отсечение
+    //        foreach (var f in cur_polyhedron.Facets)
+    //        //var f = currentPolyhedron.Facets[7];
+    //        {
+    //            Point3D n = Mult((f[1] - f[0]), (f[1] - f[2]));
+    //            var cos = (-1 * n.Z) / (1 + Math.Sqrt(n.X * n.X + n.Y * n.Y + n.Z * n.Z));
+    //            if (0 < cos)
+    //            {
+    //                double left = f.Min(p => p.X), right = f.Max(p => p.X), min = f.Min(p => p.Y), max = f.Max(p => p.Y);
+    //                int lInd = f.FindIndex(p => p.X == left), rInd = f.FindIndex(p => p.X == right), maxI = f.FindIndex(p => p.Y == max), minI = f.FindIndex(p => p.Y == min);
+    //                double kWidth = (right - left) / texture.Width, kHeight = (max - min) / texture.Height;
+    //                if (kWidth == 0.0)
+    //                    kWidth = 1;
+    //                if (kHeight == 0.0)
+    //                    kHeight = 1;
+    //                var fPoint = f.ConvertAll(p => new PointD(p.X, p.Y));
+
+    //                for (int i = (int)(left); i < right; i++)
+    //                    for (int j = (int)(min); j < max; j++)
+    //                        if (i >= 0 && j >= 0 && i < withTexture.Width && j < withTexture.Height)
+    //                            if (pointInRightPolygon(ref fPoint, new PointD(i, j)))
+    //                            {
+    //                                int u = (int)((i - left) / kWidth), v = (int)((j - min) / kHeight);
+    //                                var p = f[lInd] + u * (f[rInd] - f[lInd]) + v * (f[rInd] - f[lInd]);
+    //                                *//* withTexture.SetPixel(i, j, texture.GetPixel((int)((p.X) % texture.Width + texture.Width) % texture.Width,
+    //                                                                             (int)((p.Y) % texture.Height + texture.Height) % texture.Height)); //*//*
+    //                                withTexture.SetPixel(i, j, texture.GetPixel(u, v));
+    //                            }
+    //            }
+    //        }
+
+    //        pictureBox1.Image = withTexture;
+    //        pictureBox1.Refresh();*/
+    //    }
+    //}
+

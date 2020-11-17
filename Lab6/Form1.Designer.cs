@@ -85,6 +85,8 @@
             this.Ortxyz = new System.Windows.Forms.CheckBox();
             this.button5 = new System.Windows.Forms.Button();
             this.z_index = new System.Windows.Forms.Button();
+            this.textureLoadButton = new System.Windows.Forms.Button();
+            this.textureButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.SuspendLayout();
@@ -718,11 +720,32 @@
             this.z_index.UseVisualStyleBackColor = true;
             this.z_index.Click += new System.EventHandler(this.z_index_Click);
             // 
+            // textureLoadButton
+            // 
+            this.textureLoadButton.Location = new System.Drawing.Point(1463, 696);
+            this.textureLoadButton.Name = "textureLoadButton";
+            this.textureLoadButton.Size = new System.Drawing.Size(117, 46);
+            this.textureLoadButton.TabIndex = 54;
+            this.textureLoadButton.Text = "Загрузить текстуру";
+            this.textureLoadButton.UseVisualStyleBackColor = true;
+            // 
+            // textureButton
+            // 
+            this.textureButton.Location = new System.Drawing.Point(1597, 696);
+            this.textureButton.Name = "textureButton";
+            this.textureButton.Size = new System.Drawing.Size(107, 45);
+            this.textureButton.TabIndex = 55;
+            this.textureButton.Text = "Применить текстуру";
+            this.textureButton.UseVisualStyleBackColor = true;
+            this.textureButton.Click += new System.EventHandler(this.textureButton_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1727, 809);
+            this.Controls.Add(this.textureButton);
+            this.Controls.Add(this.textureLoadButton);
             this.Controls.Add(this.z_index);
             this.Controls.Add(this.Ortxyz);
             this.Controls.Add(this.button4);
@@ -849,6 +872,8 @@
         private System.Windows.Forms.CheckBox Ortxyz;
         private System.Windows.Forms.Button button5;
         private System.Windows.Forms.Button z_index;
+        private System.Windows.Forms.Button textureLoadButton;
+        private System.Windows.Forms.Button textureButton;
     }
 }
 
