@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Imaging;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -21,6 +23,8 @@ namespace Affin3D
             bm = new Bitmap(pictureBox1.Width, pictureBox1.Height);
             pictureBox1.Image = bm;
             g = Graphics.FromImage(bm);
+
+            SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
         }
 
         public enum State
@@ -763,71 +767,25 @@ namespace Affin3D
             pictureBox1.Refresh();
         }
 
-
+       
 
 
         private void textureButton_Click(object sender, EventArgs e)
         {
-            
+            int width = pictureBox1.Width, height = pictureBox1.Height;
+
+            Bitmap picture = Texture.z_buffer(width, height, cur_polyhedron);
+
+            pictureBox1.Image = picture;
+            pictureBox1.Refresh();
+        }
+
+        
+
+
+        private void texture_button_Click(object sender, EventArgs e)
+        {
+
         }
     }
-    }
-
-    
-
-        
-
-        
-
-        
-
-
-
-    //    //произведение векторов
-    //    Point3D Mult(Point3D a, Point3D b)
-    //    {
-    //        return new Point3D(a.Y * b.Z - a.Z * b.Y,
-    //                           a.Z * b.X - a.X * b.Z,
-    //                           a.X * b.Y - a.Y * b.Z);
-    //    }
-
-    //    private void textureButton_Click(object sender, EventArgs e)
-    //    {
-    //        /*Bitmap withTexture = new Bitmap(pictureBox1.Width, pictureBox1.Height);
-
-    //        //отсечение
-    //        foreach (var f in cur_polyhedron.Facets)
-    //        //var f = currentPolyhedron.Facets[7];
-    //        {
-    //            Point3D n = Mult((f[1] - f[0]), (f[1] - f[2]));
-    //            var cos = (-1 * n.Z) / (1 + Math.Sqrt(n.X * n.X + n.Y * n.Y + n.Z * n.Z));
-    //            if (0 < cos)
-    //            {
-    //                double left = f.Min(p => p.X), right = f.Max(p => p.X), min = f.Min(p => p.Y), max = f.Max(p => p.Y);
-    //                int lInd = f.FindIndex(p => p.X == left), rInd = f.FindIndex(p => p.X == right), maxI = f.FindIndex(p => p.Y == max), minI = f.FindIndex(p => p.Y == min);
-    //                double kWidth = (right - left) / texture.Width, kHeight = (max - min) / texture.Height;
-    //                if (kWidth == 0.0)
-    //                    kWidth = 1;
-    //                if (kHeight == 0.0)
-    //                    kHeight = 1;
-    //                var fPoint = f.ConvertAll(p => new PointD(p.X, p.Y));
-
-    //                for (int i = (int)(left); i < right; i++)
-    //                    for (int j = (int)(min); j < max; j++)
-    //                        if (i >= 0 && j >= 0 && i < withTexture.Width && j < withTexture.Height)
-    //                            if (pointInRightPolygon(ref fPoint, new PointD(i, j)))
-    //                            {
-    //                                int u = (int)((i - left) / kWidth), v = (int)((j - min) / kHeight);
-    //                                var p = f[lInd] + u * (f[rInd] - f[lInd]) + v * (f[rInd] - f[lInd]);
-    //                                *//* withTexture.SetPixel(i, j, texture.GetPixel((int)((p.X) % texture.Width + texture.Width) % texture.Width,
-    //                                                                             (int)((p.Y) % texture.Height + texture.Height) % texture.Height)); //*//*
-    //                                withTexture.SetPixel(i, j, texture.GetPixel(u, v));
-    //                            }
-    //            }
-    //        }
-
-    //        pictureBox1.Image = withTexture;
-    //        pictureBox1.Refresh();*/
-    //    }
-    //}
-
+}

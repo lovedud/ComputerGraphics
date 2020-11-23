@@ -731,7 +731,7 @@
             // 
             // textureButton
             // 
-            this.textureButton.Location = new System.Drawing.Point(1597, 696);
+            this.textureButton.Location = new System.Drawing.Point(1463, 485);
             this.textureButton.Name = "textureButton";
             this.textureButton.Size = new System.Drawing.Size(107, 45);
             this.textureButton.TabIndex = 55;

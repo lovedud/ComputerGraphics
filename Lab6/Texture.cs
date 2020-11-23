@@ -8,12 +8,65 @@ using static Affin3D.AffinStuff;
 
 namespace Affin3D
 {
-    class Z_buffer
+    class Texture
     {
+        static Color[,] color_buffer; //соответсвие между пикселем и цветом
+        static double size_xx = 0, size_yy = 0;
+        static double size_diff_x = 0, size_diff_y = 0;
+        static int centerX, centerY, size_x, size_y;
+        static Bitmap img;
+
+
+
+
+        private void update_pixel_by_texture(int x, int y, Bitmap img)
+        {
+            if (x - size_xx >= size_diff_x || x <= size_xx)
+                return;
+            color_buffer[x, y] = img.GetPixel((int)((x - size_xx) / size_diff_x * img.Width), img.Height - 1 - (int)((-y + size_yy) / size_diff_y * img.Height));
+        }
+
+        public static Tuple<int, int, int, int> find_min_max_XYpoint(List<int> f, List<Point3D> points)
+        {
+            int ind_max_X = 0;
+            int ind_max_Y = 0;
+            int ind_min_X = 0;
+            int ind_min_Y = 0;
+
+            for (int i = 1; i < f.Count(); ++i)
+            {
+                if (points[f[i]].Y < points[f[ind_min_Y]].Y)
+                    ind_min_Y = i;
+
+                if (points[f[i]].X < points[f[ind_min_X]].X)
+                    ind_min_X = i;
+
+                if (points[f[i]].Y > points[f[ind_max_Y]].Y)
+                    ind_max_Y = i;
+
+                if (points[f[i]].X > points[f[ind_max_X]].X)
+                    ind_max_X = i;
+            }
+            return new Tuple<int, int, int, int>(ind_min_X, ind_max_X, ind_min_Y, ind_max_Y);
+        }
+
+
+
         public static Bitmap z_buffer(int width, int height, Polyhedron scene)
         {
             Bitmap newImg = new Bitmap(width, height);
-            Bitmap img = new Bitmap(Image.FromFile("D:\\MEXMAT\\course4_1\\КГ\\GIT\\ComputerGraphics\\Lab6\\texture1.jpg"), 1024, 1024);
+            //List<Point3D> points = scene.points;
+
+            //Tuple<int, int, int, int> min_maxY = find_min_max_XYpoint(f, points);
+            //size_diff_x = f.points[min_maxY.Item2].X - f.points[min_maxY.Item1].X;
+            //size_diff_y = f.points[min_maxY.Item4].Y - f.points[min_maxY.Item3].Y;
+
+            //int size_x = (int)Math.Round(f.points[min_maxY.Item2].X - f.points[min_maxY.Item1].X) + 1;
+            //int size_y = (int)Math.Round(f.points[min_maxY.Item4].Y - f.points[min_maxY.Item3].Y) + 1;
+            //size_xx = f.points[min_maxY.Item1].X + centerX;
+            //size_yy = -f.points[min_maxY.Item3].Y + centerY;
+
+            //img = new Bitmap(Image.FromFile("D:\\MEXMAT\\course4_1\\КГ\\GIT\\ComputerGraphics\\Lab6\\texture1.jpg"), size_x, size_y);
 
             double[,] zbuff = new double[width, height];
             for (int i = 0; i < width; i++)
@@ -38,15 +91,15 @@ namespace Affin3D
                         if (x < width && y < height && x > 0 && y > 0)
                             if (point.Z > zbuff[x, y])
                             {
-                                zbuff[x, y] = point.Z;
-                                newImg.SetPixel(x, y, Color.FromArgb(Math.Abs((int)zbuff[x, y] % 256), 0, 0, 0));
+                                color_buffer[x, y] = img.GetPixel((int)((x - size_xx) / size_diff_x * img.Width), img.Height - 1 - (int)((-y + size_yy) / size_diff_y * img.Height));
+                                newImg.SetPixel(x, y, color_buffer[x, y]);
                             }
                     }
                 }
             return newImg;
         }
 
-        private static List<List<Point3D>> rasterize(Polyhedron polyhedron)
+        public static List<List<Point3D>> rasterize(Polyhedron polyhedron)
         {
             List<List<Point3D>> rasterized = new List<List<Point3D>>();
             foreach (var facet in polyhedron.polygons)
@@ -60,6 +113,23 @@ namespace Affin3D
                 }
                 currentFac.AddRange(rasterizeShape(facetPoints));
                 rasterized.Add(currentFac);
+
+                List<Point3D> points = polyhedron.points;
+
+                centerX = 1083 / 2;
+                centerY = 788 / 2;
+
+                Tuple<int, int, int, int> min_maxY = find_min_max_XYpoint(facet, points);
+                size_diff_x = points[facet[min_maxY.Item2]].X - points[facet[min_maxY.Item1]].X;
+                size_diff_y = points[facet[min_maxY.Item4]].Y - points[facet[min_maxY.Item3]].Y;
+
+                size_x = (int)Math.Round(points[facet[min_maxY.Item2]].X - points[facet[min_maxY.Item1]].X) + 1;
+                size_y = (int)Math.Round(points[facet[min_maxY.Item4]].Y - points[facet[min_maxY.Item3]].Y) + 1;
+                size_xx = points[facet[min_maxY.Item1]].X + centerX;
+                size_yy = -points[facet[min_maxY.Item3]].Y + centerY;
+
+                img = new Bitmap(Image.FromFile("D:\\MEXMAT\\course4_1\\КГ\\GIT\\ComputerGraphics\\Lab6\\texture1.jpg"), size_x, size_y);
+
             }
             return rasterized;
         }
@@ -157,6 +227,5 @@ namespace Affin3D
             return res;
         }
 
-       
     }
 }

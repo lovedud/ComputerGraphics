@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Imaging;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -277,6 +279,223 @@ namespace Affin3D
                     resMatrix = MatrixMultiplication(resMatrix, scaleMatr);
                     resMatrix = MatrixMultiplication(resMatrix, moveMatr);
                     points[i] = new Point3D((float)resMatrix[0, 0], (float)resMatrix[0, 1], (float)resMatrix[0, 2]);
+                }
+            }
+
+            static public List<float> mul_matrix(List<float> matr1, int m1, int n1, List<float> matr2, int m2, int n2)
+            {
+                if (n1 != m2)
+                    return new List<float>();
+                int l = m1;
+                int m = n1;
+                int n = n2;
+
+                List<float> c = new List<float>();
+                for (int i = 0; i < l * n; ++i)
+                    c.Add(0f);
+
+                for (int i = 0; i < l; ++i)
+                    for (int j = 0; j < n; ++j)
+                    {
+                        for (int r = 0; r < m; ++r)
+                            c[i * l + j] += matr1[i * m1 + r] * matr2[r * n2 + j];
+                    }
+                return c;
+            }
+
+
+            Boolean IsVisible;
+            List<float> Normal;
+
+            public void FindNormal(Point3D pCenter, Edge3D camera, List<int> f)
+            {
+                Point3D first = points[f[0]], second = points[f[1]], third = points[f[2]];
+                var A = first.Y * (second.Z - third.Z) + second.Y * (third.Z - first.Z) + third.Y * (first.Z - second.Z);
+                var B = first.Z * (second.X - third.X) + second.Z * (third.X - first.X) + third.Z * (first.X - second.X);
+                var C = first.X * (second.Y - third.Y) + second.X * (third.Y - first.Y) + third.X * (first.Y - second.Y);
+
+                Normal = new List<float> { A, B, C };
+
+                List<float> SC = new List<float> { second.X - pCenter.X, second.Y - pCenter.Y, second.Z - pCenter.Z };
+                if (mul_matrix(Normal, 1, 3, SC, 3, 1)[0] > 1E-6)
+                {
+                    Normal[0] *= -1;
+                    Normal[1] *= -1;
+                    Normal[2] *= -1;
+                }
+
+                Point3D myCenter = Center();
+
+                Point3D P = camera.start;
+                Point3D E = new Point3D(P.X - myCenter.X, P.Y - myCenter.Y, P.Z - myCenter.Z);
+                double angle = Math.Acos((Normal[0] * E.X + Normal[1] * E.Y + Normal[2] * E.Z) /
+                    ((Math.Sqrt(Normal[0] * Normal[0] + Normal[1] * Normal[1] + Normal[2] * Normal[2]) *
+                    Math.Sqrt(E.X * E.X + E.Y * E.Y + E.Z * E.Z))));
+                angle = angle * 180 / Math.PI;
+
+                IsVisible = angle >= 90;
+            }
+
+            private static Point3D[] SortTriangleVertices(Point3D P0, Point3D P1, Point3D P2)
+            {
+                Point3D p0 = new Point3D(P0)
+                {
+
+                    X = P0.X,
+                    Y = P0.Y
+                },
+                p1 = new Point3D(P1)
+                {
+                    X = P1.X,
+                    Y = P1.Y
+                },
+                p2 = new Point3D(P2)
+                {
+                    X = P2.X,
+                    Y = P2.Y
+                };
+                Point3D[] points = new Point3D[3] { p0, p1, p2 };
+
+                if (points[1].Y < points[0].Y)
+                {
+                    points[0] = p1;
+                    points[1] = p0;
+                }
+                if (points[2].Y < points[0].Y)
+                {
+                    points[2] = points[0];
+                    points[0] = p2;
+                }
+                if (points[2].Y < points[1].Y)
+                {
+                    Point3D temp = points[1];
+                    points[1] = points[2];
+                    points[2] = temp;
+                }
+
+                return points;
+            }
+
+            private static double[] NewInterpolate(int i0, double d0, int i1, double d1)
+            {
+                if (i0 == i1)
+                    return new double[] { d0 };
+                double[] values = new double[i1 - i0 + 1];
+                double a = (d1 - d0) / (i1 - i0);
+                double d = d0;
+
+                int ind = 0;
+                for (int i = i0; i <= i1; ++i)
+                {
+                    values[ind++] = d;
+                    d += a;
+                }
+
+                return values;
+            }
+
+            private static void DrawTexture(Point3D P0, Point3D P1, Point3D P2, Bitmap bmp, BitmapData bmpData, byte[] rgbValues, Bitmap texture, BitmapData bmpDataTexture, byte[] rgbValuesTexture)
+            {
+                // Отсортируйте точки так, чтобы y0 <= y1 <= y2D            
+                var points = SortTriangleVertices(P0, P1, P2);
+                Point3D SortedP0 = points[0], SortedP1 = points[1], SortedP2 = points[2];
+
+                // Вычислите координаты x и U, V текстурных координат ребер треугольника
+                var x01 = NewInterpolate((int)SortedP0.Y, SortedP0.X, (int)SortedP1.Y, SortedP1.X);
+                var u01 = NewInterpolate((int)SortedP0.Y, SortedP0.X, (int)SortedP1.Y, SortedP1.X);
+                var v01 = NewInterpolate((int)SortedP0.Y, SortedP0.Y, (int)SortedP1.Y, SortedP1.Y);
+                var x12 = NewInterpolate((int)SortedP1.Y, SortedP1.X, (int)SortedP2.Y, SortedP2.X);
+                var u12 = NewInterpolate((int)SortedP1.Y, SortedP1.X, (int)SortedP2.Y, SortedP2.X);
+                var v12 = NewInterpolate((int)SortedP1.Y, SortedP1.Y, (int)SortedP2.Y, SortedP2.Y);
+                var x02 = NewInterpolate((int)SortedP0.Y, SortedP0.X, (int)SortedP2.Y, SortedP2.X);
+                var u02 = NewInterpolate((int)SortedP0.Y, SortedP0.X, (int)SortedP2.Y, SortedP2.X);
+                var v02 = NewInterpolate((int)SortedP0.Y, SortedP0.Y, (int)SortedP2.Y, SortedP2.Y);
+
+                // Concatenate the short sides
+                x01 = x01.Take(x01.Length - 1).ToArray(); // remove last element, it's the first in x12
+                var x012 = x01.Concat(x12).ToArray();
+                u01 = u01.Take(u01.Length - 1).ToArray(); // remove last element, it's the first in u12
+                var u012 = u01.Concat(u12).ToArray();
+                v01 = v01.Take(v01.Length - 1).ToArray(); // remove last element, it's the first in v12
+                var v012 = v01.Concat(v12).ToArray();
+
+                // Determine which is left and which is right
+                int m = x012.Length / 2;
+                double[] x_left, x_right, u_left, u_right, v_left, v_right;
+                if (x02[m] < x012[m])
+                {
+                    x_left = x02;
+                    x_right = x012;
+                    u_left = u02;
+                    u_right = u012;
+                    v_left = v02;
+                    v_right = v012;
+                }
+                else
+                {
+                    x_left = x012;
+                    x_right = x02;
+                    u_left = u012;
+                    u_right = u02;
+                    v_left = v012;
+                    v_right = v02;
+                }
+
+                // Рисует горизонтальные сегменты
+                for (int y = (int)SortedP0.Y; y < (int)SortedP2.Y; ++y)
+                {
+                    int screen_y = -y + bmp.Height / 2;
+                    if (screen_y < 0)
+                        break;
+                    if (bmp.Height <= screen_y)
+                        continue;
+
+                    var x_l = x_left[y - (int)SortedP0.Y];
+                    var x_r = x_right[y - (int)SortedP0.Y];
+
+                    var u_segment = NewInterpolate((int)x_l, u_left[y - (int)SortedP0.Y], (int)x_r, u_right[y - (int)SortedP0.Y]);
+                    var v_segment = NewInterpolate((int)x_l, v_left[y - (int)SortedP0.Y], (int)x_r, v_right[y - (int)SortedP0.Y]);
+                    for (int x = (int)x_l; x < (int)x_r; ++x)
+                    {
+                        int screen_x = x + bmp.Width / 2;
+                        if (screen_x < 0)
+                            continue;
+                        if (bmp.Width <= screen_x)
+                            break;
+
+                        int texture_u = (int)(u_segment[x - (int)x_l] * (texture.Width - 1));
+                        int texture_v = (int)(v_segment[x - (int)x_l] * (texture.Height - 1));
+
+                        rgbValues[screen_x * 3 + screen_y * bmpData.Stride] = rgbValuesTexture[texture_u * 3 + texture_v * bmpDataTexture.Stride];
+                        rgbValues[screen_x * 3 + 1 + screen_y * bmpData.Stride] = rgbValuesTexture[texture_u * 3 + 1 + texture_v * bmpDataTexture.Stride];
+                        rgbValues[screen_x * 3 + 2 + screen_y * bmpData.Stride] = rgbValuesTexture[texture_u * 3 + 2 + texture_v * bmpDataTexture.Stride];
+                    }
+                }
+            }
+
+            public void ApplyTexture(Bitmap bmp, BitmapData bmpData, byte[] rgbValues, Bitmap texture, BitmapData bmpDataTexture, byte[] rgbValuesTexture)
+            {
+                Point3D myCenter = Center();
+                foreach (var f in polygons)
+                {
+                    FindNormal(myCenter, new Edge3D(new Point3D(0, 0, 500), new Point3D(0, 0, 500)), f);
+                    if (IsVisible)
+                        continue;
+
+                    // 3 vertices
+                    Point3D P0 = points[f[0]];
+                    Point3D P1 = points[f[1]];
+                    Point3D P2 = points[f[2]];
+                    DrawTexture(P0, P1, P2, bmp, bmpData, rgbValues, texture, bmpDataTexture, rgbValuesTexture);
+
+                    // 4 vertices
+                    if (f.Count == 4)
+                    {
+                        P0 = points[f[2]];
+                        P1 = points[f[3]];
+                        P2 = points[f[0]];
+                        DrawTexture(P0, P1, P2, bmp, bmpData, rgbValues, texture, bmpDataTexture, rgbValuesTexture);
+                    }
                 }
             }
         }
