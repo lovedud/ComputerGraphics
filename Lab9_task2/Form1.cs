@@ -344,11 +344,9 @@ namespace AffinTransform3D
             int Xb = (int)Math.Round(cur_pointXb);
             int sign = Math.Sign(Xb - Xa);
 
-            //set_pixel(ref z_buffer, Xa, Y, za);
             if (sign != 0)
             {
                 make_pixel_line(ref z_buffer, Xa + sign, Xb - sign, Y, za, zb, sign, color, img);
-                //set_pixel(ref z_buffer, Xb, Y, zb);
             }
         }
 
@@ -470,7 +468,7 @@ namespace AffinTransform3D
             Bitmap img = null;
 
             if (is_texturing)
-                img = new Bitmap(Image.FromFile(openFileDialog_texture.FileName), size_x, size_y); //probably worth changing
+                img = new Bitmap(Image.FromFile(openFileDialog_texture.FileName), size_x, size_y);
 
             int up_ind_a = min_maxY.Item4;
             int up_ind_b = min_maxY.Item4;
